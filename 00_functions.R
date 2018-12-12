@@ -47,6 +47,42 @@ powerEst <- function(n, min_diff, p0, alpha=0.95){
   return(pow)
 }
 
-#### Optimizing sample split ---- This section relies on work in Wagner J.E.
-#### & S. V. Stehman. 2015. Optimizing sample size allocation to strata for
-#### estimating area and map accuracy. Remote Sens. Environ. 168: 126???133.
+#### Optimizing sample split ---- 
+
+#### This section relies on work in Wagner J.E. and S.V. Stehman. 2015,
+#### Optimizing sample size allocation to strate for estimating area and map
+#### accuracy. Remote Sens. Environ. 168:126-133.
+
+checkErrorMatrix <- function(errorMatrix = NULL){
+  checkRows <- sum(rowSums(errorMatrix))
+  checkCols <- sum(colSums(errorMatrix))
+  total <- checkRows + checkCols
+  message <- ifelse(total == 2, c("Error matrix appears correctly formed."),
+                    c("Errormatrix is not correctly formed."))
+  return(message)
+}
+
+optimizeSplit <-  function(errorMatrix, nTotal){
+  checkErrorMatrix(errorMatrix)
+  
+  v11 <- (errorMatrix[1,1] * (sum(errorMatrix[1,]) - errorMatrix[1,1])/sum(errorMatrix[1,])^2)
+  
+  v21 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * (errorMatrix[2,1]*errorMatrix[1,2]))/sum(errorMatrix[,1])^4
+  v22 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * (errorMatrix[1,1]*errorMatrix[2,2]))/sum(errorMatrix[,1])^4
+  
+  v31 <- errorMatrix[1,1] * errorMatrix[1,2]
+  v32 <- errorMatrix[2,1] * errorMatrix[2,2]
+  
+  k1 <-  sum(c(v11, v21, v31))
+  k2 <- sum(c(v22, v32))
+  
+  minV <- ifelse(k1 == 0, k2, ifelse(k2 == 0, k1, min(k1, k2)))
+  
+  n1p <- k1/minV
+  n2p <- sqrt(k2/minV)
+  np <-  sum(c(n1p, n2p))
+  
+  n1 <- round((n1p / np) * nTotal)
+  n2 <- round((n2p / np) * nTotal)
+  return(cat("Class 01 should get", n1, "samples.", "\nClass 02 should get", n2, "samples."))
+}
