@@ -41,7 +41,8 @@ contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
 powerEst <- function(n, min_diff, p0, alpha=0.95){
   p1 <- p0 - min_diff
   z_alpha <- qnorm(alpha + 0.025)
-  noom <- sqrt(n) * min_diff - (1 / (2 * sqrt(n))) - z_alpha * sqrt(p0 * min_diff)
+  noom <- sqrt(n) * min_diff - (1 / (2 * sqrt(n))) - 
+          z_alpha * sqrt(p0 * min_diff)
   denoom <- sqrt(p1 * (1 - p1))
   pow <- pnorm(noom/denoom)
   return(pow)
@@ -65,10 +66,13 @@ checkErrorMatrix <- function(errorMatrix = NULL){
 optimizeSplit <-  function(errorMatrix, nTotal){
   checkErrorMatrix(errorMatrix)
   
-  v11 <- (errorMatrix[1,1] * (sum(errorMatrix[1,]) - errorMatrix[1,1])/sum(errorMatrix[1,])^2)
+  v11 <- (errorMatrix[1,1] * (sum(errorMatrix[1,]) - errorMatrix[1,1]) / 
+            sum(errorMatrix[1,])^2)
   
-  v21 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * (errorMatrix[2,1]*errorMatrix[1,2]))/sum(errorMatrix[,1])^4
-  v22 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * (errorMatrix[1,1]*errorMatrix[2,2]))/sum(errorMatrix[,1])^4
+  v21 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * 
+            (errorMatrix[2,1]*errorMatrix[1,2]))/sum(errorMatrix[,1])^4
+  v22 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * 
+            (errorMatrix[1,1]*errorMatrix[2,2]))/sum(errorMatrix[,1])^4
   
   v31 <- errorMatrix[1,1] * errorMatrix[1,2]
   v32 <- errorMatrix[2,1] * errorMatrix[2,2]
@@ -84,5 +88,6 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   
   n1 <- round((n1p / np) * nTotal)
   n2 <- round((n2p / np) * nTotal)
-  return(cat("Class 01 should get", n1, "samples.", "\nClass 02 should get", n2, "samples."))
+  return(cat("Class 01 should get", n1, "samples.", 
+             "\nClass 02 should get", n2, "samples."))
 }
