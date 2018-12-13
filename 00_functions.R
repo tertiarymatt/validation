@@ -5,12 +5,17 @@
 #' output: github_document
 #' ---
 #'
-#### Required packages ----
+
+#' Required packages
+#'+ Packages
 library(tidyverse)
 
 
-#### This section is for functions related to sample size determination ----
-
+#' ### This section is for functions related to sample size determination  
+#' 
+#' Text goes here describing each function. 
+#' 
+#+ SampleSizeCode
 genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
   # convert the input probalities into z scores
   z_alpha <- qnorm(alpha + 0.025)

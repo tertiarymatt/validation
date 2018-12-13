@@ -3,8 +3,9 @@ Functions
 MS Patterson, <tertiarymatt@gmail.com>
 December 12, 2018
 
+Required packages + Packages
+
 ``` r
-#### Required packages ----
 library(tidyverse)
 ```
 
@@ -19,9 +20,11 @@ library(tidyverse)
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
-``` r
-#### This section is for functions related to sample size determination ----
+### This section is for functions related to sample size determination
 
+Text goes here describing each function.
+
+``` r
 genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
   # convert the input probalities into z scores
   z_alpha <- qnorm(alpha + 0.025)
