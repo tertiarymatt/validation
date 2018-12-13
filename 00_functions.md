@@ -1,14 +1,25 @@
-#' ---
-#' title: "Functions"
-#' author: "MS Patterson, tertiarymatt@gmail.com"
-#' date: "`r format(Sys.time(), '%B %d, %Y')`"
-#' output: github_document
-#' ---
-#'
+Functions
+================
+MS Patterson, <tertiarymatt@gmail.com>
+December 12, 2018
+
+``` r
 #### Required packages ----
 library(tidyverse)
+```
 
+    ## -- Attaching packages ------------------------------------------------------------------ tidyverse 1.2.1 --
 
+    ## v ggplot2 3.1.0     v purrr   0.2.5
+    ## v tibble  1.4.2     v dplyr   0.7.8
+    ## v tidyr   0.8.2     v stringr 1.3.1
+    ## v readr   1.2.1     v forcats 0.3.0
+
+    ## -- Conflicts --------------------------------------------------------------------- tidyverse_conflicts() --
+    ## x dplyr::filter() masks stats::filter()
+    ## x dplyr::lag()    masks stats::lag()
+
+``` r
 #### This section is for functions related to sample size determination ----
 
 genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
@@ -48,19 +59,17 @@ powerEst <- function(n, min_diff, p0, alpha=0.95){
   pow <- pnorm(noom/denoom)
   return(pow)
 }
+```
 
- 
+### Optimizing sample split
 
-#' ### Optimizing sample split
-#' This section relies on work in Wagner J.E. and S.V. Stehman. 2015,
-#' Optimizing sample size allocation to strate for estimating area and map
-#' accuracy. Remote Sens. Environ. 168:126-133.  
-#'
-#' #### Error matrix checker  
-#' 
-#' This function checks that the area-proportion error matrix is properly formed.  
+This section relies on work in Wagner J.E. and S.V. Stehman. 2015, Optimizing sample size allocation to strate for estimating area and map accuracy. Remote Sens. Environ. 168:126-133.
 
-#+ ErrorMatrixChecker
+#### Error matrix checker
+
+This function checks that the area-proportion error matrix is properly formed.
+
+``` r
 checkErrorMatrix <- function(errorMatrix){
   checkRows <- sum(rowSums(errorMatrix))
   checkCols <- sum(colSums(errorMatrix))
@@ -69,18 +78,16 @@ checkErrorMatrix <- function(errorMatrix){
                     c("Errormatrix is not correctly formed."))
   return(message)
 }
+```
 
+#### Two Category Optimization of Sample Distribution
 
-#' ####Two Category Optimization of Sample Distribution
-#' 
-#' This function uses Wagner & Stehman's approach to optimize sample 
-#' distribution for two strata, to minimize SE and maintain accuracy of error
-#' estimation.  
-#' 
-#' **errorMatrix**: An area-based error matrix for a two class map (2x2).  
-#' **nTotal**: The total sample pool to work with.
+This function uses Wagner & Stehman's approach to optimize sample distribution for two strata, to minimize SE and maintain accuracy of error estimation.
 
-#+ OptimizeSplit
+**errorMatrix**: An area-based error matrix for a two class map (2x2).
+**nTotal**: The total sample pool to work with.
+
+``` r
 optimizeSplit <-  function(errorMatrix, nTotal){
   # Check that the matrix proportions work out. 
   checkErrorMatrix(errorMatrix)
@@ -114,3 +121,4 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   return(cat("Class 01 should get", n1, "samples.", 
              "\nClass 02 should get", n2, "samples."))
 }
+```
