@@ -1,7 +1,7 @@
 Functions
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-December 12, 2018
+December 13, 2018
 
 Required packages
 
@@ -9,14 +9,14 @@ Required packages
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ------------------------------------------------------------------ tidyverse 1.2.1 --
+    ## -- Attaching packages ---------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
-    ## v ggplot2 3.1.0     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.8
-    ## v tidyr   0.8.2     v stringr 1.3.1
-    ## v readr   1.2.1     v forcats 0.3.0
+    ## v ggplot2 2.2.1     v purrr   0.2.5
+    ## v tibble  1.4.2     v dplyr   0.7.5
+    ## v tidyr   0.8.1     v stringr 1.3.1
+    ## v readr   1.1.1     v forcats 0.3.0
 
-    ## -- Conflicts --------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -123,5 +123,99 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   
   return(cat("Class 01 should get", n1, "samples.", 
              "\nClass 02 should get", n2, "samples."))
+}
+```
+
+### Functions for fuzzy accuracy assessment
+
+#### Make a fuzzy population error matrix
+
+``` r
+fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
+  ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
+  ### number of classes, along with the class names as a character vector.
+  ### Tables should be of identical size, with identical ordering of sample
+  ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
+  ### two tables, and output as a labeled matrix.
+  
+  #establish table
+  fTable <- matrix(nrow=length(classes)+1, ncol=length(classes)+1, 0)
+  
+  for(i in 1:nrow(cT)){
+    r <- rT[i,]
+    c <- cT[i,]
+    
+    #Build a single pixel table
+    fPixel <- matrix(nrow=length(c)+1, ncol=length(r)+1)
+    fPixel[length(classes)+1,] <- c(r, 0)
+    fPixel[,length(classes)+1] <- c(c, sum(c))
+    
+    for(m in 1:length(classes)){
+      for(n in 1:length(classes)){
+        fPixel[m,n] <- min(r[n], c[m])
+      }
+    }
+    
+    rownames(fPixel) <- c(classes, "Grade")
+    colnames(fPixel)<- c(classes, "Grade")
+    fPixel
+    
+    #add tables
+    fTable <- fTable + fPixel
+  }
+  return(fTable)
+}
+```
+
+#### CEO Point Table Reclassification
+
+Condense a soft classication table into two columns, primary and secondary, add to table
+
+``` r
+topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields = NULL){
+  ### inTable should be a soft classification table (output from CEO), plotField
+  ### should point to the PLOTID field, flagfield should point to FLAGGED field,
+  ### classfields should be a vector of the indices of the fields for the
+  ### classes.
+  
+  require(tidyr)
+  classes <- colnames(inTable)[classfields]
+  plots <- select(inTable, plotfield, flagfield, classfields)
+  
+  #initialize variables to collect primary and secondary class types
+  primary <- NULL
+  secondary <- NULL
+  
+  for(i in 1:nrow(plots)){
+    
+    if(plots[i,2] == FALSE){
+      
+      #produce a verson of the table
+      pl <- plots[i,-1]
+      pl <- as_vector(pl[-1])
+      n <- length(unique(pl))
+      
+      if(length(which(pl == sort(unique(pl))[n])) == 1){ # Is there a tie?
+        primary[i] <- classes[which(pl == sort(unique(pl))[n])]
+        secondary[i] <- ifelse(sort(unique(pl))[n-1] == 0, # Does the second highest cover has a score of zero?
+                               classes[which.max(pl)], # if so, enter max again
+                               classes[which(pl == sort(unique(pl))[n-1])]) #if not enter second highest
+      } else { #in case of tie, add the tied classes, primary is just the first field encountered
+        tie <- classes[which(pl == sort(unique(pl))[n])]
+        paste("Plot", plots[i,1], "has a tie, with values", tie[1], "and", tie[2])
+        primary[i] <- tie[1]
+        secondary[i] <- tie[2]
+      }
+    }
+    else{
+      primary[i] <- "FLAGGED"
+      secondary[i] <- "FLAGGED"
+    }
+  }
+  
+  inTable$Primary <- primary
+  inTable$Secondary <- secondary
+  
+  return(inTable)
 }
 ```
