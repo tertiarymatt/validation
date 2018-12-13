@@ -54,7 +54,7 @@ powerEst <- function(n, min_diff, p0, alpha=0.95){
 #### Optimizing sample size allocation to strate for estimating area and map
 #### accuracy. Remote Sens. Environ. 168:126-133.
 
-checkErrorMatrix <- function(errorMatrix = NULL){
+checkErrorMatrix <- function(errorMatrix){
   checkRows <- sum(rowSums(errorMatrix))
   checkCols <- sum(colSums(errorMatrix))
   total <- checkRows + checkCols
@@ -64,8 +64,19 @@ checkErrorMatrix <- function(errorMatrix = NULL){
 }
 
 optimizeSplit <-  function(errorMatrix, nTotal){
+  #' Two Category Optimization of Sample Distribution
+  #' 
+  #' This function uses Wagner & Stehman's approach to optimize sample 
+  #' distribution for two strata, to minimize SE and maintain accuracy of error
+  #' estimation.
+  #' 
+  #' @param errorMatrix An area-based error matrix for a two class map (2x2).
+  #' @param nTotal The total sample pool to work with.
+  
+  # Check that the matrix proportions work out. 
   checkErrorMatrix(errorMatrix)
   
+  # Calculate individual components used for finding proportions. 
   v11 <- (errorMatrix[1,1] * (sum(errorMatrix[1,]) - errorMatrix[1,1]) / 
             sum(errorMatrix[1,])^2)
   
@@ -74,20 +85,23 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   v22 <- ((errorMatrix[1,1] * errorMatrix[2,1]) * 
             (errorMatrix[1,1]*errorMatrix[2,2]))/sum(errorMatrix[,1])^4
   
-  v31 <- errorMatrix[1,1] * errorMatrix[1,2]
-  v32 <- errorMatrix[2,1] * errorMatrix[2,2]
+  v31 <- prod(errorMatrix[1,])
+  v32 <- prod(errorMatrix[2,])
   
   k1 <-  sum(c(v11, v21, v31))
   k2 <- sum(c(v22, v32))
   
   minV <- ifelse(k1 == 0, k2, ifelse(k2 == 0, k1, min(k1, k2)))
   
+  # Calculate the proportions for each class
   n1p <- k1/minV
   n2p <- sqrt(k2/minV)
   np <-  sum(c(n1p, n2p))
   
+  # Calculate sample sizes for each class
   n1 <- round((n1p / np) * nTotal)
   n2 <- round((n2p / np) * nTotal)
+  
   return(cat("Class 01 should get", n1, "samples.", 
              "\nClass 02 should get", n2, "samples."))
 }
