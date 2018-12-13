@@ -3,7 +3,7 @@ Functions
 MS Patterson, <tertiarymatt@gmail.com>
 December 12, 2018
 
-Required packages + Packages
+Required packages
 
 ``` r
 library(tidyverse)
