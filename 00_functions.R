@@ -5,7 +5,7 @@
 #### last updated: 12/12/18
 
 #### Required packages ----
-
+library(tidyverse)
 
 
 #### This section is for functions related to sample size determination ----
