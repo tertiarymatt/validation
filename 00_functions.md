@@ -1,9 +1,9 @@
 Functions
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-December 13, 2018
+December 18, 2018
 
-Required packages
+### Required packages
 
 ``` r
 library(tidyverse)
