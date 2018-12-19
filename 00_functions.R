@@ -11,10 +11,26 @@
 library(tidyverse)
 
 
-#' ### This section is for functions related to sample size determination  
-#' 
-#' Text goes here describing each function. 
-#' 
+#' ### This section is for functions related to sample size determination ' '
+#' The following sample size calculation functions are derived from the work of
+#' Foody, G. M. (2009). Sample size determination for image classification
+#' accuracy assessment and comparison. International Journal of Remote Sensing,
+#' 30(20), 5273???5291. https://doi.org/10.1080/01431160903130937 '
+#'
+#' Each of the three sample size caclulation functions relates to a particular
+#' approach. `genSample1()` is an implementation of the typical sample size
+#' calcuation, using only the target accuracy (p0), the half-width of the
+#' Confidence Interval (h), and the tolerance for Type I error (alpha).
+#'
+#' `genSample2()` is used when it is desired to be able to reliably test for a
+#' result being a certain distance from the target accuracy. It requires the
+#' minimum detectable difference (min_diff), and also that tolerance for Type II
+#' errors be specified (beta).
+#'
+#' `genSample3()` is used when a confidence interval is of more interest than
+#' testing against a target accuracy. See eq. 22-25.
+
+
 #+ SampleSizeCode
 genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
   # convert the input probalities into z scores
