@@ -224,37 +224,37 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
 
 #' #### Make a fuzzy population error matrix  
 
-fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
-  ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
-  ### number of classes, along with the class names as a character vector.
-  ### Tables should be of identical size, with identical ordering of sample
-  ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
-  ### two tables, and output as a labeled matrix.
-  
-  #establish table
-  fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
-  
-  for (i in 1:nrow(cT)){
-    r <- rT[i,]
-    c <- cT[i,]
-    
-    #Build a single pixel table
-    fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
-    fPixel[length(classes) + 1,] <- c(r, 0)
-    fPixel[,length(classes) + 1] <- c(c, sum(c))
-    
-    for (m in 1:length(classes)){
-      for (n in 1:length(classes)){
-        fPixel[m,n] <- min(r[n], c[m])
-      }
-    }
-    
-    rownames(fPixel) <- c(classes, "Grade")
-    colnames(fPixel) <- c(classes, "Grade")
-    fPixel
-    
-    #add tables
-    fTable <- fTable + fPixel
-  }
-  return(fTable)
-}
+# fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
+#   ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
+#   ### number of classes, along with the class names as a character vector.
+#   ### Tables should be of identical size, with identical ordering of sample
+#   ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
+#   ### two tables, and output as a labeled matrix.
+#   
+#   #establish table
+#   fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
+#   
+#   for (i in 1:nrow(cT)){
+#     r <- rT[i,]
+#     c <- cT[i,]
+#     
+#     #Build a single pixel table
+#     fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
+#     fPixel[length(classes) + 1,] <- c(r, 0)
+#     fPixel[,length(classes) + 1] <- c(c, sum(c))
+#     
+#     for (m in 1:length(classes)){
+#       for (n in 1:length(classes)){
+#         fPixel[m,n] <- min(r[n], c[m])
+#       }
+#     }
+#     
+#     rownames(fPixel) <- c(classes, "Grade")
+#     colnames(fPixel) <- c(classes, "Grade")
+#     fPixel
+#     
+#     #add tables
+#     fTable <- fTable + fPixel
+#   }
+#   return(fTable)
+# }

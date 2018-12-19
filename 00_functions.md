@@ -1,7 +1,7 @@
 Functions
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-December 18, 2018
+December 19, 2018
 
 ### Required packages
 
@@ -9,48 +9,62 @@ December 18, 2018
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ------------------------------------- tidyverse 1.2.1 --
 
-    ## v ggplot2 2.2.1     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.5
-    ## v tidyr   0.8.1     v stringr 1.3.1
-    ## v readr   1.1.1     v forcats 0.3.0
+    ## v ggplot2 3.1.0     v purrr   0.2.5
+    ## v tibble  1.4.2     v dplyr   0.7.8
+    ## v tidyr   0.8.2     v stringr 1.3.1
+    ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ---------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
-### This section is for functions related to sample size determination ' '
+### This section is for functions related to sample size determination
 
-The following sample size calculation functions are derived from the work of Foody, G. M. (2009). Sample size determination for image classification accuracy assessment and comparison. International Journal of Remote Sensing, 30(20), 5273???5291. <https://doi.org/10.1080/01431160903130937> '
+The following sample size calculation functions are derived from the work of Foody, G. M. (2009). Sample size determination for image classification accuracy assessment and comparison. International Journal of Remote Sensing, 30(20), 5273-5291. <https://doi.org/10.1080/01431160903130937>
 
 Each of the three sample size caclulation functions relates to a particular approach. `genSample1()` is an implementation of the typical sample size calcuation, using only the target accuracy (p0), the half-width of the Confidence Interval (h), and the tolerance for Type I error (alpha).
 
 `genSample2()` is used when it is desired to be able to reliably test for a result being a certain distance from the target accuracy. It requires the minimum detectable difference (min\_diff), and also that tolerance for Type II errors be specified (beta).
 
-`genSample3()` is used when a confidence interval is of more interest than testing against a target accuracy. See eq. 22-25.
+`genSample3()` is used when a confidence interval is of more interest than testing against a target accuracy. See eq. 22-25. This function requires the specification of the target or expected accuracy (p0), alpha and beta, and the difference in accuracy that can be detected with a power of 1 - beta (d).
+
+The function `contCorrect()` performs a continuity correction on sample size estimates. A continuity correction may be necessary when using equations that assume a continious distribution (samples are discrete), which results in a slight underestimate of the necessary sample size. It is most appropriate to apply to the estimate of sample size produced by `genSample2()`.
+
+The function `powerEst()` can be used to estimate the power of a sample size, given the minimum difference to be detected (min\_diff), the expected accuracy (p0), and alpha.
 
 ``` r
-genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
+genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.05){
   # convert the input probalities into z scores
-  z_alpha <- qnorm(alpha + 0.025)
+  z_alpha <- qnorm((1 - alpha/2))
   # calculate n_prime sample size
-  n_prime <- z_alpha^2 * (p0 * (1 - p0)) / (h^2)
+  n <- z_alpha^2 * (p0 * (1 - p0)) / (h^2)
   
-  return(round(n_prime))
+  return(round(n))
 }
 
-genSample2 <- function(p0 = 0.85, min_diff = 0.01, alpha = 0.95, beta = 0.95){
+genSample2 <- function(p0 = 0.85, min_diff = 0.01, alpha = 0.05, beta = 0.2){
   # convert the input probalities into z scores
-  z_alpha <- qnorm(alpha + 0.025)
-  z_beta <-  qnorm(beta + 0.025)
+  z_alpha <- qnorm((1 - alpha))
+  z_beta <-  qnorm((1 - beta))
   
   # calculate the actual n prime estimate 
   p1 <- p0 - min_diff
   noom <- (z_alpha * sqrt(p0 * (1 - p0))) + (z_beta * sqrt(p1 * (1 - p1)))
-  n_prime <- (noom / min_diff)^2
+  n <- (noom / min_diff)^2
   
-  return(round(n_prime))
+  return(round(n))
+}
+
+
+genSample3 <-  function(p0 = 0.85, d = 0.1, alpha = 0.05, beta = 0.2){
+  z_alpha <- qnorm((1 - alpha/2))
+  z_beta <-  qnorm((1 - beta))
+  
+  n <- (2 * p0 * (1 - p0) * (z_alpha + z_beta)^2) / d^2
+  
+  return(round(n))
 }
 
 contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
@@ -59,9 +73,9 @@ contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
   return(round(n))
 }
 
-powerEst <- function(n, min_diff, p0, alpha=0.95){
+powerEst <- function(n, min_diff, p0, alpha=0.05){
   p1 <- p0 - min_diff
-  z_alpha <- qnorm(alpha + 0.025)
+  z_alpha <- qnorm((1 - alpha) + 0.025)
   noom <- sqrt(n) * min_diff - (1 / (2 * sqrt(n))) - 
           z_alpha * sqrt(p0 * min_diff)
   denoom <- sqrt(p1 * (1 - p1))
@@ -132,53 +146,13 @@ optimizeSplit <-  function(errorMatrix, nTotal){
 }
 ```
 
-### Functions for fuzzy accuracy assessment
+### CEO Point Table Reclassification
 
-#### Make a fuzzy population error matrix
-
-``` r
-fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
-  ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
-  ### number of classes, along with the class names as a character vector.
-  ### Tables should be of identical size, with identical ordering of sample
-  ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
-  ### two tables, and output as a labeled matrix.
-  
-  #establish table
-  fTable <- matrix(nrow=length(classes)+1, ncol=length(classes)+1, 0)
-  
-  for(i in 1:nrow(cT)){
-    r <- rT[i,]
-    c <- cT[i,]
-    
-    #Build a single pixel table
-    fPixel <- matrix(nrow=length(c)+1, ncol=length(r)+1)
-    fPixel[length(classes)+1,] <- c(r, 0)
-    fPixel[,length(classes)+1] <- c(c, sum(c))
-    
-    for(m in 1:length(classes)){
-      for(n in 1:length(classes)){
-        fPixel[m,n] <- min(r[n], c[m])
-      }
-    }
-    
-    rownames(fPixel) <- c(classes, "Grade")
-    colnames(fPixel)<- c(classes, "Grade")
-    fPixel
-    
-    #add tables
-    fTable <- fTable + fPixel
-  }
-  return(fTable)
-}
-```
-
-#### CEO Point Table Reclassification
-
-Condense a soft classication table into two columns, primary and secondary, add to table
+This function takes a raw point table produced by Collect Earth Online, and returns that table with a Primary and Secondary class field added. The Primary field is the class with the highest percentage cover, and the Secondary is the class with the second highest. If the plot has been flagged, these fields are marked FLAGGED.Ties return the classes in the order encountered.
 
 ``` r
-topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields = NULL){
+topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
+                       classfields = NULL){
   ### inTable should be a soft classification table (output from CEO), plotField
   ### should point to the PLOTID field, flagfield should point to FLAGGED field,
   ### classfields should be a vector of the indices of the fields for the
@@ -192,28 +166,35 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields
   primary <- NULL
   secondary <- NULL
   
-  for(i in 1:nrow(plots)){
+  for (i in 1:nrow(plots)) {
     
-    if(plots[i,2] == FALSE){
+    if (plots[i,2] == FALSE) {
       
       #produce a verson of the table
       pl <- plots[i,-1]
       pl <- as_vector(pl[-1])
       n <- length(unique(pl))
       
-      if(length(which(pl == sort(unique(pl))[n])) == 1){ # Is there a tie?
+      #Is there a tie?
+      if (length(which(pl == sort(unique(pl))[n])) == 1) {
         primary[i] <- classes[which(pl == sort(unique(pl))[n])]
-        secondary[i] <- ifelse(sort(unique(pl))[n-1] == 0, # Does the second highest cover has a score of zero?
-                               classes[which.max(pl)], # if so, enter max again
-                               classes[which(pl == sort(unique(pl))[n-1])]) #if not enter second highest
-      } else { #in case of tie, add the tied classes, primary is just the first field encountered
+        
+        #Does the second highest cover has a score of zero?
+        secondary[i] <- ifelse(sort(unique(pl))[n - 1] == 0,
+                               #if so, enter max again
+                               classes[which.max(pl)], 
+                               #if not enter second highest
+                               classes[which(pl == sort(unique(pl))[n - 1])]) 
+      } #in case of tie, add the tied classes, 
+        #primary is just the first field encountered
+      else {
         tie <- classes[which(pl == sort(unique(pl))[n])]
         paste("Plot", plots[i,1], "has a tie, with values", tie[1], "and", tie[2])
         primary[i] <- tie[1]
         secondary[i] <- tie[2]
       }
     }
-    else{
+    else {
       primary[i] <- "FLAGGED"
       secondary[i] <- "FLAGGED"
     }
@@ -224,4 +205,45 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields
   
   return(inTable)
 }
+```
+
+### Functions for fuzzy accuracy assessment
+
+#### Make a fuzzy population error matrix
+
+``` r
+# fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
+#   ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
+#   ### number of classes, along with the class names as a character vector.
+#   ### Tables should be of identical size, with identical ordering of sample
+#   ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
+#   ### two tables, and output as a labeled matrix.
+#   
+#   #establish table
+#   fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
+#   
+#   for (i in 1:nrow(cT)){
+#     r <- rT[i,]
+#     c <- cT[i,]
+#     
+#     #Build a single pixel table
+#     fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
+#     fPixel[length(classes) + 1,] <- c(r, 0)
+#     fPixel[,length(classes) + 1] <- c(c, sum(c))
+#     
+#     for (m in 1:length(classes)){
+#       for (n in 1:length(classes)){
+#         fPixel[m,n] <- min(r[n], c[m])
+#       }
+#     }
+#     
+#     rownames(fPixel) <- c(classes, "Grade")
+#     colnames(fPixel) <- c(classes, "Grade")
+#     fPixel
+#     
+#     #add tables
+#     fTable <- fTable + fPixel
+#   }
+#   return(fTable)
+# }
 ```
