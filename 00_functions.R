@@ -82,7 +82,7 @@ contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
 
 powerEst <- function(n, min_diff, p0, alpha=0.05){
   p1 <- p0 - min_diff
-  z_alpha <- qnorm((1-alpha) + 0.025)
+  z_alpha <- qnorm((1 - alpha) + 0.025)
   noom <- sqrt(n) * min_diff - (1 / (2 * sqrt(n))) - 
           z_alpha * sqrt(p0 * min_diff)
   denoom <- sqrt(p1 * (1 - p1))
@@ -156,51 +156,16 @@ optimizeSplit <-  function(errorMatrix, nTotal){
              "\nClass 02 should get", n2, "samples."))
 }
 
-#' ### Functions for fuzzy accuracy assessment  
-
-#' #### Make a fuzzy population error matrix  
-
-fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
-  ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
-  ### number of classes, along with the class names as a character vector.
-  ### Tables should be of identical size, with identical ordering of sample
-  ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
-  ### two tables, and output as a labeled matrix.
-  
-  #establish table
-  fTable <- matrix(nrow=length(classes)+1, ncol=length(classes)+1, 0)
-  
-  for(i in 1:nrow(cT)){
-    r <- rT[i,]
-    c <- cT[i,]
-    
-    #Build a single pixel table
-    fPixel <- matrix(nrow=length(c)+1, ncol=length(r)+1)
-    fPixel[length(classes)+1,] <- c(r, 0)
-    fPixel[,length(classes)+1] <- c(c, sum(c))
-    
-    for(m in 1:length(classes)){
-      for(n in 1:length(classes)){
-        fPixel[m,n] <- min(r[n], c[m])
-      }
-    }
-    
-    rownames(fPixel) <- c(classes, "Grade")
-    colnames(fPixel)<- c(classes, "Grade")
-    fPixel
-    
-    #add tables
-    fTable <- fTable + fPixel
-  }
-  return(fTable)
-}
-
-#' #### CEO Point Table Reclassification
+#' ### CEO Point Table Reclassification
 #'
-#' Condense a soft classication table into two columns, primary and secondary,
-#' add to table
+#' This function takes a raw point table produced by Collect Earth Online, and
+#' returns that table with a Primary and Secondary class field added. The
+#' Primary field is the class with the highest percentage cover, and the
+#' Secondary is the class with the second highest. If the plot has been flagged,
+#' these fields are marked FLAGGED.Ties return the classes in the order encountered. 
 
-topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields = NULL){
+topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
+                       classfields = NULL){
   ### inTable should be a soft classification table (output from CEO), plotField
   ### should point to the PLOTID field, flagfield should point to FLAGGED field,
   ### classfields should be a vector of the indices of the fields for the
@@ -214,28 +179,35 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields
   primary <- NULL
   secondary <- NULL
   
-  for(i in 1:nrow(plots)){
+  for (i in 1:nrow(plots)) {
     
-    if(plots[i,2] == FALSE){
+    if (plots[i,2] == FALSE) {
       
       #produce a verson of the table
       pl <- plots[i,-1]
       pl <- as_vector(pl[-1])
       n <- length(unique(pl))
       
-      if(length(which(pl == sort(unique(pl))[n])) == 1){ # Is there a tie?
+      #Is there a tie?
+      if (length(which(pl == sort(unique(pl))[n])) == 1) {
         primary[i] <- classes[which(pl == sort(unique(pl))[n])]
-        secondary[i] <- ifelse(sort(unique(pl))[n-1] == 0, # Does the second highest cover has a score of zero?
-                               classes[which.max(pl)], # if so, enter max again
-                               classes[which(pl == sort(unique(pl))[n-1])]) #if not enter second highest
-      } else { #in case of tie, add the tied classes, primary is just the first field encountered
+        
+        #Does the second highest cover has a score of zero?
+        secondary[i] <- ifelse(sort(unique(pl))[n - 1] == 0,
+                               #if so, enter max again
+                               classes[which.max(pl)], 
+                               #if not enter second highest
+                               classes[which(pl == sort(unique(pl))[n - 1])]) 
+      } #in case of tie, add the tied classes, 
+        #primary is just the first field encountered
+      else {
         tie <- classes[which(pl == sort(unique(pl))[n])]
         paste("Plot", plots[i,1], "has a tie, with values", tie[1], "and", tie[2])
         primary[i] <- tie[1]
         secondary[i] <- tie[2]
       }
     }
-    else{
+    else {
       primary[i] <- "FLAGGED"
       secondary[i] <- "FLAGGED"
     }
@@ -245,4 +217,44 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, classfields
   inTable$Secondary <- secondary
   
   return(inTable)
+}
+
+
+#' ### Functions for fuzzy accuracy assessment  
+
+#' #### Make a fuzzy population error matrix  
+
+fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
+  ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
+  ### number of classes, along with the class names as a character vector.
+  ### Tables should be of identical size, with identical ordering of sample
+  ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
+  ### two tables, and output as a labeled matrix.
+  
+  #establish table
+  fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
+  
+  for (i in 1:nrow(cT)){
+    r <- rT[i,]
+    c <- cT[i,]
+    
+    #Build a single pixel table
+    fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
+    fPixel[length(classes) + 1,] <- c(r, 0)
+    fPixel[,length(classes) + 1] <- c(c, sum(c))
+    
+    for (m in 1:length(classes)){
+      for (n in 1:length(classes)){
+        fPixel[m,n] <- min(r[n], c[m])
+      }
+    }
+    
+    rownames(fPixel) <- c(classes, "Grade")
+    colnames(fPixel) <- c(classes, "Grade")
+    fPixel
+    
+    #add tables
+    fTable <- fTable + fPixel
+  }
+  return(fTable)
 }
