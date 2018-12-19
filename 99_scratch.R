@@ -52,41 +52,77 @@ optimizeSplit <-  function(errorMatrix){
   n2 <- round((n2p / np) * nTotal)
 }
 
-#+ Material from other projects to build on
 
 #' ### Code block for visualizing the outputs of a CEO project. 
 #+ Do Visualization
+
 # Inmport Data
-valid1 <- read_csv("data/some_data.csv")
+ceoTable <- read_csv("data/some_data.csv")
 
 # class names need to be pulled from each project. 
-classes <- colnames(valid1)[11:30]
+classes <- colnames(ceoTable)[11:30]
 
-# Make a plot of each class's distribution of vales, dropping zeros (which are super abundant)
-select(valid1, classes) %>% gather(., key = "class", value = "count") %>%  filter(., count>0) %>% 
-  ggplot(., aes(count)) + geom_histogram(bins=10) + facet_wrap(~class, scales="free_y")
+# Make a plot of each class's distribution of vales, dropping zeros 
+# (which are super abundant)
+select(ceoTable, classes) %>% 
+  gather(., key = "class", value = "count") %>%  
+  filter(., count > 0) %>% 
+  ggplot(., aes(count)) + geom_histogram(bins = 10) + 
+  facet_wrap(~class, scales = "free_y")
 
 # How many of each class have a cover value of >50%?
-select(valid1, classes) %>% 
+select(ceoTable, classes) %>% 
   gather(., key = "class", value = "count") %>%  
-  filter(., count>50) %>% 
+  filter(., count > 50) %>% 
   count(., class) %>% 
-  qplot(class, n, data = ., geom = "col", main = c("Instances of class cover >50%")) + coord_flip()
+  qplot(class, n, data = ., geom = "col", 
+        main = c("Instances of class cover >50%")) + coord_flip()
 
 # How many of each class have a non-zero cover value of <50%?
-select(valid1, classes) %>% 
+select(ceoTable, classes) %>% 
   gather(., key = "class", value = "count") %>%
-  filter(., count>0) %>%
-  filter(., count<50) %>% 
+  filter(., count > 0) %>%
+  filter(., count < 50) %>% 
   count(., class) %>% 
-  qplot(class, n, data = ., geom = "col", main = c("Instances of non-zero class cover <50%")) + coord_flip()
+  qplot(class, n, data = ., geom = "col", 
+        main = c("Instances of non-zero class cover <50%")) + coord_flip()
 
 # Make a plot of each class's instances
-select(valid1, classes) %>% 
+select(ceoTable, classes) %>% 
   gather(., key = "class", value = "count") %>%  
-  filter(., count>0) %>%
+  filter(., count > 0) %>%
   count(., class) %>% 
-  qplot(class, n, data = ., geom = "col", main = c("Instances of each class")) + coord_flip()
+  qplot(class, n, data = ., geom = "col", 
+        main = c("Instances of each class")) + coord_flip()
+
+
+#' ### CEO Point Table Reclassification
+#'
+#' Use `topClasses()`` to take a raw point table produced by Collect Earth
+#' Online, and returns that table with a Primary and Secondary class field
+#' added.
+
+
+#' Then use primary and/or secondary classes and threshold values to convert to 
+#' end classification. 
+#' 
+#' Threshold Table
+# 
+
+#' ### Reclass table into classes using case_when and dply. 
+#+ Do Reclass
+require("dplyr")
+thing <- thing %>% 
+  mutate(
+    Primary = case_when(
+      Primary == "FOREST_TREE" & FOREST_TREE >= 50 ~ "CLOSED FOREST",
+      Primary == "FOREST_TREE" & FOREST_TREE < 50 ~ "OPEN FOREST",
+      TRUE ~ as.character(Primary)
+    )
+  )
+
+
+#+ Material from other projects to build on
 
 
 
@@ -137,56 +173,6 @@ for(i in 1:nrow(cT)){
 
 fuzzyTable
 
-#+ Processing tables into other classes 
-valid1 <- read_csv("data/ceo-myanmar-assembly-validation-plot-data-2018-06-21.csv")
-classes <- colnames(valid1)[11:30]
-
-validPlots <- select(valid1, "PLOT_ID", "FLAGGED", classes)
-
-
-pl <- as_vector(validPlots[1,-1])
-
-
-#Returns name of most abundant class
-classes[which.max(pl)]
-
-n <- length(unique(pl))
-classes[which(pl == sort(unique(pl))[n])]
-
-#Returns name of second most abundant class, or if that is zero, the max again. 
-ifelse(sort(unique(pl))[n-1] == 0, classes[which.max(pl)], classes[which(pl == sort(unique(pl))[n-1])])
-
-primary <- NULL
-secondary <- NULL
-
-for(i in 1:nrow(validPlots)){
-  
-  if(validPlots$FLAGGED[i] == FALSE){
-    
-    pl <- validPlots[i,-1]
-    pl <- as_vector(pl[-1])
-    n <- length(unique(pl))
-    
-    if(length(which(pl == sort(unique(pl))[n])) == 1){ # Is there a tie?
-      primary[i] <- classes[which(pl == sort(unique(pl))[n])]
-      secondary[i] <- ifelse(sort(unique(pl))[n-1] == 0, # Does the second highest cover has a score of zero?
-                             classes[which.max(pl)], # if so, enter max again
-                             classes[which(pl == sort(unique(pl))[n-1])]) #if not enter second highest
-    } else { #in case of tie, add the tied classes, primary is just the first field encountered
-      tie <- classes[which(pl == sort(unique(pl))[n])]
-      paste("Plot", validPlots$PLOT_ID[i], "has a tie, with values", tie[1], "and", tie[2])
-      primary[i] <- tie[1]
-      secondary[i] <- tie[2]
-    }
-  }
-  else{
-    primary[i] <- "FLAGGED"
-    secondary[i] <- "FLAGGED"
-  }
-}
-
-validPlots$Primary <- primary
-validPlots$Secondary <- secondary
 
 #### Add in more specifics, closed open, etc ----
 valid1 <- read_csv("data/ceo-myanmar-assembly-validation-plot-data-2018-06-21.csv")
@@ -196,14 +182,6 @@ unique(validClasses$Primary)
 
 ### Basic structure of replacement below, needs to be tailored to the cutoffs for various classes
 thing <- validClasses
-
-for(i in 1:nrow(validClasses)){
-  if(thing$Primary[i] == "FLAGGED"){
-    next()
-  } else if(thing$Primary[i] == "FOREST_TREE"){
-    thing$Primary[i] <- if_else(thing$FOREST_TREE[i] >= 50, "Closed Forest", "Open Forest")
-  } 
-}
 
 ### Rewrite that using case_when, can be very comprehensive, much cleaner. 
 require("dplyr")
