@@ -10,12 +10,11 @@
 #+ Packages
 library(tidyverse)
 
-
-#' ### This section is for functions related to sample size determination ' '
+#' ### This section is for functions related to sample size determination
 #' The following sample size calculation functions are derived from the work of
 #' Foody, G. M. (2009). Sample size determination for image classification
 #' accuracy assessment and comparison. International Journal of Remote Sensing,
-#' 30(20), 5273???5291. https://doi.org/10.1080/01431160903130937 '
+#' 30(20), 5273-5291. https://doi.org/10.1080/01431160903130937 
 #'
 #' Each of the three sample size caclulation functions relates to a particular
 #' approach. `genSample1()` is an implementation of the typical sample size
@@ -28,30 +27,51 @@ library(tidyverse)
 #' errors be specified (beta).
 #'
 #' `genSample3()` is used when a confidence interval is of more interest than
-#' testing against a target accuracy. See eq. 22-25.
-
+#' testing against a target accuracy. See eq. 22-25. This function requires the
+#' specification of the target or expected accuracy (p0), alpha and beta, and
+#' the difference in accuracy that can be detected with a power of 1 - beta (d).
+#'
+#' The function `contCorrect()` performs a continuity correction on sample size
+#' estimates. A continuity correction may be necessary when using equations that
+#' assume a continious distribution (samples are discrete), which results in a 
+#' slight underestimate of the necessary sample size. It is most appropriate to 
+#' apply to the estimate of sample size produced by `genSample2()`.
+#' 
+#' The function `powerEst()` can be used to estimate the power of a sample size,
+#' given the minimum difference to be detected (min_diff), the expected accuracy (p0), 
+#' and alpha.
 
 #+ SampleSizeCode
-genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.95){
+genSample1 <- function(p0 = 0.85, h = 0.01, alpha = 0.05){
   # convert the input probalities into z scores
-  z_alpha <- qnorm(alpha + 0.025)
+  z_alpha <- qnorm((1 - alpha/2))
   # calculate n_prime sample size
-  n_prime <- z_alpha^2 * (p0 * (1 - p0)) / (h^2)
+  n <- z_alpha^2 * (p0 * (1 - p0)) / (h^2)
   
-  return(round(n_prime))
+  return(round(n))
 }
 
-genSample2 <- function(p0 = 0.85, min_diff = 0.01, alpha = 0.95, beta = 0.95){
+genSample2 <- function(p0 = 0.85, min_diff = 0.01, alpha = 0.05, beta = 0.2){
   # convert the input probalities into z scores
-  z_alpha <- qnorm(alpha + 0.025)
-  z_beta <-  qnorm(beta + 0.025)
+  z_alpha <- qnorm((1 - alpha))
+  z_beta <-  qnorm((1 - beta))
   
   # calculate the actual n prime estimate 
   p1 <- p0 - min_diff
   noom <- (z_alpha * sqrt(p0 * (1 - p0))) + (z_beta * sqrt(p1 * (1 - p1)))
-  n_prime <- (noom / min_diff)^2
+  n <- (noom / min_diff)^2
   
-  return(round(n_prime))
+  return(round(n))
+}
+
+
+genSample3 <-  function(p0 = 0.85, d = 0.1, alpha = 0.05, beta = 0.2){
+  z_alpha <- qnorm((1 - alpha/2))
+  z_beta <-  qnorm((1 - beta))
+  
+  n <- (2 * p0 * (1 - p0) * (z_alpha + z_beta)^2) / d^2
+  
+  return(round(n))
 }
 
 contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
@@ -60,9 +80,9 @@ contCorrect <- function(n_prime, min_diff = 0.01, p0 = 0.85){
   return(round(n))
 }
 
-powerEst <- function(n, min_diff, p0, alpha=0.95){
+powerEst <- function(n, min_diff, p0, alpha=0.05){
   p1 <- p0 - min_diff
-  z_alpha <- qnorm(alpha + 0.025)
+  z_alpha <- qnorm((1-alpha) + 0.025)
   noom <- sqrt(n) * min_diff - (1 / (2 * sqrt(n))) - 
           z_alpha * sqrt(p0 * min_diff)
   denoom <- sqrt(p1 * (1 - p1))
