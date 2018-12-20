@@ -181,7 +181,7 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
   
   for (i in 1:nrow(plots)) {
     
-    if (plots[i,2] == FALSE) {
+    if (plots[i,2] == "false") {
       
       #produce a verson of the table
       pl <- plots[i,-1]
