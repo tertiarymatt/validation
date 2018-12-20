@@ -9,15 +9,22 @@
 #' Required packages
 #+ Packages
 library(tidyverse)
+library(stringr)
 
 #' ### Code block for visualizing the outputs of a CEO project. 
 #+ Do Visualization
 
 # Inmport Data
-ceoTable <- read_csv("data/some_data.csv")
+ceoTable <- read_csv("data/ceo-prueba-de-clase-plot-data-2018-12-20.csv")
+summary(ceoTable)
+colnames(ceoTable)
 
-# class names need to be pulled from each project. 
-classes <- colnames(ceoTable)[11:30]
+# class names need to be pulled from each project.
+classes <- colnames(ceoTable[23:39]) %>% 
+  str_split(., coll(":"), simplify = TRUE) %>% 
+  .[,2]
+
+colnames(ceoTable)[23:39] <- classes
 
 # Make a plot of each class's distribution of values, dropping zeros 
 # (which are super abundant)
@@ -61,7 +68,7 @@ select(ceoTable, classes) %>%
 
 #+ Find dominant landcover elements
 ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
-                       classfields = NULL)
+                       classfields = c(23:39))
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
