@@ -164,7 +164,7 @@ optimizeSplit <-  function(errorMatrix, nTotal){
 #' Secondary is the class with the second highest. If the plot has been flagged,
 #' these fields are marked FLAGGED.Ties return the classes in the order encountered. 
 
-topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
+addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
                        classfields = NULL){
   ### inTable should be a soft classification table (output from CEO), plotField
   ### should point to the PLOTID field, flagfield should point to FLAGGED field,
