@@ -10,49 +10,6 @@
 #+ Packages
 library(tidyverse)
 
-#+ Developing functions for optimizing sample size
-
-# need an area-weighted error matrix
-error <- matrix(nrow = 2, ncol = 2, 
-                c(0.05, 0.0125, 
-                  0.0125, 0.925))
-
-nTotal <- 7200
-
-checkErrorMatrix <- function(errorMatrix = NULL){
-  checkRows <- sum(rowSums(errorMatrix))
-  checkCols <- sum(colSums(errorMatrix))
-  total <- checkRows + checkCols
-  message <- ifelse(total == 2, c("Error matrix appears correctly formed."),
-         c("Errormatrix is not correctly formed."))
-  return(message)
-}
-
-optimizeSplit <-  function(errorMatrix){
-  checkErrorMatrix(errorMatrix)
-
-  v11 <- (error[1,1] * (sum(error[1,]) - error[1,1])/sum(error[1,])^2)
-  
-  v21 <- ((error[1,1] * error[2,1]) * (error[2,1]*error[1,2]))/sum(error[,1])^4
-  v22 <- ((error[1,1] * error[2,1]) * (error[1,1]*error[2,2]))/sum(error[,1])^4
-  
-  v31 <- error[1,1] * error[1,2]
-  v32 <- error[2,1] * error[2,2]
-  
-  k1 <-  sum(c(v11, v21, v31))
-  k2 <- sum(c(v22, v32))
-  
-  minV <- ifelse(k1 == 0, k2, ifelse(k2 == 0, k1, min(k1, k2)))
-  
-  n1p <- k1/minV
-  n2p <- sqrt(k2/minV)
-  np <-  sum(c(n1p, n2p))
-  
-  n1 <- round((n1p / np) * nTotal)
-  n2 <- round((n2p / np) * nTotal)
-}
-
-
 #' ### Code block for visualizing the outputs of a CEO project. 
 #+ Do Visualization
 
@@ -103,11 +60,40 @@ select(ceoTable, classes) %>%
 #' added.
 
 
-#' Then use primary and/or secondary classes and threshold values to convert to 
-#' end classification. 
-#' 
-#' Threshold Table
-# 
+#' Then use primary and/or secondary classes and threshold values to convert to
+#' end classification.
+#'
+#' Point class list (ES): 
+#' Arbol nativo, Arbol de plantacion, Arbol de Mangle
+#' Vegetacion herbecea/pastos, Vegetacion arbustiva, Vegetacion de paramo
+#' Cultivos Agua natural, Agua Artificial, Vegetacion de humedales Estructura de
+#' vivienda, Construccion de infraestructura, Carreteras y lotes, Vegetacion de
+#' asentamientos 
+#' Suelo desnudo, Nieve/Hielo
+
+#' Point class list (EN): 
+#' Forest Land: Native tree, Plantation tree, Mangrove 
+#' Grassland: Herbaceous vegetation/Grass, Shrub vegetation, Paramo vegetation
+#' Croplands: Crops
+#' Wetlands: Natural water, Artifical water, Wetland vegetation
+#' Settlement: Housing Structure, Infrastructure building, Roads and lots,
+#'             urban vegetation
+#' Other Lands: Barren, Snow/Ice
+
+#' Thresholds:
+#' Forest = Native tree >= 30% 
+#' Plantation = Plantation tree >= 30% 
+#' Mangrove = Mangrove >= 30% 
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30% 
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%
+#' Paramo = Paramo > 0%
+#' Cropland = Crops >= 50%
+#' Natural Water = Natural water >= 50% | Wetland vegetation >= 50%
+#' Artificial water = Aritifical water >= 50%
+#' Settlement = Houses & Commercial >= 50% | Urban vegetation >= 50%
+#' Infrastructure = Roads and Lots >= 50% | Infrastructure building >= 50%
+#' Non-vegetated = barren >= 75%
+#' Glacial = Snow/Ice >= 75%
 
 #' ### Reclass table into classes using case_when and dply. 
 #+ Do Reclass
