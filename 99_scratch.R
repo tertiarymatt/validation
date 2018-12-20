@@ -19,7 +19,7 @@ ceoTable <- read_csv("data/some_data.csv")
 # class names need to be pulled from each project. 
 classes <- colnames(ceoTable)[11:30]
 
-# Make a plot of each class's distribution of vales, dropping zeros 
+# Make a plot of each class's distribution of values, dropping zeros 
 # (which are super abundant)
 select(ceoTable, classes) %>% 
   gather(., key = "class", value = "count") %>%  
@@ -55,10 +55,13 @@ select(ceoTable, classes) %>%
 
 #' ### CEO Point Table Reclassification
 #'
-#' Use `topClasses()`` to take a raw point table produced by Collect Earth
+#' Use `addTopClasses()`` to take a raw plot table produced by Collect Earth
 #' Online, and returns that table with a Primary and Secondary class field
 #' added.
 
+#+ Find dominant landcover elements
+ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
+                       classfields = NULL)
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
