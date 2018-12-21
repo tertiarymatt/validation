@@ -108,7 +108,7 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 #' ### Reclass table into classes using case_when and dply. 
 #+ Do Reclass
 require("dplyr")
-thing <- thing %>% 
+reclassed <- ceoTable %>% 
   mutate(
     Primary = case_when(
       Primary == "FOREST_TREE" & FOREST_TREE >= 50 ~ "CLOSED FOREST",
@@ -116,6 +116,24 @@ thing <- thing %>%
       TRUE ~ as.character(Primary)
     )
   )
+
+
+#' After reclass, need to use extracted "true values" to build a confusion
+#' matrix, using `confusionMatrix()` from `package::caret`. 
+#' Note that columns of responses need to be set up as factors. 
+
+#'+ make a confusionMatrix
+
+#' Then need to conver the confusion matrix into an area-based version. 
+#' Will need pixel counts and so forth for this. 
+
+#'+ make confusionMatrix area-based
+
+#' Using new area-based confustion matrix, calculate accuracy statistics, and
+#' standard errors.
+
+#'+ tidy confusionMatrix, extract statistics
+
 
 
 #+ Material from other projects to build on
