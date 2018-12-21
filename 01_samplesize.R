@@ -16,10 +16,13 @@ source("00_functions.R")
 #'+ Sample Size
 
 overallN <- genSample1(p0 = 0.75, h = 0.01, alpha = 0.05)
+overallN
 
 deforestationN <- genSample1(p0 = 0.90, h = 0.01, alpha = 0.05)
+deforestationN
 
 averageN <- mean(c(overallN, deforestationN))
+averageN
 
 #' N needs to be increased a bit to cover the possibility of bad imagery, etc. 
 
@@ -52,37 +55,35 @@ samplePool
 #' The Earth Engine script is included below. 
 #' 
 #'  
-#' ////////////////////////////////////////////////////////////////////////////////
-#` // Stack burned areas and latitude/longitude
-#` var sampleImage = ee.Image.cat(toSample, ee.Image.pixelLonLat());
-#` 
-#` // Sample within the study area and the loss mask
-#` var sample = sampleImage.stratifiedSample({
-#`   numPoints: 50,
-#`   classBand: 'class',
-#`   region: studyArea,
-#`   scale: 30,
-#`   seed: 17,
-#` });
-
-#` ////////////////////////////////////////////////////////////////////////////////
-#`   // Add back in geometry and visualize
-#` var sample_geo_assembly = sample.map(function(point){
-#`   var long = point.get('longitude');
-#`   var lat = point.get('latitude');
-#`   var geom = ee.Algorithms.GeometryConstructors.Point([long, lat]);
-#`   return point.setGeometry(geom);
-#` });
-#` 
-#` Map.addLayer(sample_geo_assembly.draw('0000FF',2),{},'Sample locations');
-#` Map.centerObject(sample_geo_assembly, 9);
-#` 
-#` print('Point Sample Data', sample_geo_assembly);
-#` 
-#` ////////////////////////////////////////////////////////////////////////////////
-#' Export.table.toDrive({
-#'   collection: sample_geo_assembly,
-#'   description:'Validation_Sample',
-#'   folder:'driveFolderHere',
-#'   fileFormat: "CSV"
-#'   });
+#' 
+#' > // Stack class map and latitude/longitude  
+#' > var sampleImage = ee.Image.cat(toSample, ee.Image.pixelLonLat());  
+#' >   
+#' > // Sample within the study area and the loss mask  
+#' > var sample = sampleImage.stratifiedSample({  
+#' >   numPoints: 50,  
+#' >   classBand: 'class',  
+#' >   region: studyArea,  
+#' >   scale: 30,  
+#' >   seed: 17,  
+#' > });  
+#' >   
+#' >   // Add back in geometry and visualize  
+#' > var sample_geo_assembly = sample.map(function(point){  
+#' >   var long = point.get('longitude');  
+#' >   var lat = point.get('latitude');  
+#' >   var geom = ee.Algorithms.GeometryConstructors.Point([long, lat]);  
+#' >   return point.setGeometry(geom);  
+#' > });  
+#' >   
+#' > Map.addLayer(sample_geo_assembly.draw('0000FF',2),{},'Sample locations');  
+#' > Map.centerObject(sample_geo_assembly, 9);  
+#' >   
+#' > print('Point Sample Data', sample_geo_assembly);  
+#' >   
+#' > Export.table.toDrive({  
+#' >   collection: sample_geo_assembly,  
+#' >   description:'Validation_Sample',  
+#' >   folder:'driveFolderHere',  
+#' >   fileFormat: "CSV"  
+#' >   });  
