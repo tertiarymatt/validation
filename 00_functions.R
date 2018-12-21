@@ -122,7 +122,7 @@ checkErrorMatrix <- function(errorMatrix){
 #' **nTotal**: The total sample pool to work with.
 
 #+ OptimizeSplit
-optimizeSplit <-  function(errorMatrix, nTotal){
+optimizeSplit <-  function(errorMatrix, nTotal, classes){
   # Check that the matrix proportions work out. 
   checkErrorMatrix(errorMatrix)
   
@@ -152,8 +152,10 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   n1 <- round((n1p / np) * nTotal)
   n2 <- round((n2p / np) * nTotal)
   
-  return(cat("Class 01 should get", n1, "samples.", 
-             "\nClass 02 should get", n2, "samples."))
+  samples <- c(n1, n2)
+  names(samples) <- classes
+  
+  return(samples)
 }
 
 #' ### CEO Point Table Reclassification
