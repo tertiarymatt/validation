@@ -26,8 +26,6 @@ source("00_functions.R")
 
 ### This section is used to determing sample size needed for the project.
 
--   Sample Size
-
 ``` r
 overallN <- genSample1(p0 = 0.75, h = 0.01, alpha = 0.05)
 overallN
@@ -49,7 +47,7 @@ averageN
 
     ## [1] 5330
 
-N needs to be increased a bit to cover the possibility of bad imagery, etc. + Set final sample size
+N needs to be increased a bit to cover the possibility of bad imagery, etc.
 
 ``` r
 actualN <- 5500

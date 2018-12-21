@@ -13,7 +13,7 @@ source("00_functions.R")
 
 #' ### This section is used to determing sample size needed for the project.
 #' 
-#'+ Sample Size
+#+ Sample Size
 
 overallN <- genSample1(p0 = 0.75, h = 0.01, alpha = 0.05)
 overallN
@@ -26,7 +26,7 @@ averageN
 
 #' N needs to be increased a bit to cover the possibility of bad imagery, etc. 
 
-#'+ Set final sample size
+#+ Set final sample size
 actualN <- 5500
 
 #' Use the optimization tool from Wagner & Stehman, 2015 to split samples into
