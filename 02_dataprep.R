@@ -110,9 +110,12 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 require("dplyr")
 reclassed <- ceoTable %>% 
 	mutate(
-		Primary = case_when(
-			Primary == "FOREST_TREE" & FOREST_TREE >= 50 ~ "CLOSED FOREST",
-			Primary == "FOREST_TREE" & FOREST_TREE < 50 ~ "OPEN FOREST",
-			TRUE ~ as.character(Primary)
+		Cover = case_when(
+			Primary == "NATIVE_TREE" & NATIVE_TREE >= 30 ~ "Primary Forest",
+			Primary == "REGROWTH_TREE" & REGROWTH_TREE >= 30 ~ "Secondary Forest",
+			Primary == "PLANTATION_TREE" & PLANTATION_TREE >= 30 ~ "Plantation Forest",
+			Primary == "MANGROVE" & MANGROVE >= 30 ~ "Mangrove",
+			
+			TRUE ~ as.character(Cover)
 		)
 	)
