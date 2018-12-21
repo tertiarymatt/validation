@@ -54,29 +54,36 @@ samplePool
 #' used for this, but this would require that the map be downloaded and imported. 
 #' The Earth Engine script is included below. 
 #' 
-#'  
-#' 
+#' > //Calculate area of each class, turn into proportion
+#' > 
+#' > // Stable classes get 4244 points.  
+#' > // Changes classes get 1256 points. 
+#' > // Minimum of 75 points per class. 
+#' > var stable = [];
+#' > var change = [];
+#' >
 #' > // Stack class map and latitude/longitude  
 #' > var sampleImage = ee.Image.cat(toSample, ee.Image.pixelLonLat());  
 #' >   
-#' > // Sample within the study area and the loss mask  
-#' > var sample = sampleImage.stratifiedSample({  
-#' >   numPoints: 50,  
-#' >   classBand: 'class',  
-#' >   region: studyArea,  
-#' >   scale: 30,  
-#' >   seed: 17,  
+#' > // Sample within the study area and the loss mask     
+#' > var sample = sampleImage.stratifiedSample({    
+#' >  classValues: [],  
+#' >	classPoints: [stable, change],  
+#' >  classBand: 'class',   
+#' >  region: studyArea,    
+#' >  scale: 30,    
+#' >  seed: 17,     
 #' > });  
-#' >   
-#' >   // Add back in geometry and visualize  
-#' > var sample_geo_assembly = sample.map(function(point){  
-#' >   var long = point.get('longitude');  
-#' >   var lat = point.get('latitude');  
-#' >   var geom = ee.Algorithms.GeometryConstructors.Point([long, lat]);  
-#' >   return point.setGeometry(geom);  
-#' > });  
-#' >   
-#' > Map.addLayer(sample_geo_assembly.draw('0000FF',2),{},'Sample locations');  
+#' >     
+#' >   // Add back in geometry and visualize    
+#' > var sample_geo_assembly = sample.map(function(point){    
+#' >   var long = point.get('longitude');    
+#' >   var lat = point.get('latitude');    
+#' >   var geom = ee.Algorithms.GeometryConstructors.Point([long, lat]);    
+#' >   return point.setGeometry(geom);    
+#' > });    
+#' >     
+#' > Map.addLayer(sample_geo_assembly.draw('0000FF',2),{},'Sample locations');   
 #' > Map.centerObject(sample_geo_assembly, 9);  
 #' >   
 #' > print('Point Sample Data', sample_geo_assembly);  
