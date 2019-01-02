@@ -99,3 +99,38 @@ colnames(cor_values) <- c("Class", "Cor", "Pvalue")
 
 # Assemble tables into one object for display. 
 kable(bind_cols(icc_values, cor_values[,2:3]))
+
+
+#' ### CEO Plot Table Reclassification
+#'
+#' Use `addTopClasses()` to take a raw plot table produced by Collect Earth
+#' Online, and returns that table with a Primary and Secondary class field
+#' added.
+
+#+ Find dominant landcover elements
+# Find dominant landcover elements
+crossData <- addTopClasses(crossData, plotfield = 1, flagfield = 6, 
+							classfields = c(17:35))
+
+#' Now that we have the dominant landscape element classes, we can check for
+#'  agreement between the interpreters on that, in this case just using simple
+#'  percentages.
+
+#+ TopClassAgreement
+# make a little tibble with just the primary class, spread by rater
+primaryAgree <- select(crossData, "USER_ID", "PLOT_ID", "Primary") %>%
+	spread(., "USER_ID", "Primary") %>%
+	na.omit(.)
+
+# make a little tibble with just the secondary class, spread by rater
+secondaryAgree <- select(crossData, "USER_ID", "PLOT_ID", "Secondary") %>%
+	spread(., "USER_ID", "Secondary") %>%
+	na.omit(.)
+
+# Get raw percentage agreement on dominant class
+round(sum(primaryAgree[,2] == primaryAgree[,3]) 
+			/ nrow(primaryAgree) * 100, 2)
+
+# Get raw precentage agreement on secondary class. 
+round(sum(secondaryAgree[,2] == secondaryAgree[,3]) 
+			/ nrow(secondaryAgree) * 100, 2)
