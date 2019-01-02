@@ -35,8 +35,9 @@ colnames(crossData)[17:35] <- classes
 names(crossData)
 
 # Process data into form that can be used for irr
+# to do this, need to prepare a list of data frames with values for each class
+# this is then fed to the irr functions. 
 cross_tables <- rep(list(NA),length(classes))
-
 names(cross_tables) <- classes
 
 for (m in 1:length(cross_tables)) {
@@ -50,10 +51,17 @@ for (m in 1:length(cross_tables)) {
 #' ### Calculate Metrics of Agreement  
 #' Describe metrics used, provide citations. 
 
-#+ IRR Metrics
-
-# Iota, a multivariate metric of agreement
+#' IRR Metrics
+#' Iota is used to calculate overall agreement between two raters. 
+#
+#+ Iota, a multivariate metric of agreement
 crossval_iota <- iota(cross_tables, scaledata = "q")
+crossval_iota
+
+#' For checking agreement of individual classes, we can use several approaches
+#' The Intraclass correlcation coefficient and mean bivariate Pearson's are two.
+
+#+ Per-class agreement
 
 # Intraclass Correlation Coefficient
 cross_icc <- list()
@@ -62,12 +70,18 @@ for (m in 1:length(cross_tables)) {
 }
 names(cross_icc) <- classes
 
-# make a "table"
-icc_values <- matrix(NA, 20, 2)
+# make a "table" from data values in list
+icc_values <- data_frame(length(classes), 5)
 for (m in 1:length(cross_icc)) {
   icc_values[m,1] <- names(cross_icc[m])
-  icc_values[m,2] <- cross_icc[[m]]$value
+  icc_values[m,2] <- round(cross_icc[[m]]$value, 4)
+  icc_values[m,3] <- round(cross_icc[[m]]$lbound, 4)
+  icc_values[m,4] <- round(cross_icc[[m]]$ubound, 4)
+  icc_values[m,5] <- round(cross_icc[[m]]$p.value, 4)
 }
+
+colnames(icc_values) <- c("Class", "ICC", "Lower", "Upper", "Pvalue")
+
 
 #Mean Bivariate Pearson's
 cross_cor <- list()
@@ -75,3 +89,15 @@ for (m in 1:length(cross_tables)) {
   cross_cor[[m]] <- meancor(cross_tables[[m]])
 }
 names(cross_cor) <- classes
+
+# make a "table" from data values in list
+cor_values <- data_frame(length(classes), 3)
+for (m in 1:length(cross_icc)) {
+	cor_values[m,1] <- names(cross_cor[m])
+	cor_values[m,2] <- round(cross_cor[[m]]$value, 4)
+	cor_values[m,3] <- round(cross_cor[[m]]$p.value, 4)
+}
+colnames(cor_values) <- c("Class", "Cor", "Pvalue")
+
+
+bind_cols(icc_values, cor_values[,2:3])
