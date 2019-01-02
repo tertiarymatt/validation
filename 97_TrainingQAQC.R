@@ -10,7 +10,7 @@
 #+ Packages
 library(tidyverse)
 library(irr)
-library(stargazer)
+library(knitr)
 source("00_functions.R")
 
 #' ### Import Data
@@ -49,17 +49,16 @@ for (m in 1:length(cross_tables)) {
 }
 
 #' ### Calculate Metrics of Agreement  
-#' Describe metrics used, provide citations. 
+#' Describe metrics used, provide citations.  
+#' **Iota** is used to calculate overall agreement between two raters. 
 
-#' IRR Metrics
-#' Iota is used to calculate overall agreement between two raters. 
-#
 #+ Iota, a multivariate metric of agreement
 crossval_iota <- iota(cross_tables, scaledata = "q")
 crossval_iota
 
-#' For checking agreement of individual classes, we can use several approaches
-#' The Intraclass correlcation coefficient and mean bivariate Pearson's are two.
+#' For checking agreement of individual classes, we can use several approaches.  
+#' The **intraclass correlcation coefficient** and 
+#' **mean bivariate Pearson's** are two.
 
 #+ Per-class agreement
 
@@ -82,8 +81,7 @@ for (m in 1:length(cross_icc)) {
 
 colnames(icc_values) <- c("Class", "ICC", "Lower", "Upper", "Pvalue")
 
-
-#Mean Bivariate Pearson's
+# Mean Bivariate Pearson's
 cross_cor <- list()
 for (m in 1:length(cross_tables)) {
   cross_cor[[m]] <- meancor(cross_tables[[m]])
@@ -99,5 +97,5 @@ for (m in 1:length(cross_icc)) {
 }
 colnames(cor_values) <- c("Class", "Cor", "Pvalue")
 
-
-bind_cols(icc_values, cor_values[,2:3])
+# Assemble tables into one object for display. 
+kable(bind_cols(icc_values, cor_values[,2:3]))
