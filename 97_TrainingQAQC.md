@@ -256,7 +256,7 @@ kable(bind_cols(icc_values, cor_values[,2:3]))
 | OTHER                        |     NaN|      NaN|     NaN|     NaN|      NA|       NA|
 | CLOUDS/UNINTERPRETABLE       |  0.0409|  -0.1153|  0.1952|  0.3040|  0.2020|   0.0119|
 
-Reviewing the results of this table and the actual plot classifications, one can see that the The bulk of the disagreements occurred between Primary and Secondary Forest, Shrub and Forest, and Shrub and Herbaceous cover. Given the imagery and location, this isn't terribly surprising.
+Reviewing the results of this table and the actual plot classifications, one can see that the bulk of the disagreements occurred between Primary and Secondary Forest, Shrub and Forest, and Shrub and Herbaceous cover. Given the imagery and location, this isn't terribly surprising.
 Minor disagreements occurred around Crops vs. Herbaceous, Barren vs. Herbaceous, and within the Settlement cluster of classes.
 Note that most of the differences in agreement are occuring *within* level 1 classes, and not across them.
 
@@ -297,3 +297,7 @@ round(sum(secondaryAgree[,2] == secondaryAgree[,3])
 ```
 
     ## [1] 47.47
+
+### Level 1 and Level 2 LULC classes
+
+Next steps: add code to convert to level 1 and level 2 classes, and test agreement/consistency at that level.

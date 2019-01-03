@@ -118,7 +118,7 @@ colnames(cor_values) <- c("Class", "Cor", "Pvalue")
 kable(bind_cols(icc_values, cor_values[,2:3]))
 
 #' Reviewing the results of this table and the actual plot classifications, 
-#' one can see that the The bulk of the disagreements occurred between 
+#' one can see that the bulk of the disagreements occurred between 
 #' Primary and Secondary Forest, Shrub and Forest, and Shrub and Herbaceous 
 #' cover. Given the imagery and location, this isn't terribly surprising.  
 #' Minor disagreements occurred around Crops vs. Herbaceous, 
@@ -159,3 +159,7 @@ round(sum(primaryAgree[,2] == primaryAgree[,3])
 # Get raw precentage agreement on secondary class. 
 round(sum(secondaryAgree[,2] == secondaryAgree[,3]) 
 			/ nrow(secondaryAgree) * 100, 2)
+
+#' ### Level 1 and Level 2 LULC classes
+#' Next steps: add code to convert to level 1 and level 2 classes, and test 
+#' agreement/consistency at that level. 
