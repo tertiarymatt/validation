@@ -185,7 +185,7 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
     
     if (plots[i,2] == "FALSE") {
       
-      #produce a verson of the table
+      #produce a version of the table
       pl <- plots[i,-1]
       pl <- as_vector(pl[-1])
       n <- length(unique(pl))
