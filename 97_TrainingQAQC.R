@@ -222,8 +222,8 @@ reclassed <- crossData2 %>%
 			SNOW_ICE +
 				BARE_GROUND >= 70 ~ "Glacial",
 			OTHER >= 50 ~ "Other",
-			CLOUDS_UNINTERPRETABLE >= 50 ~ "No Data",
-			Primary == "FLAGGED" ~ "No Data",
+			CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
+			Primary == "FLAGGED" ~ "No_Data",
 			TRUE ~ "Mosaic"
 		)
 	)
@@ -234,7 +234,52 @@ reclassed <- crossData2 %>%
 #' Croplands = Cropland  
 #' Wetlands = Aritifical Water, Natural Water  
 #' Settlements = Settlement, Infrastructure  
-#' Other Lands = Glacial, Non-vegetated, Mosaic  
+#' Other Lands = Glacial, Non-vegetated, Other, Mosaic  
 #' No Data = No Data  
 
 # Adding the Level one classes.
+reclassed <- reclassed %>% 
+	mutate(
+		LEVEL1 = case_when(
+			LEVEL2 == "Primary_Forest" |
+				LEVEL2 == "Secondary_Forest" |
+				LEVEL2 == "Plantation_Forest" |
+				LEVEL2 == "Mangrove" ~ "Forest_Lands",
+			LEVEL2 == "Herbland" | 
+				LEVEL2 == "Shrubland" | 
+				LEVEL2 == "Paramo" ~ "Grasslands",
+			LEVEL2 == "Cropland" ~ "Croplands",
+			LEVEL2 == "Natural_Water" |
+				LEVEL2 == "Artificial_Water" ~ "Wetlands",
+			LEVEL2 == "Settlement" |
+				LEVEL2 == "Infrastructure" ~ "Settlements",
+			LEVEL2 == "Glacial" |
+				LEVEL2 == "Non-vegetated" |
+				LEVEL2 == "Other" |
+				LEVEL2 == "Mosaic" ~ "Other_Lands",
+			LEVEL2 == "No_Data" ~ "No_Data"
+		)
+	)
+
+
+#' Now that we have the LULC classes assigned, we can check for agreement 
+#' between the interpreters on that, in this case just using simple percentages.
+
+#+ LULCAgreement
+# make a little tibble with just the level 2 class, spread by rater
+lvl2Agree <- select(reclassed, "USER_ID", "PLOT_ID", "LEVEL2") %>%
+	spread(., "USER_ID", "LEVEL2") %>%
+	na.omit(.)
+
+# make a little tibble with just the level 1 class, spread by rater
+lvl1Agree <- select(reclassed, "USER_ID", "PLOT_ID", "LEVEL1") %>%
+	spread(., "USER_ID", "LEVEL1") %>%
+	na.omit(.)
+
+# Get raw percentage agreement on level 2 class
+round(sum(lvl2Agree[,2] == lvl2Agree[,3]) 
+			/ nrow(lvl2Agree) * 100, 2)
+
+# Get raw percentage agreement on level 1 class. 
+round(sum(lvl1Agree[,2] == lvl1Agree[,3]) 
+			/ nrow(lvl1Agree) * 100, 2)
