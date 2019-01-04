@@ -161,24 +161,25 @@ round(sum(primaryAgree[,2] == primaryAgree[,3])
 round(sum(secondaryAgree[,2] == secondaryAgree[,3]) 
 			/ nrow(secondaryAgree) * 100, 2)
 
-#' ### Level 1 and Level 2 LULC classes
+#' ### Level 1 and Level 2 LULC classes  
 #' Next steps: add code to convert to level 1 and level 2 classes, and test 
-#' agreement/consistency at that level. 
-
-#' Thresholds:
-#' Primary Forest = Secondary tree >= 30%
-#' Secondary Forest = Secondary tree >= 30%
-#' Plantation = Plantation tree >= 30% 
-#' Mangrove = Mangrove >= 30% 
-#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30% 
-#' Shrubland = Shrub vegetation >= 30%, Tree < 30%
-#' Paramo = Paramo > 0%
-#' Cropland = Crops >= 50%
-#' Water = Natural water >= 50% | Wetland vegetation >= 50%
-#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%
-#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%
-#' Non-vegetated = barren >= 70%
-#' Glacial = Snow/Ice >= 70%
+#' agreement/consistency at that level. Because the data is collected a finer
+#' level of detail than either Level 1 or Level 2, Level 2 is produced first.  
+#'
+#' #### Level 2 LULC Thresholds:  
+#' Primary Forest = Secondary tree >= 30%  
+#' Secondary Forest = Secondary tree >= 30%  
+#' Plantation = Plantation tree >= 30%  
+#' Mangrove = Mangrove >= 30%  
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%  
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%  
+#' Paramo = Paramo > 0%  
+#' Cropland = Crops >= 50%  
+#' Water = Natural water >= 50% | Wetland vegetation >= 50%  
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%  
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%  
+#' Non-vegetated = barren >= 70%  
+#' Glacial = Snow/Ice >= 70%  
 
 #+ Level2Classes
 # Adding the Level 2 Classes. 
@@ -226,5 +227,14 @@ reclassed <- crossData2 %>%
 			TRUE ~ "Mosaic"
 		)
 	)
+
+#' #### Level 1 LULC Conversions:
+#' Forest Lands = Primary, Secondary, Plantation, Mangrove  
+#' Grasslands = Herbland, Shrubland, Paramo  
+#' Croplands = Cropland  
+#' Wetlands = Aritifical Water, Natural Water  
+#' Settlements = Settlement, Infrastructure  
+#' Other Lands = Glacial, Non-vegetated, Mosaic  
+#' No Data = No Data  
 
 # Adding the Level one classes.
