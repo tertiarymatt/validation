@@ -158,3 +158,36 @@ reclassed <- ceoTable %>%
 			TRUE ~ "Mosaic"
 		)
 	)
+
+#' #### Level 1 LULC Conversions:
+#' Forest Lands = Primary, Secondary, Plantation, Mangrove  
+#' Grasslands = Herbland, Shrubland, Paramo  
+#' Croplands = Cropland  
+#' Wetlands = Aritifical Water, Natural Water  
+#' Settlements = Settlement, Infrastructure  
+#' Other Lands = Glacial, Non-vegetated, Other, Mosaic  
+#' No Data = No Data  
+
+# Adding the Level one classes.
+reclassed <- reclassed %>% 
+	mutate(
+		LEVEL1 = case_when(
+			LEVEL2 == "Primary_Forest" |
+				LEVEL2 == "Secondary_Forest" |
+				LEVEL2 == "Plantation_Forest" |
+				LEVEL2 == "Mangrove" ~ "Forest_Lands",
+			LEVEL2 == "Herbland" | 
+				LEVEL2 == "Shrubland" | 
+				LEVEL2 == "Paramo" ~ "Grasslands",
+			LEVEL2 == "Cropland" ~ "Croplands",
+			LEVEL2 == "Natural_Water" |
+				LEVEL2 == "Artificial_Water" ~ "Wetlands",
+			LEVEL2 == "Settlement" |
+				LEVEL2 == "Infrastructure" ~ "Settlements",
+			LEVEL2 == "Glacial" |
+				LEVEL2 == "Non-vegetated" |
+				LEVEL2 == "Other" |
+				LEVEL2 == "Mosaic" ~ "Other_Lands",
+			LEVEL2 == "No_Data" ~ "No_Data"
+		)
+	)
