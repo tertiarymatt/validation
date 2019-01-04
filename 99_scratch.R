@@ -6,7 +6,13 @@
 #' ---
 #'
 
-#' After reclass, need to use extracted "true values" to build a confusion
+#' 1. Generate sample in GEE, export
+#' 1. Import to CEO, PI. 
+#' 1. Initial data from CEO split into two tables, one for each year. 
+#' 1. Perform a reclass on the Validation Data
+#' 1. Rejoin final classes into new table
+#' 1. Create change/stable classes
+#' 1. After reclass, need to use extracted "true values" to build a confusion 
 #' matrix, using `confusionMatrix()` from `package::caret`. 
 #' Note that columns of responses need to be set up as factors. 
 
