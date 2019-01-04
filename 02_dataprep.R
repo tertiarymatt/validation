@@ -73,37 +73,42 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
 #'
-#' Point class list (ES): 
+#' #### Point class list (ES): 
 #' Arbol nativo, Arbol de rebrote, Arbol de plantacion, Arbol de Mangle
 #' Vegetacion herbecea/pastos, Vegetacion arbustiva, Vegetacion de paramo
 #' Cultivos Agua natural, Agua Artificial, Vegetacion de humedales Estructura de
 #' vivienda, Construccion de infraestructura, Carreteras y lotes, Vegetacion de
 #' asentamientos 
 #' Suelo desnudo, Nieve/Hielo
-
-#' Point class list (EN): 
-#' Forest Land: Native tree, Regrowth tree, Plantation tree, Mangrove 
-#' Grassland: Herbaceous vegetation/Grass, Shrub vegetation, Paramo vegetation
-#' Croplands: Crops
-#' Wetlands: Natural water, Artifical water, Wetland vegetation
+#'
+#' #### Point class list (EN): 
+#' Forest Land: Primary tree, Secondary tree, Plantation tree, Mangrove  
+#' Grassland: Herbaceous vegetation/Grass, Shrub vegetation, Paramo vegetation  
+#' Croplands: Crops  
+#' Wetlands: Natural water, Artifical water, Wetland vegetation  
 #' Settlement: Housing Structure, Infrastructure building, Roads and lots,
-#'             urban vegetation
-#' Other Lands: Barren, Snow/Ice
+#'             urban vegetation  
+#' Other Lands: Barren, Snow/Ice  
+#'
+#' ### Level 1 and Level 2 LULC classes
+#' Next steps: add code to convert to level 1 and level 2 classes, and test 
+#' agreement/consistency at that level. Because the data is collected a finer
+#' level of detail than either Level 1 or Level 2, Level 2 is produced first.
 
-#' Thresholds:
-#' Primary Forest = Secondary tree >= 30%
-#' Secondary Forest = Secondary tree >= 30%
-#' Plantation = Plantation tree >= 30% 
-#' Mangrove = Mangrove >= 30% 
-#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30% 
-#' Shrubland = Shrub vegetation >= 30%, Tree < 30%
-#' Paramo = Paramo > 0%
-#' Cropland = Crops >= 50%
-#' Water = Natural water >= 50% | Wetland vegetation >= 50%
-#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%
-#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%
-#' Non-vegetated = barren >= 70%
-#' Glacial = Snow/Ice >= 70%
+#' #### Level 2 LULC Thresholds:  
+#' Primary Forest = Secondary tree >= 30%  
+#' Secondary Forest = Secondary tree >= 30%  
+#' Plantation = Plantation tree >= 30%  
+#' Mangrove = Mangrove >= 30%  
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%  
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%  
+#' Paramo = Paramo > 0%  
+#' Cropland = Crops >= 50%  
+#' Water = Natural water >= 50% | Wetland vegetation >= 50%  
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%  
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%  
+#' Non-vegetated = barren >= 70%  
+#' Glacial = Snow/Ice >= 70%  
 
 #' ### Reclass table into classes using case_when and dplyr. 
 #+ Do Reclass
