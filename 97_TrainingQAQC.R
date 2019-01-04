@@ -29,7 +29,8 @@ names(crossData)
 classes <- colnames(crossData[17:35]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
-	gsub(" ", "_", .)
+	gsub(" ", "_", .) %>% 
+	gsub("/", "_", .)
 
 colnames(crossData)[17:35] <- classes
 names(crossData)
@@ -64,7 +65,7 @@ crossval_iota <- iota(cross_tables, scaledata = "q")
 crossval_iota
 
 #' For checking agreement of individual classes, we can use several approaches.  
-#' The **intraclass correlcation coefficient** and 
+#' The **intraclass correlation coefficient** and 
 #' **mean bivariate Pearson's** are two.
 #' The ICC is used to measure consistency between two raters, and uses an F-test
 #' to test for significance.  
@@ -156,7 +157,7 @@ secondaryAgree <- select(crossData, "USER_ID", "PLOT_ID", "Secondary") %>%
 round(sum(primaryAgree[,2] == primaryAgree[,3]) 
 			/ nrow(primaryAgree) * 100, 2)
 
-# Get raw precentage agreement on secondary class. 
+# Get raw percentage agreement on secondary class. 
 round(sum(secondaryAgree[,2] == secondaryAgree[,3]) 
 			/ nrow(secondaryAgree) * 100, 2)
 
