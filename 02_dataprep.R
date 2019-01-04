@@ -100,32 +100,56 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 #' Paramo = Paramo > 0%
 #' Cropland = Crops >= 50%
 #' Water = Natural water >= 50% | Wetland vegetation >= 50%
-#' Settlement = Houses & Commercial >= 50% | Urban vegetation >= 50%
-#' Infrastructure = Roads and Lots >= 50% | Infrastructure building >= 50%
-#' Non-vegetated = barren >= 75%
-#' Glacial = Snow/Ice >= 75%
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%
+#' Non-vegetated = barren >= 70%
+#' Glacial = Snow/Ice >= 70%
 
 #' ### Reclass table into classes using case_when and dplyr. 
 #+ Do Reclass
-require("dplyr")
+#+ Level2Classes
+# Adding the Level 2 Classes. 
 reclassed <- ceoTable %>% 
 	mutate(
-		Cover = case_when(
-			Primary == "PRIMARY_TREE" & PRIMARY_TREE >= 30 ~ "Primary_Forest",
-			Primary == "SECONDARY_TREE" & SECONDARY_TREE >= 30 ~ "Secondary_Forest",
-			Primary == "PLANTATION_TREE" & PLANTATION_TREE >= 30 ~ "Plantation_Forest",
-			Primary == "MANGROVE" & MANGROVE >= 30 ~ "Mangrove",
-			Primary == "HERBACEOUS_GRASS_VEGETATION" & HERBACEOUS_GRASS_VEGETATION 
-				>= 30 ~ "Herbland",
-			Primary == "SHRUB_VEGETATION" & SHRUB_VEGETATION >= 30 ~ "Shrubland",
-			Primary == "PARAMO_VEGETATION" & PARAMO_VEGETATION >= 0 ~ "Paramo",
-			Primary == "CROPS" & CROPS >= 50 ~ "Cropland",
-			Primary == "NATURAL_WATER" & NATURAL_WATER + 
+		LEVEL2 = case_when(
+			PRIMARY_TREE >= 30 ~ "Primary_Forest",
+			SECONDARY_TREE >= 30 ~ "Secondary_Forest",
+			PLANTATION_TREE >= 30 ~ "Plantation_Forest",
+			MANGROVE >= 30 ~ "Mangrove",
+			HERBACEOUS_GRASS_VEGETATION >= 30 ~ "Herbland",
+			SHRUB_VEGETATION >= 30 ~ "Shrubland",
+			PARAMO_VEGETATION > 0 ~ "Paramo",
+			CROPS >= 50 ~ "Cropland",
+			NATURAL_WATER + 
 				WETLAND_VEGETATION >= 50 ~  "Natural_Water",
-			Primary == "ARTIFICIAL_WATER" & ARTIFICIAL_WATER + 
+			ARTIFICIAL_WATER + 
 				WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
-			Primary == "WETLAND_VEGETATION" & WETLAND_VEGETATION >= 50 
-				~ "Natural_Water"
-			TRUE ~ as.character(Cover)
+			WETLAND_VEGETATION >= 50 & 
+				ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
+			WETLAND_VEGETATION >= 50 ~ "Natural_Water",
+			HOUSING_STRUCTURE + 
+				SETTLEMENT_VEGETATION + 
+				ROADS_AND_LOTS >= 30 ~ "Settlement",
+			ROADS_AND_LOTS >= 30 & 
+				HOUSING_STRUCTURE > 0 ~ "Settlement",
+			INFRASTRUCTURE + 
+				SETTLEMENT_VEGETATION + 
+				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+			ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+			BARE_GROUND >= 70 ~ "Non-vegetated",
+			BARE_GROUND +
+				HOUSING_STRUCTURE +
+				SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
+			BARE_GROUND +
+				INFRASTRUCTURE +
+				SETTLEMENT_VEGETATION >= 30 ~ "Infrastructure",
+			BARE_GROUND +
+				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+			SNOW_ICE +
+				BARE_GROUND >= 70 ~ "Glacial",
+			OTHER >= 50 ~ "Other",
+			CLOUDS_UNINTERPRETABLE >= 50 ~ "No Data",
+			Primary == "FLAGGED" ~ "No Data",
+			TRUE ~ "Mosaic"
 		)
 	)
