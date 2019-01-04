@@ -91,8 +91,8 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 #' Other Lands: Barren, Snow/Ice
 
 #' Thresholds:
-#' Primary Forest = Native tree >= 30%
-#' Secondary Forest = Regrowth tree >= 30%
+#' Primary Forest = Secondary tree >= 30%
+#' Secondary Forest = Secondary tree >= 30%
 #' Plantation = Plantation tree >= 30% 
 #' Mangrove = Mangrove >= 30% 
 #' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30% 
@@ -111,11 +111,21 @@ require("dplyr")
 reclassed <- ceoTable %>% 
 	mutate(
 		Cover = case_when(
-			Primary == "NATIVE_TREE" & NATIVE_TREE >= 30 ~ "Primary Forest",
-			Primary == "REGROWTH_TREE" & REGROWTH_TREE >= 30 ~ "Secondary Forest",
-			Primary == "PLANTATION_TREE" & PLANTATION_TREE >= 30 ~ "Plantation Forest",
+			Primary == "PRIMARY_TREE" & PRIMARY_TREE >= 30 ~ "Primary_Forest",
+			Primary == "SECONDARY_TREE" & SECONDARY_TREE >= 30 ~ "Secondary_Forest",
+			Primary == "PLANTATION_TREE" & PLANTATION_TREE >= 30 ~ "Plantation_Forest",
 			Primary == "MANGROVE" & MANGROVE >= 30 ~ "Mangrove",
-			
+			Primary == "HERBACEOUS_GRASS_VEGETATION" & HERBACEOUS_GRASS_VEGETATION 
+				>= 30 ~ "Herbland",
+			Primary == "SHRUB_VEGETATION" & SHRUB_VEGETATION >= 30 ~ "Shrubland",
+			Primary == "PARAMO_VEGETATION" & PARAMO_VEGETATION >= 0 ~ "Paramo",
+			Primary == "CROPS" & CROPS >= 50 ~ "Cropland",
+			Primary == "NATURAL_WATER" & NATURAL_WATER + 
+				WETLAND_VEGETATION >= 50 ~  "Natural_Water",
+			Primary == "ARTIFICIAL_WATER" & ARTIFICIAL_WATER + 
+				WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
+			Primary == "WETLAND_VEGETATION" & WETLAND_VEGETATION >= 50 
+				~ "Natural_Water"
 			TRUE ~ as.character(Cover)
 		)
 	)
