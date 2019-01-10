@@ -1,7 +1,7 @@
 Determing Sample Size
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-December 20, 2018
+January 10, 2019
 
 ### Required packages
 
@@ -9,14 +9,14 @@ December 20, 2018
 library(tidyverse)
 ```
 
-    ## -- Attaching packages -------------------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --
 
-    ## v ggplot2 2.2.1     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.5
-    ## v tidyr   0.8.1     v stringr 1.3.1
-    ## v readr   1.1.1     v forcats 0.3.0
+    ## v ggplot2 3.1.0     v purrr   0.2.5
+    ## v tibble  1.4.2     v dplyr   0.7.8
+    ## v tidyr   0.8.2     v stringr 1.3.1
+    ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ----------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -25,6 +25,8 @@ source("00_functions.R")
 ```
 
 ### This section is used to determing sample size needed for the project.
+
+Before running this script, use the `01_ChangePercentage` Earth Engine script to find the percent area occupied by change classes in the output data. That percentage will be used in the sample size allocation optimizing algorithm included in this script.
 
 ``` r
 overallN <- genSample1(p0 = 0.75, h = 0.01, alpha = 0.05)
@@ -53,7 +55,7 @@ N needs to be increased a bit to cover the possibility of bad imagery, etc.
 actualN <- 5500
 ```
 
-Use the optimization tool from Wagner & Stehman, 2015 to split samples into two pools, stable and change. The first step is to create an area-based error matrix, with estimated proportions.
+Use the optimization tool from Wagner & Stehman, 2015 to split samples into two pools, stable and change. The first step is to create an area-based error matrix, with estimated proportions. Position \[1,1\] in this matrix is the estimate of change area, position \[2,2\] in the matrix is stable class area. Positions \[1,2\] and \[2,1\] represent the errors between the change and stable classes. These are obviously unknown, but can be estimated. Here they are conservatively estimated as being one quarter of the size of the change class.
 
 We will assume a larger than realistic change to ensure sufficient power.
 
@@ -78,36 +80,4 @@ samplePool
     ## Change Stable 
     ##   1256   4244
 
-The next step requires the use of Google Earth Engine to assign the split samples to their respective classes, and generating a point file. R could be used for this, but this would require that the map be downloaded and imported. The Earth Engine script is included below.
-
-> // Stack class map and latitude/longitude
-> var sampleImage = ee.Image.cat(toSample, ee.Image.pixelLonLat());
->
-> // Sample within the study area and the loss mask
-> var sample = sampleImage.stratifiedSample({
-> numPoints: 50,
-> classBand: 'class',
-> region: studyArea,
-> scale: 30,
-> seed: 17,
-> });
->
-> // Add back in geometry and visualize
-> var sample\_geo\_assembly = sample.map(function(point){
-> var long = point.get('longitude');
-> var lat = point.get('latitude');
-> var geom = ee.Algorithms.GeometryConstructors.Point(\[long, lat\]);
-> return point.setGeometry(geom);
-> });
->
-> Map.addLayer(sample\_geo\_assembly.draw('0000FF',2),{},'Sample locations');
-> Map.centerObject(sample\_geo\_assembly, 9);
->
-> print('Point Sample Data', sample\_geo\_assembly);
->
-> Export.table.toDrive({
-> collection: sample\_geo\_assembly,
-> description:'Validation\_Sample',
-> folder:'driveFolderHere',
-> fileFormat: "CSV"
-> });
+The next step requires the use of the Google Earth Engine script `02_SamplePointGenerator` to assign the split samples to their respective classes, and generating a point file. R could be used for this, but this would require that the map be downloaded and imported.
