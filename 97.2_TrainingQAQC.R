@@ -15,25 +15,31 @@ source("00_functions.R")
 
 #' ### Import Data
 #+ Import
-kim <- read_csv("data/ceo-training-project-kim-plot-data-2019-01-02.csv")
-steve <- read_csv("data/ceo-training-project-steve-plot-data-2019-01-02.csv")
 
-crossData <- rbind(kim, steve)
+steve2 <- read_csv("data/ceo-training-project-3.1-plot-data-2019-01-07.csv")
+kim2 <- read_csv("data/ceo-training-project-3.2-plot-data-2019-01-07.csv")
+
+crossData2 <- rbind(kim2, steve2)
+
+# remove "flagged plots" entries  
+flagged <- which(crossData2$FLAGGED == "TRUE")
+crossData2 <- crossData2[-flagged,]
+
 
 #' ### Process data into form that can be used for irr  
 #' Provide overview of the process. 
 
-#+ Process
+#+ Process2
 # Find and extract the class names. 
-names(crossData)
-classes <- colnames(crossData[17:35]) %>% 
+names(crossData2)
+classes <- colnames(crossData2[18:36]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
 	gsub(" ", "_", .) %>% 
 	gsub("/", "_", .)
 
-colnames(crossData)[17:35] <- classes
-names(crossData)
+colnames(crossData2)[18:36] <- classes
+names(crossData2)
 
 # Process data into form that can be used for irr
 # to do this, need to prepare a list of data frames with values for each class
@@ -42,11 +48,11 @@ cross_tables <- rep(list(NA),length(classes))
 names(cross_tables) <- classes
 
 for (m in 1:length(cross_tables)) {
-  cross_tables[[m]] <- select(crossData, "USER_ID", "PLOT_ID", classes[m]) %>%
-    spread(., "USER_ID", classes[m]) %>%
-    .[,-1] %>%
-  	na.omit(.) %>% 
-    as.matrix(.)
+	cross_tables[[m]] <- select(crossData2, "USER_ID", "PLOT_ID", classes[m]) %>%
+		spread(., "USER_ID", classes[m]) %>%
+		.[,-1] %>%
+		na.omit(.) %>% 
+		as.matrix(.)
 }
 
 #' ### Calculate Metrics of Agreement  
@@ -60,7 +66,7 @@ for (m in 1:length(cross_tables)) {
 #' 1. Janson, H., & Olsson, U. (2001). A measure of agreement for interval or
 #'  nominal multivariate observations. Educational and Psychological Measurement, 61, 277-289. 
 
-#+ Iota, a multivariate metric of agreement
+#+ Iota, a multivariate metric of agreement2
 crossval_iota <- iota(cross_tables, scaledata = "q")
 crossval_iota
 
@@ -78,23 +84,23 @@ crossval_iota
 #'  1. Shrout, P.E., & Fleiss, J.L. (1979), Intraclass correlation: uses in 
 #'  assessing rater reliability. Psychological Bulletin, 86, 420-428.  
 
-#+ Per-class agreement
+#+ Per-class agreement2
 
 # Intraclass Correlation Coefficient
 cross_icc <- list()
 for (m in 1:length(cross_tables)) {
-  cross_icc[[m]] <- icc(cross_tables[[m]], model = "oneway", type = "agreement")
+	cross_icc[[m]] <- icc(cross_tables[[m]], model = "oneway", type = "agreement")
 }
 names(cross_icc) <- classes
 
 # make a "table" from data values in list
 icc_values <- data_frame(length(classes), 5)
 for (m in 1:length(cross_icc)) {
-  icc_values[m,1] <- names(cross_icc[m])
-  icc_values[m,2] <- round(cross_icc[[m]]$value, 4)
-  icc_values[m,3] <- round(cross_icc[[m]]$lbound, 4)
-  icc_values[m,4] <- round(cross_icc[[m]]$ubound, 4)
-  icc_values[m,5] <- round(cross_icc[[m]]$p.value, 4)
+	icc_values[m,1] <- names(cross_icc[m])
+	icc_values[m,2] <- round(cross_icc[[m]]$value, 4)
+	icc_values[m,3] <- round(cross_icc[[m]]$lbound, 4)
+	icc_values[m,4] <- round(cross_icc[[m]]$ubound, 4)
+	icc_values[m,5] <- round(cross_icc[[m]]$p.value, 4)
 }
 
 colnames(icc_values) <- c("Class", "ICC", "Lower", "Upper", "Pvalue")
@@ -102,7 +108,7 @@ colnames(icc_values) <- c("Class", "ICC", "Lower", "Upper", "Pvalue")
 # Mean Bivariate Pearson's
 cross_cor <- list()
 for (m in 1:length(cross_tables)) {
-  cross_cor[[m]] <- meancor(cross_tables[[m]])
+	cross_cor[[m]] <- meancor(cross_tables[[m]])
 }
 names(cross_cor) <- classes
 
@@ -133,33 +139,33 @@ kable(bind_cols(icc_values, cor_values[,2:3]))
 #' Online, and return that table with a Primary and Secondary class field
 #' added.
 
-#+ Find dominant landcover elements
+#+ Find dominant landcover elements2
 # Find dominant landcover elements
-crossData2 <- addTopClasses(crossData, plotfield = 1, flagfield = 6, 
-							classfields = c(17:35))
+crossData2 <- addTopClasses(crossData2, plotfield = 1, flagfield = 6, 
+														classfields = c(18:36))
 
 #' Now that we have the dominant landscape element classes, we can check for
 #'  agreement between the interpreters on that, in this case just using simple
 #'  percentages.
 
-#+ TopClassAgreement
+#+ TopClassAgreement2
 # make a little tibble with just the primary class, spread by rater
-primaryAgree <- select(crossData2, "USER_ID", "PLOT_ID", "Primary") %>%
+primaryAgree2 <- select(crossData2, "USER_ID", "PLOT_ID", "Primary") %>%
 	spread(., "USER_ID", "Primary") %>%
 	na.omit(.)
 
 # make a little tibble with just the secondary class, spread by rater
-secondaryAgree <- select(crossData2, "USER_ID", "PLOT_ID", "Secondary") %>%
+secondaryAgree2 <- select(crossData2, "USER_ID", "PLOT_ID", "Secondary") %>%
 	spread(., "USER_ID", "Secondary") %>%
 	na.omit(.)
 
 # Get raw percentage agreement on dominant class
-round(sum(primaryAgree[,2] == primaryAgree[,3]) 
-			/ nrow(primaryAgree) * 100, 2)
+round(sum(primaryAgree2[,2] == primaryAgree2[,3]) 
+			/ nrow(primaryAgree2) * 100, 2)
 
 # Get raw percentage agreement on secondary class. 
-round(sum(secondaryAgree[,2] == secondaryAgree[,3]) 
-			/ nrow(secondaryAgree) * 100, 2)
+round(sum(secondaryAgree2[,2] == secondaryAgree2[,3]) 
+			/ nrow(secondaryAgree2) * 100, 2)
 
 #' ### Level 1 and Level 2 LULC classes  
 #' Next steps: add code to convert to level 1 and level 2 classes, and test 
@@ -167,23 +173,23 @@ round(sum(secondaryAgree[,2] == secondaryAgree[,3])
 #' level of detail than either Level 1 or Level 2, Level 2 is produced first.  
 #'
 #' #### Level 2 LULC Thresholds:  
-#' Primary Forest = Secondary tree >= 30%   
-#' Secondary Forest = Secondary tree >= 30%    
-#' Plantation = Plantation tree >= 30%   
-#' Mangrove = Mangrove >= 30%   
-#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%   
-#' Shrubland = Shrub vegetation >= 30%, Tree < 30%   
-#' Paramo = Paramo > 0%   
-#' Cropland = Crops >= 50%    
+#' Primary Forest = Secondary tree >= 30%  
+#' Secondary Forest = Secondary tree >= 30%  
+#' Plantation = Plantation tree >= 30%  
+#' Mangrove = Mangrove >= 30%  
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%  
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%  
+#' Paramo = Paramo > 0%  
+#' Cropland = Crops >= 50%  
 #' Water = Natural water >= 50% | Wetland vegetation >= 50%  
-#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%   
-#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%   
-#' Non-vegetated = barren >= 70%   
-#' Glacial = Snow/Ice >= 70%   
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%  
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%  
+#' Non-vegetated = barren >= 70%  
+#' Glacial = Snow/Ice >= 70%  
 
-#+ Level2Classes
+#+ Level2Classes2
 # Adding the Level 2 Classes. 
-reclassed <- crossData2 %>% 
+reclassed2 <- crossData2 %>% 
 	mutate(
 		LEVEL2 = case_when(
 			PRIMARY_TREE >= 30 ~ "Primary_Forest",
@@ -238,7 +244,7 @@ reclassed <- crossData2 %>%
 #' No Data = No Data  
 
 # Adding the Level one classes.
-reclassed <- reclassed %>% 
+reclassed2_2 <- reclassed2 %>% 
 	mutate(
 		LEVEL1 = case_when(
 			LEVEL2 == "Primary_Forest" |
@@ -265,21 +271,21 @@ reclassed <- reclassed %>%
 #' Now that we have the LULC classes assigned, we can check for agreement 
 #' between the interpreters on that, in this case just using simple percentages.
 
-#+ LULCAgreement
+#+ LULCAgreement2
 # make a little tibble with just the level 2 class, spread by rater
-lvl2Agree <- select(reclassed, "USER_ID", "PLOT_ID", "LEVEL2") %>%
+lvl2Agree2 <- select(reclassed2_2, "USER_ID", "PLOT_ID", "LEVEL2") %>%
 	spread(., "USER_ID", "LEVEL2") %>%
 	na.omit(.)
 
 # make a little tibble with just the level 1 class, spread by rater
-lvl1Agree <- select(reclassed, "USER_ID", "PLOT_ID", "LEVEL1") %>%
+lvl1Agree2 <- select(reclassed2_2, "USER_ID", "PLOT_ID", "LEVEL1") %>%
 	spread(., "USER_ID", "LEVEL1") %>%
 	na.omit(.)
 
 # Get raw percentage agreement on level 2 class
-round(sum(lvl2Agree[,2] == lvl2Agree[,3]) 
-			/ nrow(lvl2Agree) * 100, 2)
+round(sum(lvl2Agree2[,2] == lvl2Agree2[,3]) 
+			/ nrow(lvl2Agree2) * 100, 2)
 
 # Get raw percentage agreement on level 1 class. 
-round(sum(lvl1Agree[,2] == lvl1Agree[,3]) 
-			/ nrow(lvl1Agree) * 100, 2)
+round(sum(lvl1Agree2[,2] == lvl1Agree2[,3]) 
+			/ nrow(lvl1Agree2) * 100, 2)
