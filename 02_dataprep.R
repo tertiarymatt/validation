@@ -153,8 +153,8 @@ reclassed <- ceoTable %>%
 			SNOW_ICE +
 				BARE_GROUND >= 70 ~ "Glacial",
 			OTHER >= 50 ~ "Other",
-			CLOUDS_UNINTERPRETABLE >= 50 ~ "No Data",
-			Primary == "FLAGGED" ~ "No Data",
+			CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
+			Primary == "FLAGGED" ~ "No_Data",
 			TRUE ~ "Mosaic"
 		)
 	)

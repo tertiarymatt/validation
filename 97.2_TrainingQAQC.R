@@ -64,7 +64,8 @@ for (m in 1:length(cross_tables)) {
 #' 1. Conger, A.J. (1980). Integration and generalisation of Kappas for multiple
 #'  raters. Psychological Bulletin, 88, 322-328.  
 #' 1. Janson, H., & Olsson, U. (2001). A measure of agreement for interval or
-#'  nominal multivariate observations. Educational and Psychological Measurement, 61, 277-289. 
+#'  nominal multivariate observations. Educational and Psychological 
+#'  Measurement, 61, 277-289. 
 
 #+ Iota, a multivariate metric of agreement2
 crossval_iota <- iota(cross_tables, scaledata = "q")
