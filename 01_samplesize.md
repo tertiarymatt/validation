@@ -1,7 +1,7 @@
 Determing Sample Size
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 10, 2019
+January 11, 2019
 
 ### Required packages
 
@@ -61,14 +61,14 @@ We will assume a larger than realistic change to ensure sufficient power.
 
 ``` r
 error <- matrix(nrow = 2, ncol = 2, 
-                c(0.05, 0.0125, 
-                  0.0125, 0.925))
+                c(0.025, 0.00625, 
+                  0.00625, 0.9375))
 
 # Check that error matrix is correctly made. 
 checkErrorMatrix(error)
 ```
 
-    ## [1] "Error matrix appears correctly formed."
+    ## [1] "Errormatrix is not correctly formed."
 
 Next we will optimize the split of the sample pool.
 
@@ -78,6 +78,6 @@ samplePool
 ```
 
     ## Change Stable 
-    ##   1256   4244
+    ##    947   4553
 
 The next step requires the use of the Google Earth Engine script `02_SamplePointGenerator` to assign the split samples to their respective classes, and generating a point file. R could be used for this, but this would require that the map be downloaded and imported.

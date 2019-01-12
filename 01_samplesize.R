@@ -47,8 +47,8 @@ actualN <- 5500
 
 #'We will assume a larger than realistic change to ensure sufficient power. 
 error <- matrix(nrow = 2, ncol = 2, 
-                c(0.05, 0.0125, 
-                  0.0125, 0.925))
+                c(0.025, 0.00625, 
+                  0.00625, 0.9375))
 
 # Check that error matrix is correctly made. 
 checkErrorMatrix(error)
