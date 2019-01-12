@@ -20,9 +20,11 @@ summary(ceoTable)
 colnames(ceoTable)
 
 # class names need to be pulled from each project.
-classes <- colnames(ceoTable[23:39]) %>% 
+classes <- colnames(crossData[17:35]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
-	.[,2]
+	.[,2] %>% 
+	gsub(" ", "_", .) %>% 
+	gsub("/", "_", .)
 
 colnames(ceoTable)[23:39] <- classes
 
