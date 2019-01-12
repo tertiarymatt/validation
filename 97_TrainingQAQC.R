@@ -135,7 +135,7 @@ kable(bind_cols(icc_values, cor_values[,2:3]))
 
 #+ Find dominant landcover elements
 # Find dominant landcover elements
-crossData2 <- addTopClasses(crossData, plotfield = 1, flagfield = 6, 
+crossData <- addTopClasses(crossData, plotfield = 1, flagfield = 6, 
 							classfields = c(17:35))
 
 #' Now that we have the dominant landscape element classes, we can check for
@@ -144,12 +144,12 @@ crossData2 <- addTopClasses(crossData, plotfield = 1, flagfield = 6,
 
 #+ TopClassAgreement
 # make a little tibble with just the primary class, spread by rater
-primaryAgree <- select(crossData2, "USER_ID", "PLOT_ID", "Primary") %>%
+primaryAgree <- select(crossData, "USER_ID", "PLOT_ID", "Primary") %>%
 	spread(., "USER_ID", "Primary") %>%
 	na.omit(.)
 
 # make a little tibble with just the secondary class, spread by rater
-secondaryAgree <- select(crossData2, "USER_ID", "PLOT_ID", "Secondary") %>%
+secondaryAgree <- select(crossData, "USER_ID", "PLOT_ID", "Secondary") %>%
 	spread(., "USER_ID", "Secondary") %>%
 	na.omit(.)
 
@@ -183,50 +183,7 @@ round(sum(secondaryAgree[,2] == secondaryAgree[,3])
 
 #+ Level2Classes
 # Adding the Level 2 Classes. 
-reclassed <- crossData2 %>% 
-	mutate(
-		LEVEL2 = case_when(
-			PRIMARY_TREE >= 30 ~ "Primary_Forest",
-			SECONDARY_TREE >= 30 ~ "Secondary_Forest",
-			PLANTATION_TREE >= 30 ~ "Plantation_Forest",
-			MANGROVE >= 30 ~ "Mangrove",
-			HERBACEOUS_GRASS_VEGETATION >= 30 ~ "Herbland",
-			SHRUB_VEGETATION >= 30 ~ "Shrubland",
-			PARAMO_VEGETATION > 0 ~ "Paramo",
-			CROPS >= 50 ~ "Cropland",
-			NATURAL_WATER + 
-				WETLAND_VEGETATION >= 50 ~  "Natural_Water",
-			ARTIFICIAL_WATER + 
-				WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
-			WETLAND_VEGETATION >= 50 & 
-				ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
-			WETLAND_VEGETATION >= 50 ~ "Natural_Water",
-			HOUSING_STRUCTURE + 
-				SETTLEMENT_VEGETATION + 
-				ROADS_AND_LOTS >= 30 ~ "Settlement",
-			ROADS_AND_LOTS >= 30 & 
-				HOUSING_STRUCTURE > 0 ~ "Settlement",
-			INFRASTRUCTURE + 
-				SETTLEMENT_VEGETATION + 
-				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-			ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-			BARE_GROUND >= 70 ~ "Non-vegetated",
-			BARE_GROUND +
-				HOUSING_STRUCTURE +
-				SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
-			BARE_GROUND +
-				INFRASTRUCTURE +
-				SETTLEMENT_VEGETATION >= 30 ~ "Infrastructure",
-			BARE_GROUND +
-				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-			SNOW_ICE +
-				BARE_GROUND >= 70 ~ "Glacial",
-			OTHER >= 50 ~ "Other",
-			CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
-			Primary == "FLAGGED" ~ "No_Data",
-			TRUE ~ "Mosaic"
-		)
-	)
+reclassed <- addLevel2(crossData)
 
 #' #### Level 1 LULC Conversions:
 #' Forest Lands = Primary, Secondary, Plantation, Mangrove  
@@ -238,29 +195,7 @@ reclassed <- crossData2 %>%
 #' No Data = No Data  
 
 # Adding the Level one classes.
-reclassed <- reclassed %>% 
-	mutate(
-		LEVEL1 = case_when(
-			LEVEL2 == "Primary_Forest" |
-				LEVEL2 == "Secondary_Forest" |
-				LEVEL2 == "Plantation_Forest" |
-				LEVEL2 == "Mangrove" ~ "Forest_Lands",
-			LEVEL2 == "Herbland" | 
-				LEVEL2 == "Shrubland" | 
-				LEVEL2 == "Paramo" ~ "Grasslands",
-			LEVEL2 == "Cropland" ~ "Croplands",
-			LEVEL2 == "Natural_Water" |
-				LEVEL2 == "Artificial_Water" ~ "Wetlands",
-			LEVEL2 == "Settlement" |
-				LEVEL2 == "Infrastructure" ~ "Settlements",
-			LEVEL2 == "Glacial" |
-				LEVEL2 == "Non-vegetated" |
-				LEVEL2 == "Other" |
-				LEVEL2 == "Mosaic" ~ "Other_Lands",
-			LEVEL2 == "No_Data" ~ "No_Data"
-		)
-	)
-
+reclassed <- addLevel1(reclassed)
 
 #' Now that we have the LULC classes assigned, we can check for agreement 
 #' between the interpreters on that, in this case just using simple percentages.

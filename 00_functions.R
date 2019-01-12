@@ -221,7 +221,108 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
   return(inTable)
 }
 
+#' #### Level 2 LULC Thresholds:  
+#' Primary Forest = Secondary tree >= 30%   
+#' Secondary Forest = Secondary tree >= 30%    
+#' Plantation = Plantation tree >= 30%   
+#' Mangrove = Mangrove >= 30%   
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%   
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%   
+#' Paramo = Paramo > 0%   
+#' Cropland = Crops >= 50%    
+#' Water = Natural water >= 50% | Wetland vegetation >= 50%  
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%   
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%   
+#' Non-vegetated = barren >= 70%   
+#' Glacial = Snow/Ice >= 70%   
 
+#+ Level2Classes
+# Adding the Level 2 Classes. 
+addLevel2 <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			LEVEL2 = case_when(
+				PRIMARY_TREE >= 30 ~ "Primary_Forest",
+				SECONDARY_TREE >= 30 ~ "Secondary_Forest",
+				PLANTATION_TREE >= 30 ~ "Plantation_Forest",
+				MANGROVE >= 30 ~ "Mangrove",
+				HERBACEOUS_GRASS_VEGETATION >= 30 ~ "Herbland",
+				SHRUB_VEGETATION >= 30 ~ "Shrubland",
+				PARAMO_VEGETATION > 0 ~ "Paramo",
+				CROPS >= 50 ~ "Cropland",
+				NATURAL_WATER + 
+					WETLAND_VEGETATION >= 50 ~  "Natural_Water",
+				ARTIFICIAL_WATER + 
+					WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
+				WETLAND_VEGETATION >= 50 & 
+					ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
+				WETLAND_VEGETATION >= 50 ~ "Natural_Water",
+				HOUSING_STRUCTURE + 
+					SETTLEMENT_VEGETATION + 
+					ROADS_AND_LOTS >= 30 ~ "Settlement",
+				ROADS_AND_LOTS >= 30 & 
+					HOUSING_STRUCTURE > 0 ~ "Settlement",
+				INFRASTRUCTURE + 
+					SETTLEMENT_VEGETATION + 
+					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+				BARE_GROUND >= 70 ~ "Non-vegetated",
+				BARE_GROUND +
+					HOUSING_STRUCTURE +
+					SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
+				BARE_GROUND +
+					INFRASTRUCTURE +
+					SETTLEMENT_VEGETATION >= 30 ~ "Infrastructure",
+				BARE_GROUND +
+					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+				SNOW_ICE +
+					BARE_GROUND >= 70 ~ "Glacial",
+				OTHER >= 50 ~ "Other",
+				CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
+				Primary == "FLAGGED" ~ "No_Data",
+				TRUE ~ "Mosaic"
+			)
+		)
+	return(reclassed)
+}
+
+#' #### Level 1 LULC Conversions:
+#' Forest Lands = Primary, Secondary, Plantation, Mangrove  
+#' Grasslands = Herbland, Shrubland, Paramo  
+#' Croplands = Cropland  
+#' Wetlands = Aritifical Water, Natural Water  
+#' Settlements = Settlement, Infrastructure  
+#' Other Lands = Glacial, Non-vegetated, Other, Mosaic  
+#' No Data = No Data  
+
+# Adding the Level one classes.
+addLevel1 <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			LEVEL1 = case_when(
+				LEVEL2 == "Primary_Forest" |
+					LEVEL2 == "Secondary_Forest" |
+					LEVEL2 == "Plantation_Forest" |
+					LEVEL2 == "Mangrove" ~ "Forest_Lands",
+				LEVEL2 == "Herbland" | 
+					LEVEL2 == "Shrubland" | 
+					LEVEL2 == "Paramo" ~ "Grasslands",
+				LEVEL2 == "Cropland" ~ "Croplands",
+				LEVEL2 == "Natural_Water" |
+					LEVEL2 == "Artificial_Water" ~ "Wetlands",
+				LEVEL2 == "Settlement" |
+					LEVEL2 == "Infrastructure" ~ "Settlements",
+				LEVEL2 == "Glacial" |
+					LEVEL2 == "Non-vegetated" |
+					LEVEL2 == "Other" |
+					LEVEL2 == "Mosaic" ~ "Other_Lands",
+				LEVEL2 == "No_Data" ~ "No_Data"
+			)
+		)
+	return(reclassed)
+}
 #' ### Functions for fuzzy accuracy assessment  
 
 #' #### Make a fuzzy population error matrix  
