@@ -234,7 +234,7 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
 #' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%   
 #' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%   
 #' Non-vegetated = barren >= 70%   
-#' Glacial = Snow/Ice >= 70%   
+#' Glacier = Snow/Ice >= 70%   
 
 #+ Level2Classes
 # Adding the Level 2 Classes. 
@@ -277,7 +277,7 @@ addLevel2 <- function(table){
 				BARE_GROUND +
 					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
 				SNOW_ICE +
-					BARE_GROUND >= 70 ~ "Glacial",
+					BARE_GROUND >= 70 ~ "Glacier",
 				OTHER >= 50 ~ "Other",
 				CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
 				Primary == "FLAGGED" ~ "No_Data",
@@ -293,7 +293,7 @@ addLevel2 <- function(table){
 #' Croplands = Cropland  
 #' Wetlands = Aritifical Water, Natural Water  
 #' Settlements = Settlement, Infrastructure  
-#' Other Lands = Glacial, Non-vegetated, Other, Mosaic  
+#' Other Lands = Glacier, Non-vegetated, Other, Mosaic  
 #' No Data = No Data  
 
 # Adding the Level one classes.
@@ -314,7 +314,7 @@ addLevel1 <- function(table){
 					LEVEL2 == "Artificial_Water" ~ "Wetlands",
 				LEVEL2 == "Settlement" |
 					LEVEL2 == "Infrastructure" ~ "Settlements",
-				LEVEL2 == "Glacial" |
+				LEVEL2 == "Glacier" |
 					LEVEL2 == "Non-vegetated" |
 					LEVEL2 == "Other" |
 					LEVEL2 == "Mosaic" ~ "Other_Lands",
@@ -323,6 +323,56 @@ addLevel1 <- function(table){
 		)
 	return(reclassed)
 }
+
+#' Classes are collected as intergers when the sample is generated in GEE.
+#' They need to be converted into text for building an error matrix.
+#' AREA SIN COBERTURA VEGETAL:0  
+#' ARTIFICIAL:1  
+#' BOSQUE NATIVO:2  
+#' CULTIVO ANUAL:3  
+#' CULTIVO PERMANENTE:4  
+#' CULTIVO SEMIPERMANENTE:5  
+#' INFRAESTRUCTURA:6   
+#' MOSAICO AGROPECUARIO:7   
+#' NATURAL:8   
+#' PARAMOS:9  
+#' PASTIZAL:10   
+#' PLANTACION FORESTAL:11  
+#' VEGETACION ARBUSTIVA:12  
+#' VEGETACION HERBACEA:13  
+#' ZONAS POBLADAS:14  
+#' GLACIAL:15
+#' 
+#+ Convert GEE codes in the exported table into class values. 
+# Adding the Level 2 Classes.
+# Note that the codes below are temporary, and for script development,
+# and will be replaced when the LULC change product is produced. 
+convertToClasses <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			MapClass = case_when(
+				CLASS == 0 ~ "Non-vegetated",
+				CLASS == 1 ~ "Artificial_Water",
+				CLASS == 2 ~ "Primary_Forest",
+				CLASS == 3 ~ "Cropland",
+				CLASS == 4 ~ "Cropland",
+				CLASS == 5 ~ "Cropland",
+				CLASS == 6 ~ "Infrastructure",
+				CLASS == 7 ~ "Cropland",
+				CLASS == 8 ~ "Natural_Water",
+				CLASS == 9 ~ "Paramo",
+				CLASS == 10 ~ "Herbland",
+				CLASS == 11 ~ "Plantation_Forest",
+				CLASS == 12 ~ "Shrubland",
+				CLASS == 13 ~ "Herbland",
+				CLASS == 14 ~ "Settlement",
+				CLASS == 15 ~ "Glacier"
+			)
+		)
+	return(reclassed)
+}
+
 #' ### Functions for fuzzy accuracy assessment  
 
 #' #### Make a fuzzy population error matrix  
