@@ -58,5 +58,12 @@ map <- factor(finalTable$MapClass, refLevels)
 #' We can use the `caret` package for this process. 
 
 #+ ConfusionMatrix
-erroMatrix <- confusionMatrix(map, reference, positive = NULL, 
+errorMatrix <- confusionMatrix(map, reference, positive = NULL, 
 															dnn = c("Prediction", "Reference"))
+
+#' ### Create an area-based data frame.  
+
+#+ AreaBased
+# Extract the error matrix, and make into a data frame for easier addressing.
+# Remember that reference are columns, and predicted map values are rows!
+eM <- data.frame(unclass(errorMatrix$table))

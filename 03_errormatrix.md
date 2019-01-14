@@ -9,14 +9,14 @@ January 14, 2019
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -94,6 +94,14 @@ map <- factor(finalTable$MapClass, refLevels)
 Construct the confusion matrix, using the extracted vectors of values. We can use the `caret` package for this process.
 
 ``` r
-erroMatrix <- confusionMatrix(map, reference, positive = NULL, 
+errorMatrix <- confusionMatrix(map, reference, positive = NULL, 
                                                             dnn = c("Prediction", "Reference"))
+```
+
+### Create an area-based data frame.
+
+``` r
+# Extract the error matrix, and make into a data frame for easier addressing.
+# Remember that reference are columns, and predicted map values are rows!
+eM <- data.frame(unclass(errorMatrix$table))
 ```
