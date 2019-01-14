@@ -10,23 +10,27 @@
 #+ Packages
 library(tidyverse)
 library(stringr)
+source('00_functions.R')
 
-#' ### Code block for visualizing the outputs of a CEO project. 
-#+ Do Visualization
+#' Import raw data, strip out unneeded name components of class fields. 
 
-# Inmport Data
-ceoTable <- read_csv("data/ceo-prueba-de-clase-plot-data-2018-12-20.csv")
+#+ Inmport Data
+ceoTable <- read_csv("data/validation_error_matrix_dev.csv")
 summary(ceoTable)
 colnames(ceoTable)
 
 # class names need to be pulled from each project.
-classes <- colnames(crossData[17:35]) %>% 
+classes <- colnames(ceoTable[17:35]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
 	gsub(" ", "_", .) %>% 
 	gsub("/", "_", .)
 
-colnames(ceoTable)[23:39] <- classes
+colnames(ceoTable)[17:35] <- classes
+
+#' ### Code block for visualizing the outputs of a CEO project, to give 
+#' a rough sense of the data. 
+#+ Do Visualization
 
 # Make a plot of each class's distribution of values, dropping zeros 
 # (which are super abundant)
@@ -70,7 +74,7 @@ select(ceoTable, classes) %>%
 
 #+ Find dominant landcover elements
 ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
-													classfields = c(23:39))
+													classfields = c(17:35))
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
@@ -129,3 +133,4 @@ reclassed <- addLevel2(ceoTable)
 
 # Adding the Level one classes.
 reclassed <- addLevel1(reclassed)
+reclassed
