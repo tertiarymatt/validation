@@ -1,7 +1,7 @@
 Functions
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-December 19, 2018
+January 14, 2019
 
 ### Required packages
 
@@ -9,14 +9,14 @@ December 19, 2018
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ----------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ---------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts -------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -111,7 +111,7 @@ This function uses Wagner & Stehman's approach to optimize sample distribution f
 **nTotal**: The total sample pool to work with.
 
 ``` r
-optimizeSplit <-  function(errorMatrix, nTotal){
+optimizeSplit <-  function(errorMatrix, nTotal, classes){
   # Check that the matrix proportions work out. 
   checkErrorMatrix(errorMatrix)
   
@@ -141,8 +141,10 @@ optimizeSplit <-  function(errorMatrix, nTotal){
   n1 <- round((n1p / np) * nTotal)
   n2 <- round((n2p / np) * nTotal)
   
-  return(cat("Class 01 should get", n1, "samples.", 
-             "\nClass 02 should get", n2, "samples."))
+  samples <- c(n1, n2)
+  names(samples) <- classes
+  
+  return(samples)
 }
 ```
 
@@ -151,7 +153,7 @@ optimizeSplit <-  function(errorMatrix, nTotal){
 This function takes a raw point table produced by Collect Earth Online, and returns that table with a Primary and Secondary class field added. The Primary field is the class with the highest percentage cover, and the Secondary is the class with the second highest. If the plot has been flagged, these fields are marked FLAGGED.Ties return the classes in the order encountered.
 
 ``` r
-topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
+addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
                        classfields = NULL){
   ### inTable should be a soft classification table (output from CEO), plotField
   ### should point to the PLOTID field, flagfield should point to FLAGGED field,
@@ -168,9 +170,9 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
   
   for (i in 1:nrow(plots)) {
     
-    if (plots[i,2] == FALSE) {
+    if (plots[i,2] == "FALSE") {
       
-      #produce a verson of the table
+      #produce a version of the table
       pl <- plots[i,-1]
       pl <- as_vector(pl[-1])
       n <- length(unique(pl))
@@ -204,6 +206,114 @@ topClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
   inTable$Secondary <- secondary
   
   return(inTable)
+}
+```
+
+#### Level 2 LULC Thresholds:
+
+Primary Forest = Secondary tree &gt;= 30%
+Secondary Forest = Secondary tree &gt;= 30%
+Plantation = Plantation tree &gt;= 30%
+Mangrove = Mangrove &gt;= 30%
+Grass/herbland = Herbaceous veg &gt; 0% & Tree &lt; 30% & Shrub &lt; 30%
+Shrubland = Shrub vegetation &gt;= 30%, Tree &lt; 30%
+Paramo = Paramo &gt; 0%
+Cropland = Crops &gt;= 50%
+Water = Natural water &gt;= 50% | Wetland vegetation &gt;= 50%
+Settlement = Houses & Commercial &gt;= 30% | Urban vegetation &gt;= 30%
+Infrastructure = Roads and Lots &gt;= 30% | Infrastructure building &gt;= 30%
+Non-vegetated = barren &gt;= 70%
+Glacial = Snow/Ice &gt;= 70%
+
+``` r
+# Adding the Level 2 Classes. 
+addLevel2 <- function(table){
+    require(tidyr)
+    reclassed <- table %>% 
+        mutate(
+            LEVEL2 = case_when(
+                PRIMARY_TREE >= 30 ~ "Primary_Forest",
+                SECONDARY_TREE >= 30 ~ "Secondary_Forest",
+                PLANTATION_TREE >= 30 ~ "Plantation_Forest",
+                MANGROVE >= 30 ~ "Mangrove",
+                HERBACEOUS_GRASS_VEGETATION >= 30 ~ "Herbland",
+                SHRUB_VEGETATION >= 30 ~ "Shrubland",
+                PARAMO_VEGETATION > 0 ~ "Paramo",
+                CROPS >= 50 ~ "Cropland",
+                NATURAL_WATER + 
+                    WETLAND_VEGETATION >= 50 ~  "Natural_Water",
+                ARTIFICIAL_WATER + 
+                    WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
+                WETLAND_VEGETATION >= 50 & 
+                    ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
+                WETLAND_VEGETATION >= 50 ~ "Natural_Water",
+                HOUSING_STRUCTURE + 
+                    SETTLEMENT_VEGETATION + 
+                    ROADS_AND_LOTS >= 30 ~ "Settlement",
+                ROADS_AND_LOTS >= 30 & 
+                    HOUSING_STRUCTURE > 0 ~ "Settlement",
+                INFRASTRUCTURE + 
+                    SETTLEMENT_VEGETATION + 
+                    ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+                ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+                BARE_GROUND >= 70 ~ "Non-vegetated",
+                BARE_GROUND +
+                    HOUSING_STRUCTURE +
+                    SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
+                BARE_GROUND +
+                    INFRASTRUCTURE +
+                    SETTLEMENT_VEGETATION >= 30 ~ "Infrastructure",
+                BARE_GROUND +
+                    ROADS_AND_LOTS >= 30 ~ "Infrastructure",
+                SNOW_ICE +
+                    BARE_GROUND >= 70 ~ "Glacial",
+                OTHER >= 50 ~ "Other",
+                CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
+                Primary == "FLAGGED" ~ "No_Data",
+                TRUE ~ "Mosaic"
+            )
+        )
+    return(reclassed)
+}
+```
+
+#### Level 1 LULC Conversions:
+
+Forest Lands = Primary, Secondary, Plantation, Mangrove
+Grasslands = Herbland, Shrubland, Paramo
+Croplands = Cropland
+Wetlands = Aritifical Water, Natural Water
+Settlements = Settlement, Infrastructure
+Other Lands = Glacial, Non-vegetated, Other, Mosaic
+No Data = No Data
+
+``` r
+# Adding the Level one classes.
+addLevel1 <- function(table){
+    require(tidyr)
+    reclassed <- table %>% 
+        mutate(
+            LEVEL1 = case_when(
+                LEVEL2 == "Primary_Forest" |
+                    LEVEL2 == "Secondary_Forest" |
+                    LEVEL2 == "Plantation_Forest" |
+                    LEVEL2 == "Mangrove" ~ "Forest_Lands",
+                LEVEL2 == "Herbland" | 
+                    LEVEL2 == "Shrubland" | 
+                    LEVEL2 == "Paramo" ~ "Grasslands",
+                LEVEL2 == "Cropland" ~ "Croplands",
+                LEVEL2 == "Natural_Water" |
+                    LEVEL2 == "Artificial_Water" ~ "Wetlands",
+                LEVEL2 == "Settlement" |
+                    LEVEL2 == "Infrastructure" ~ "Settlements",
+                LEVEL2 == "Glacial" |
+                    LEVEL2 == "Non-vegetated" |
+                    LEVEL2 == "Other" |
+                    LEVEL2 == "Mosaic" ~ "Other_Lands",
+                LEVEL2 == "No_Data" ~ "No_Data"
+            )
+        )
+    return(reclassed)
 }
 ```
 
