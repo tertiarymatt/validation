@@ -125,9 +125,6 @@ checkErrorMatrix <- function(errorMatrix){
 
 #+ OptimizeSplit
 optimizeSplit <-  function(errorMatrix, nTotal, classes){
-  # Check that the matrix proportions work out. 
-  checkErrorMatrix(errorMatrix)
-  
   # Calculate individual components used for finding proportions. 
   v11 <- (errorMatrix[1,1] * (sum(errorMatrix[1,]) - errorMatrix[1,1]) / 
             sum(errorMatrix[1,])^2)
