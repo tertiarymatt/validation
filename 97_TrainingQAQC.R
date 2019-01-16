@@ -6,6 +6,10 @@
 #' ---
 #'
 
+#' Set working directory to where data is being stored.
+#'+ setwd
+setwd("~/R/validation")
+
 #' ### Required packages
 #+ Packages
 library(tidyverse)
