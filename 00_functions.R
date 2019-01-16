@@ -10,11 +10,11 @@
 #+ Packages
 library(tidyverse)
 
-#' ### This section is for functions related to sample size determination
+#' ### Functions related to sample size determination
 #' The following sample size calculation functions are derived from the work of
-#' Foody, G. M. (2009). Sample size determination for image classification
+#' _Foody, G. M. (2009). Sample size determination for image classification
 #' accuracy assessment and comparison. International Journal of Remote Sensing,
-#' 30(20), 5273-5291. https://doi.org/10.1080/01431160903130937 
+#' 30(20), 5273-5291._ https://doi.org/10.1080/01431160903130937 
 #'
 #' Each of the three sample size caclulation functions relates to a particular
 #' approach. `genSample1()` is an implementation of the typical sample size
@@ -93,13 +93,14 @@ powerEst <- function(n, min_diff, p0, alpha=0.05){
  
 
 #' ### Optimizing sample split
-#' This section relies on work in Wagner J.E. and S.V. Stehman. 2015,
-#' Optimizing sample size allocation to strate for estimating area and map
-#' accuracy. Remote Sens. Environ. 168:126-133.  
+#' This section relies on work in _Wagner J.E. and S.V. Stehman. 2015,
+#' Optimizing sample size allocation to strata for estimating area and map
+#' accuracy. Remote Sens. Environ. 168:126-133_.  
 #'
 #' #### Error matrix checker  
 #' 
-#' This function checks that the area-proportion error matrix is properly formed.  
+#' This function checks that the area-proportion error matrix is properly 
+#' formed, and accounts for 100% of the area.  
 
 #+ ErrorMatrixChecker
 checkErrorMatrix <- function(errorMatrix){
@@ -115,9 +116,10 @@ checkErrorMatrix <- function(errorMatrix){
 #' ####Two Category Optimization of Sample Distribution
 #' 
 #' This function uses Wagner & Stehman's approach to optimize sample 
-#' distribution for two strata, to minimize SE and maintain accuracy of error
-#' estimation.  
+#' distribution for two strata. The optimization is intended to minimize 
+#' standard errors while maintaining accuracy of area estimation.  
 #' 
+#' The function requires two inputs:  
 #' **errorMatrix**: An area-based error matrix for a two class map (2x2).  
 #' **nTotal**: The total sample pool to work with.
 
@@ -158,18 +160,20 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
   return(samples)
 }
 
-#' ### CEO Point Table Reclassification
+#' ### CEO Point Table Reclassification Functions
 #'
-#' This function takes a raw point table produced by Collect Earth Online, and
+#' `addTopClasses` takes a raw point table produced by Collect Earth Online, and
 #' returns that table with a Primary and Secondary class field added. The
 #' Primary field is the class with the highest percentage cover, and the
 #' Secondary is the class with the second highest. If the plot has been flagged,
-#' these fields are marked FLAGGED.Ties return the classes in the order encountered. 
+#' these fields are marked FLAGGED.Ties return the classes in the order 
+#' encountered. 
 
 addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
                        classfields = NULL){
-  ### inTable should be a soft classification table (output from CEO), plotField
-  ### should point to the PLOTID field, flagfield should point to FLAGGED field,
+  ### inTable should be a point-based classification table (output from CEO), 
+  ### plotField should point to the PLOTID field, 
+  ### flagfield should point to FLAGGED field,
   ### classfields should be a vector of the indices of the fields for the
   ### classes.
   
@@ -221,8 +225,15 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
   return(inTable)
 }
 
-#' #### Level 2 LULC Thresholds:  
-#' Primary Forest = Secondary tree >= 30%   
+#' #### Adding LULC Classes  
+#' The following functions build on the point-based data collected in CEO after,
+#' it has been processed using `addTopClasses`. They convert the point-based
+#' classes into land use and land cover (LULC) classes, using thresholds
+#' devised in the LULC classification system.  
+#' 
+#' #### Level 2 Class Thresholds:  
+#' (note these will be updated to Spanish class names)  
+#' Primary Forest = Primary tree >= 30%   
 #' Secondary Forest = Secondary tree >= 30%    
 #' Plantation = Plantation tree >= 30%   
 #' Mangrove = Mangrove >= 30%   
@@ -324,8 +335,12 @@ addLevel1 <- function(table){
 	return(reclassed)
 }
 
-#' Classes are collected as intergers when the sample is generated in GEE.
-#' They need to be converted into text for building an error matrix.
+#' #### Map class conversions  
+#' The class of each sample point is collected as an intergers when the sample 
+#' is generated in Google Earth Engine. These interger codes need to be 
+#' converted into text (and later, a factor) for building an error matrix.
+#' 
+#' __Land cover class codes__  
 #' AREA SIN COBERTURA VEGETAL:0  
 #' ARTIFICIAL:1  
 #' BOSQUE NATIVO:2  
@@ -372,42 +387,3 @@ convertToClasses <- function(table){
 		)
 	return(reclassed)
 }
-
-#' ### Functions for fuzzy accuracy assessment  
-
-#' #### Make a fuzzy population error matrix  
-
-# fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
-#   ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
-#   ### number of classes, along with the class names as a character vector.
-#   ### Tables should be of identical size, with identical ordering of sample
-#   ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
-#   ### two tables, and output as a labeled matrix.
-#   
-#   #establish table
-#   fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
-#   
-#   for (i in 1:nrow(cT)){
-#     r <- rT[i,]
-#     c <- cT[i,]
-#     
-#     #Build a single pixel table
-#     fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
-#     fPixel[length(classes) + 1,] <- c(r, 0)
-#     fPixel[,length(classes) + 1] <- c(c, sum(c))
-#     
-#     for (m in 1:length(classes)){
-#       for (n in 1:length(classes)){
-#         fPixel[m,n] <- min(r[n], c[m])
-#       }
-#     }
-#     
-#     rownames(fPixel) <- c(classes, "Grade")
-#     colnames(fPixel) <- c(classes, "Grade")
-#     fPixel
-#     
-#     #add tables
-#     fTable <- fTable + fPixel
-#   }
-#   return(fTable)
-# }

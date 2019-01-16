@@ -1,7 +1,7 @@
 Functions
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 14, 2019
+January 15, 2019
 
 ### Required packages
 
@@ -9,20 +9,20 @@ January 14, 2019
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ----------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts -------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
-### This section is for functions related to sample size determination
+### Functions related to sample size determination
 
-The following sample size calculation functions are derived from the work of Foody, G. M. (2009). Sample size determination for image classification accuracy assessment and comparison. International Journal of Remote Sensing, 30(20), 5273-5291. <https://doi.org/10.1080/01431160903130937>
+The following sample size calculation functions are derived from the work of *Foody, G. M. (2009). Sample size determination for image classification accuracy assessment and comparison. International Journal of Remote Sensing, 30(20), 5273-5291.* <https://doi.org/10.1080/01431160903130937>
 
 Each of the three sample size caclulation functions relates to a particular approach. `genSample1()` is an implementation of the typical sample size calcuation, using only the target accuracy (p0), the half-width of the Confidence Interval (h), and the tolerance for Type I error (alpha).
 
@@ -86,11 +86,11 @@ powerEst <- function(n, min_diff, p0, alpha=0.05){
 
 ### Optimizing sample split
 
-This section relies on work in Wagner J.E. and S.V. Stehman. 2015, Optimizing sample size allocation to strate for estimating area and map accuracy. Remote Sens. Environ. 168:126-133.
+This section relies on work in *Wagner J.E. and S.V. Stehman. 2015, Optimizing sample size allocation to strata for estimating area and map accuracy. Remote Sens. Environ. 168:126-133*.
 
 #### Error matrix checker
 
-This function checks that the area-proportion error matrix is properly formed.
+This function checks that the area-proportion error matrix is properly formed, and accounts for 100% of the area.
 
 ``` r
 checkErrorMatrix <- function(errorMatrix){
@@ -105,8 +105,9 @@ checkErrorMatrix <- function(errorMatrix){
 
 #### Two Category Optimization of Sample Distribution
 
-This function uses Wagner & Stehman's approach to optimize sample distribution for two strata, to minimize SE and maintain accuracy of error estimation.
+This function uses Wagner & Stehman's approach to optimize sample distribution for two strata. The optimization is intended to minimize standard errors while maintaining accuracy of area estimation.
 
+The function requires two inputs:
 **errorMatrix**: An area-based error matrix for a two class map (2x2).
 **nTotal**: The total sample pool to work with.
 
@@ -148,15 +149,16 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
 }
 ```
 
-### CEO Point Table Reclassification
+### CEO Point Table Reclassification Functions
 
-This function takes a raw point table produced by Collect Earth Online, and returns that table with a Primary and Secondary class field added. The Primary field is the class with the highest percentage cover, and the Secondary is the class with the second highest. If the plot has been flagged, these fields are marked FLAGGED.Ties return the classes in the order encountered.
+`addTopClasses` takes a raw point table produced by Collect Earth Online, and returns that table with a Primary and Secondary class field added. The Primary field is the class with the highest percentage cover, and the Secondary is the class with the second highest. If the plot has been flagged, these fields are marked FLAGGED.Ties return the classes in the order encountered.
 
 ``` r
 addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6, 
                        classfields = NULL){
-  ### inTable should be a soft classification table (output from CEO), plotField
-  ### should point to the PLOTID field, flagfield should point to FLAGGED field,
+  ### inTable should be a point-based classification table (output from CEO), 
+  ### plotField should point to the PLOTID field, 
+  ### flagfield should point to FLAGGED field,
   ### classfields should be a vector of the indices of the fields for the
   ### classes.
   
@@ -209,9 +211,14 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
 }
 ```
 
-#### Level 2 LULC Thresholds:
+#### Adding LULC Classes
 
-Primary Forest = Secondary tree &gt;= 30%
+The following functions build on the point-based data collected in CEO after, it has been processed using `addTopClasses`. They convert the point-based classes into land use and land cover (LULC) classes, using thresholds devised in the LULC classification system.
+
+#### Level 2 Class Thresholds:
+
+(note these will be updated to Spanish class names)
+Primary Forest = Primary tree &gt;= 30%
 Secondary Forest = Secondary tree &gt;= 30%
 Plantation = Plantation tree &gt;= 30%
 Mangrove = Mangrove &gt;= 30%
@@ -223,7 +230,7 @@ Water = Natural water &gt;= 50% | Wetland vegetation &gt;= 50%
 Settlement = Houses & Commercial &gt;= 30% | Urban vegetation &gt;= 30%
 Infrastructure = Roads and Lots &gt;= 30% | Infrastructure building &gt;= 30%
 Non-vegetated = barren &gt;= 70%
-Glacial = Snow/Ice &gt;= 70%
+Glacier = Snow/Ice &gt;= 70%
 
 ``` r
 # Adding the Level 2 Classes. 
@@ -266,7 +273,7 @@ addLevel2 <- function(table){
                 BARE_GROUND +
                     ROADS_AND_LOTS >= 30 ~ "Infrastructure",
                 SNOW_ICE +
-                    BARE_GROUND >= 70 ~ "Glacial",
+                    BARE_GROUND >= 70 ~ "Glacier",
                 OTHER >= 50 ~ "Other",
                 CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
                 Primary == "FLAGGED" ~ "No_Data",
@@ -284,7 +291,7 @@ Grasslands = Herbland, Shrubland, Paramo
 Croplands = Cropland
 Wetlands = Aritifical Water, Natural Water
 Settlements = Settlement, Infrastructure
-Other Lands = Glacial, Non-vegetated, Other, Mosaic
+Other Lands = Glacier, Non-vegetated, Other, Mosaic
 No Data = No Data
 
 ``` r
@@ -306,7 +313,7 @@ addLevel1 <- function(table){
                     LEVEL2 == "Artificial_Water" ~ "Wetlands",
                 LEVEL2 == "Settlement" |
                     LEVEL2 == "Infrastructure" ~ "Settlements",
-                LEVEL2 == "Glacial" |
+                LEVEL2 == "Glacier" |
                     LEVEL2 == "Non-vegetated" |
                     LEVEL2 == "Other" |
                     LEVEL2 == "Mosaic" ~ "Other_Lands",
@@ -317,43 +324,55 @@ addLevel1 <- function(table){
 }
 ```
 
-### Functions for fuzzy accuracy assessment
+#### Map class conversions
 
-#### Make a fuzzy population error matrix
+The class of each sample point is collected as an intergers when the sample is generated in Google Earth Engine. These interger codes need to be converted into text (and later, a factor) for building an error matrix.
+
+**Land cover class codes**
+AREA SIN COBERTURA VEGETAL:0
+ARTIFICIAL:1
+BOSQUE NATIVO:2
+CULTIVO ANUAL:3
+CULTIVO PERMANENTE:4
+CULTIVO SEMIPERMANENTE:5
+INFRAESTRUCTURA:6
+MOSAICO AGROPECUARIO:7
+NATURAL:8
+PARAMOS:9
+PASTIZAL:10
+PLANTACION FORESTAL:11
+VEGETACION ARBUSTIVA:12
+VEGETACION HERBACEA:13
+ZONAS POBLADAS:14
+GLACIAL:15
 
 ``` r
-# fuzzyTable <- function(ref = NULL, map = NULL, classes = NULL){
-#   ### Input two fuzzy class tables, composed of nrows = sample size, ncols =
-#   ### number of classes, along with the class names as a character vector.
-#   ### Tables should be of identical size, with identical ordering of sample
-#   ### locations and classes. Fuzzy error matrix is calculated pixelwise for the
-#   ### two tables, and output as a labeled matrix.
-#   
-#   #establish table
-#   fTable <- matrix(nrow = length(classes) + 1, ncol = length(classes) + 1, 0)
-#   
-#   for (i in 1:nrow(cT)){
-#     r <- rT[i,]
-#     c <- cT[i,]
-#     
-#     #Build a single pixel table
-#     fPixel <- matrix(nrow = length(c) + 1, ncol = length(r) + 1)
-#     fPixel[length(classes) + 1,] <- c(r, 0)
-#     fPixel[,length(classes) + 1] <- c(c, sum(c))
-#     
-#     for (m in 1:length(classes)){
-#       for (n in 1:length(classes)){
-#         fPixel[m,n] <- min(r[n], c[m])
-#       }
-#     }
-#     
-#     rownames(fPixel) <- c(classes, "Grade")
-#     colnames(fPixel) <- c(classes, "Grade")
-#     fPixel
-#     
-#     #add tables
-#     fTable <- fTable + fPixel
-#   }
-#   return(fTable)
-# }
+# Adding the Level 2 Classes.
+# Note that the codes below are temporary, and for script development,
+# and will be replaced when the LULC change product is produced. 
+convertToClasses <- function(table){
+    require(tidyr)
+    reclassed <- table %>% 
+        mutate(
+            MapClass = case_when(
+                CLASS == 0 ~ "Non-vegetated",
+                CLASS == 1 ~ "Artificial_Water",
+                CLASS == 2 ~ "Primary_Forest",
+                CLASS == 3 ~ "Cropland",
+                CLASS == 4 ~ "Cropland",
+                CLASS == 5 ~ "Cropland",
+                CLASS == 6 ~ "Infrastructure",
+                CLASS == 7 ~ "Cropland",
+                CLASS == 8 ~ "Natural_Water",
+                CLASS == 9 ~ "Paramo",
+                CLASS == 10 ~ "Herbland",
+                CLASS == 11 ~ "Plantation_Forest",
+                CLASS == 12 ~ "Shrubland",
+                CLASS == 13 ~ "Herbland",
+                CLASS == 14 ~ "Settlement",
+                CLASS == 15 ~ "Glacier"
+            )
+        )
+    return(reclassed)
+}
 ```
