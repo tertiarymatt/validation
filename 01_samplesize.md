@@ -26,7 +26,7 @@ source("00_functions.R")
 
 ### This section is used to determing sample size needed for the project.
 
-Before running this script, use the [`01_ChangePercentage` Earth Engine script](https://code.earthengine.google.com/447784b1b33ab11eda31b7d3e6e72da1) to find the percent area occupied by change classes in the output data. The percentage of change will be displayed in the console after the script is run. That percentage will be used in the sample size allocation optimizing algorithm included in this script.
+Before running this script, use the [`01_ChangePercentage` Earth Engine script](https://code.earthengine.google.com/146c6bba7eb1d1225caa9ff01fbb3d82) to find the percent area occupied by change classes in the output data. The percentage of change will be displayed in the console after the script is run. That percentage will be used in the sample size allocation optimizing algorithm included in this script.
 
 ### Sample Size Determination
 
@@ -92,4 +92,4 @@ samplePool
     ## Change Stable 
     ##   1181   5748
 
-The next step requires the use of the Google Earth Engine script [`02_SamplePointGenerator`](https://code.earthengine.google.com/74a583f2d2b61352abff0ea27216b02b) to assign the split samples to their respective classes, and generating a point file. R could be used for this, but this would require that the map be downloaded and imported.
+The next step requires the use of the Google Earth Engine script [`02_SamplePointGenerator`](https://code.earthengine.google.com/d2d33130faedff1752cc634c91ffde74) to assign the split samples to their respective classes, and generating a point file. R could be used for this, but this would require that the map be downloaded and imported.
