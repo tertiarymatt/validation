@@ -12,6 +12,14 @@ library(tidyverse)
 library(stringr)
 source('00_functions.R')
 
+#' This script is used to import the photo-interpreted points after they have
+#' been produced in Collect Earth Online. The process is as follows.  
+#' 1. Import all tables.  
+#' 1. Clean and shorten class names.  
+#' 1. Find dominant point classes.  
+#' 1. Convert dominant point classes to LULC classes. 
+#' 
+#' ### Importing data.  
 #' Import raw data, strip out unneeded name components of class fields. 
 
 #+ Inmport Data
@@ -99,9 +107,9 @@ ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6,
 #' ### Level 1 and Level 2 LULC classes
 #' Next steps: add code to convert to level 1 and level 2 classes, and test 
 #' agreement/consistency at that level. Because the data is collected a finer
-#' level of detail than either Level 1 or Level 2, Level 2 is produced first.
-
-#' #### Level 2 LULC Thresholds:  
+#' level of detail than either Level 1 or Level 2, Level 2 is produced first.  
+#' 
+#' #### Level 2 LULC Thresholds:   
 #' Primary Forest = Secondary tree >= 30%  
 #' Secondary Forest = Secondary tree >= 30%  
 #' Plantation = Plantation tree >= 30%  
