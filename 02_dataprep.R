@@ -147,7 +147,7 @@ reclassed
 #' The SEPAL stratified estimator tool works with integer classes. 
 #' However, the data have been imported and prepared as characters. 
 #' This section is for converting map values and validation values to integer 
-#' values.
+#' values, and will export a csv file that can be uploaded into SEPAL. 
 
 #+ ConvertoClassesandFactors
 #Code to convert these classes into factors, for use in building an error matrix.
@@ -175,3 +175,5 @@ finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$reference <- as.numeric(finalTable$reference) - 1
 finalTable$predicted <- as.numeric(finalTable$predicted) - 1
 
+# Export table for upload to SEPAL
+write_csv(finalTable, "data/finalTable.csv")
