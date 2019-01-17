@@ -35,6 +35,7 @@ classes <- colnames(ceoTable[17:35]) %>%
 	gsub("/", "_", .)
 
 colnames(ceoTable)[17:35] <- classes
+colnames(ceoTable)
 
 #' ### Code block for visualizing the outputs of a CEO project, to give 
 #' a rough sense of the data. 
@@ -142,3 +143,35 @@ reclassed <- addLevel2(ceoTable)
 # Adding the Level one classes.
 reclassed <- addLevel1(reclassed)
 reclassed
+
+#' The SEPAL stratified estimator tool works with integer classes. 
+#' However, the data have been imported and prepared as characters. 
+#' This section is for converting map values and validation values to integer 
+#' values.
+
+#+ ConvertoClassesandFactors
+#Code to convert these classes into factors, for use in building an error matrix.
+
+# convert integers into text
+finalTable <- convertToClasses(reclassed)
+
+#strip out No_Data entries.
+toRemove <- which(finalTable$LEVEL2 == "No_Data")
+finalTable <- finalTable[-toRemove,]
+
+# Convert to factors. The levels need to be properly set. For the final numeric
+# codes to match those of the map, they need to be in the same order as those
+# of the map. 
+refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
+							 "Cropland", "Secondary_Forest", "Infrastructure", 
+							 "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
+							 "Shrubland", "Herbland", "Settlement", "Glacier")
+
+# Add the factors to the table
+finalTable$reference <- factor(finalTable$LEVEL2, refLevels)
+finalTable$predicted <- factor(finalTable$MapClass, refLevels)
+
+# Convert factors to integers. Subtracting one as GEE begins with 0. 
+finalTable$reference <- as.numeric(finalTable$reference) - 1
+finalTable$predicted <- as.numeric(finalTable$predicted) - 1
+
