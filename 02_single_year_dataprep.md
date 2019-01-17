@@ -1,7 +1,7 @@
 Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 15, 2019
+January 17, 2019
 
 Required packages
 
@@ -196,7 +196,27 @@ classes <- colnames(ceoTable[17:35]) %>%
     gsub("/", "_", .)
 
 colnames(ceoTable)[17:35] <- classes
+colnames(ceoTable)
 ```
+
+    ##  [1] "PLOT_ID"                     "CENTER_LON"                 
+    ##  [3] "CENTER_LAT"                  "SIZE_M"                     
+    ##  [5] "SHAPE"                       "FLAGGED"                    
+    ##  [7] "ANALYSES"                    "SAMPLE_POINTS"              
+    ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
+    ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
+    ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
+    ## [15] "PL_FID_REFDTA"               "CLASS"                      
+    ## [17] "PRIMARY_TREE"                "SECONDARY_TREE"             
+    ## [19] "PLANTATION_TREE"             "MANGROVE"                   
+    ## [21] "HERBACEOUS_GRASS_VEGETATION" "SHRUB_VEGETATION"           
+    ## [23] "PARAMO_VEGETATION"           "CROPS"                      
+    ## [25] "NATURAL_WATER"               "ARTIFICIAL_WATER"           
+    ## [27] "WETLAND_VEGETATION"          "HOUSING_STRUCTURE"          
+    ## [29] "INFRASTRUCTURE"              "ROADS_AND_LOTS"             
+    ## [31] "SETTLEMENT_VEGETATION"       "BARE_GROUND"                
+    ## [33] "SNOW_ICE"                    "OTHER"                      
+    ## [35] "CLOUDS_UNINTERPRETABLE"
 
 ### Code block for visualizing the outputs of a CEO project, to give
 
@@ -212,7 +232,7 @@ select(ceoTable, classes) %>%
     facet_wrap(~class, scales = "free_y")
 ```
 
-![](02_dataprep_files/figure-markdown_github/Do%20Visualization-1.png)
+![](02_single_year_dataprep_files/figure-markdown_github/Do%20Visualization-1.png)
 
 ``` r
 # How many of each class have a cover value of >50%?
@@ -224,7 +244,7 @@ select(ceoTable, classes) %>%
                 main = c("Instances of class cover >50%")) + coord_flip()
 ```
 
-![](02_dataprep_files/figure-markdown_github/Do%20Visualization-2.png)
+![](02_single_year_dataprep_files/figure-markdown_github/Do%20Visualization-2.png)
 
 ``` r
 # How many of each class have a non-zero cover value of <50%?
@@ -237,7 +257,7 @@ select(ceoTable, classes) %>%
                 main = c("Instances of non-zero class cover <50%")) + coord_flip()
 ```
 
-![](02_dataprep_files/figure-markdown_github/Do%20Visualization-3.png)
+![](02_single_year_dataprep_files/figure-markdown_github/Do%20Visualization-3.png)
 
 ``` r
 # Make a plot of each class's instances
@@ -249,7 +269,7 @@ select(ceoTable, classes) %>%
                 main = c("Instances of each class")) + coord_flip()
 ```
 
-![](02_dataprep_files/figure-markdown_github/Do%20Visualization-4.png)
+![](02_single_year_dataprep_files/figure-markdown_github/Do%20Visualization-4.png)
 
 ### CEO Point Table Reclassification
 
@@ -342,3 +362,35 @@ reclassed
     ## #   SETTLEMENT_VEGETATION <dbl>, BARE_GROUND <dbl>, SNOW_ICE <dbl>,
     ## #   OTHER <dbl>, CLOUDS_UNINTERPRETABLE <dbl>, Primary <chr>,
     ## #   Secondary <chr>, LEVEL2 <chr>, LEVEL1 <chr>
+
+The SEPAL stratified estimator tool works with integer classes. However, the data have been imported and prepared as characters. This section is for converting map values and validation values to integer values, and will export a csv file that can be uploaded into SEPAL.
+
+``` r
+#Code to convert these classes into factors, for use in building an error matrix.
+
+# convert integers into text
+finalTable <- convertToClasses(reclassed)
+
+#strip out No_Data entries.
+toRemove <- which(finalTable$LEVEL2 == "No_Data")
+finalTable <- finalTable[-toRemove,]
+
+# Convert to factors. The levels need to be properly set. For the final numeric
+# codes to match those of the map, they need to be in the same order as those
+# of the map. 
+refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
+                             "Cropland", "Secondary_Forest", "Infrastructure", 
+                             "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
+                             "Shrubland", "Herbland", "Settlement", "Glacier")
+
+# Add the factors to the table
+finalTable$reference <- factor(finalTable$LEVEL2, refLevels)
+finalTable$predicted <- factor(finalTable$MapClass, refLevels)
+
+# Convert factors to integers. Subtracting one as GEE begins with 0. 
+finalTable$reference <- as.numeric(finalTable$reference) - 1
+finalTable$predicted <- as.numeric(finalTable$predicted) - 1
+
+# Export table for upload to SEPAL
+write_csv(finalTable, "data/finalTable.csv")
+```
