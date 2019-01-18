@@ -76,7 +76,8 @@ samplePool <- optimizeSplit(error, actualN, c("Change", "Stable"))
 samplePool
 
 #' The next step requires the use of the Google Earth Engine script 
-#' [`02_SamplePointGenerator`](https://code.earthengine.google.com/d2d33130faedff1752cc634c91ffde74) to 
-#' assign the split samples to their respective classes, and generating a 
+#' [`02_SamplePointGenerator`](https://code.earthengine.google.com/1956011f22c68fe97802f62e4819de76) 
+#' to assign the split samples to their respective classes, and generating a 
 #' point file. R could be used for this, but this would require that the map 
-#' be downloaded and imported. 
+#' be downloaded and imported. This script will also export a table of class 
+#' areas that will be processed in the next R script. 
