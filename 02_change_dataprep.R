@@ -201,6 +201,7 @@ write_csv(finalTable, "data/finalTable.csv")
 #' associated classes. 
 
 #+ AreaData
+#import area dta exported by GEE.
 rawAreas <- read_csv("data/Class_Areas.csv")
 
 #clean up GEE formatting

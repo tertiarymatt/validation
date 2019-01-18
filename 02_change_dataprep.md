@@ -1,7 +1,7 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 17, 2019
+January 18, 2019
 
 Set working directory to where data is being stored. + setwd
 
@@ -36,7 +36,7 @@ This script is used to import the photo-interpreted points for change data (two 
 1. Clean and shorten class names.
 1. Find dominant point classes.
 1. Convert dominant point classes to LULC classes. 1. Format for use in SEPAL.
-1. Export the data.
+1. Export the data. 1. Export class areas for use with the SAE-Analysis tool.
 
 ### Importing data.
 
@@ -268,4 +268,46 @@ finalTable$predicted <- as.numeric(finalTable$predicted) - 1
 
 # Export table for upload to SEPAL
 write_csv(finalTable, "data/finalTable.csv")
+```
+
+### Importing class area data.
+
+Import class data, reformat the feature properties to make a tidy export. Earth Engine exports a set of lists, with numbers formatted in a slightly odd manner. The lines below convert this into a clean set of areas and associated classes.
+
+``` r
+rawAreas <- read_csv("data/Class_Areas.csv")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   `system:index` = col_double(),
+    ##   area = col_character(),
+    ##   classes = col_character(),
+    ##   .geo = col_logical()
+    ## )
+
+``` r
+#clean up GEE formatting
+areas <- gsub("[", "", rawAreas$area, fixed = TRUE) %>% 
+    gsub("]", "", ., fixed = TRUE) %>% 
+    strsplit(., ", ")
+
+#take number strings and split into the base number and an exponent
+areas <- areas[[1]]
+areaTable <- str_split(areas, "E", simplify = T)
+number <- as.numeric(areaTable[,1])
+exponent <- as.numeric(areaTable[,2])
+
+#replace missing exponents with 0, so those numbers are multiplied by 1. 
+exponent[is.na(exponent)] <- 0
+areas <- number * 10 ^ exponent
+
+areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>% 
+    gsub("]", "", ., fixed = TRUE) %>% 
+    strsplit(., ", ")
+
+cleanAreas <- data.frame(areas, areaClasses[[1]])
+
+# Export table for upload to SEPAL
+write_csv(cleanAreas, "data/area_rast.csv")
 ```
