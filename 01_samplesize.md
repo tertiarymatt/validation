@@ -1,7 +1,13 @@
 Determining Sample Size
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 15, 2019
+January 17, 2019
+
+Set working directory to where data is being stored. + setwd
+
+``` r
+setwd("~/R/projects/validation")
+```
 
 ### Required packages
 
