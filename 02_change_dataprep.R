@@ -8,7 +8,7 @@
 
 #' Set working directory to where data is being stored.
 #'+ setwd
-setwd("~/R/validation")
+setwd("~/R/projects/validation")
 
 #' Required packages
 #+ Packages
@@ -31,15 +31,9 @@ source('00_functions.R')
 
 #+ Inmport and Prepare Data
 ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
-summary(ceoTable)
 colnames(ceoTable)
 
-# convert integers into text, note that map class field must be named CLASS. 
-ceoTable <- convertToClasses(ceoTable)
-
 # Split table into pieces, reassemble into single year tables
-#create metadata data table. Use the colnames to find them and adjust columns.
-metadata <- ceoTable[,1:15]
 
 #time one plot data
 time1 <- ceoTable[,16:34]
@@ -47,26 +41,34 @@ time1 <- ceoTable[,16:34]
 #time two plot data
 time2 <- ceoTable[,35:53]
 
+#create metadata data table. Use the colnames to find them and adjust columns.
+metadata <- ceoTable[,1:15]
+
+# convert integers into text, note that map class field must be named CLASS. 
+metadata <- convertToClasses(metadata)
+
 #add metadata to the time tables.
 time1 <- bind_cols(metadata, time1)
 time2 <-  bind_cols(metadata, time2)
 
 # class names need to be pulled and cleaned up.
-classes <- colnames(time1[16:34]) %>% 
+colnames(time1)
+
+# create class column object to use in script.
+# If the structure of the data changes this MUST be updated.
+classCol <- c(17:35)
+
+classes <- colnames(time1[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
 	gsub(" ", "_", .) %>% 
 	gsub("/", "_", .)
 
-colnames(time1)[16:34] <- classes
-colnames(time2)[16:34] <- classes
+colnames(time1)[classCol] <- classes
+colnames(time2)[classCol] <- classes
 
 #verify the tables have the same names
 colnames(time1) == colnames(time2)
-
-#' ### Code block for visualizing the outputs of a CEO project, to give 
-#' a rough sense of the data. 
-#+ Do Visualization
 
 #' ### CEO Point Table Reclassification
 #'
@@ -76,13 +78,33 @@ colnames(time1) == colnames(time2)
 
 #+ Find dominant landcover elements
 time1 <- addTopClasses(time1, plotfield = 1, flagfield = 6, 
-													classfields = c(16:34))
+													classfields = classCol)
 
 time2 <- addTopClasses(time2, plotfield = 1, flagfield = 6, 
-											 classfields = c(16:34))
+											 classfields = classCol)
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
+#' 
+#' ### Level 1 and Level 2 LULC classes
+#' Next steps: add code to convert to level 1 and level 2 classes, and test 
+#' agreement/consistency at that level. Because the data is collected a finer
+#' level of detail than either Level 1 or Level 2, Level 2 is produced first.  
+#' 
+#' #### Level 2 LULC Thresholds:   
+#' Primary Forest = Primary tree >= 30%;  
+#' Secondary Forest = Secondary tree >= 30%;  
+#' Plantation = Plantation tree >= 30%;  
+#' Mangrove = Mangrove >= 30%;  
+#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%;  
+#' Shrubland = Shrub vegetation >= 30%, Tree < 30%;  
+#' Paramo = Paramo > 0%;  
+#' Cropland = Crops >= 50%;  
+#' Water = Natural water >= 50% | Wetland vegetation >= 50%;  
+#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%;  
+#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%;  
+#' Non-vegetated = barren >= 70%;  
+#' Glacial = Snow/Ice >= 70%;  
 #'
 #' #### Point class list (ES): 
 #' Arbol nativo, Arbol de rebrote, Arbol de plantacion, Arbol de Mangle
@@ -93,56 +115,34 @@ time2 <- addTopClasses(time2, plotfield = 1, flagfield = 6,
 #' Suelo desnudo, Nieve/Hielo
 #'
 #' #### Point class list (EN): 
-#' Forest Land: Primary tree, Secondary tree, Plantation tree, Mangrove  
-#' Grassland: Herbaceous vegetation/Grass, Shrub vegetation, Paramo vegetation  
-#' Croplands: Crops  
-#' Wetlands: Natural water, Artifical water, Wetland vegetation  
+#' Forest Land: Primary tree, Secondary tree, Plantation tree, Mangrove;  
+#' Grassland: Herbaceous vegetation/Grass, Shrub vegetation, Paramo vegetation;  
+#' Croplands: Crops;  
+#' Wetlands: Natural water, Artifical water, Wetland vegetation;  
 #' Settlement: Housing Structure, Infrastructure building, Roads and lots,
-#'             urban vegetation  
-#' Other Lands: Barren, Snow/Ice  
-#'
-#' ### Level 1 and Level 2 LULC classes
-#' Next steps: add code to convert to level 1 and level 2 classes, and test 
-#' agreement/consistency at that level. Because the data is collected a finer
-#' level of detail than either Level 1 or Level 2, Level 2 is produced first.  
-#' 
-#' #### Level 2 LULC Thresholds:   
-#' Primary Forest = Secondary tree >= 30%  
-#' Secondary Forest = Secondary tree >= 30%  
-#' Plantation = Plantation tree >= 30%  
-#' Mangrove = Mangrove >= 30%  
-#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%  
-#' Shrubland = Shrub vegetation >= 30%, Tree < 30%  
-#' Paramo = Paramo > 0%  
-#' Cropland = Crops >= 50%  
-#' Water = Natural water >= 50% | Wetland vegetation >= 50%  
-#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%  
-#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%  
-#' Non-vegetated = barren >= 70%  
-#' Glacial = Snow/Ice >= 70%  
+#'             urban vegetation;  
+#' Other Lands: Barren, Snow/Ice;  
 
 #' ### Reclass table into classes using case_when and dplyr. 
+
 #+ Do Reclass
-#+ Level2Classes
 # Adding the Level 2 Classes. 
 reclassedTime1 <- addLevel2(time1)
 reclassedTime2 <- addLevel2(time2)
 
 #' #### Level 1 LULC Conversions:
-#' Forest Lands = Primary, Secondary, Plantation, Mangrove  
-#' Grasslands = Herbland, Shrubland, Paramo  
-#' Croplands = Cropland  
-#' Wetlands = Aritifical Water, Natural Water  
-#' Settlements = Settlement, Infrastructure  
-#' Other Lands = Glacial, Non-vegetated, Other, Mosaic  
-#' No Data = No Data  
+#' Forest Lands = Primary, Secondary, Plantation, Mangrove;  
+#' Grasslands = Herbland, Shrubland, Paramo;  
+#' Croplands = Cropland;  
+#' Wetlands = Aritifical Water, Natural Water;  
+#' Settlements = Settlement, Infrastructure;  
+#' Other Lands = Glacial, Non-vegetated, Other, Mosaic;  
+#' No Data = No Data;  
 
-# Adding the Level one classes.
+#+ Adding the Level one classes.
+# Add level one classes. 
 reclassedTime1 <- addLevel1(reclassedTime1)
 reclassedTime2 <- addLevel1(reclassedTime2)
-
-reclassedTime1
-reclassedTime2
 
 # Begin to assemble output table
 finalTable <- metadata
@@ -152,6 +152,13 @@ finalTable$T2L1 <- reclassedTime2$LEVEL1
 finalTable$T2L2 <- reclassedTime2$LEVEL2
 finalTable$changeL1 <- finalTable$T1L1 == finalTable$T2L1
 finalTable$changeL2 <- finalTable$T1L2 == finalTable$T2L2
+
+
+#strip out No_Data entries.
+toRemove <- which(finalTable$T1L2 == "No_Data" | finalTable$T2L2 == "No_Data")
+if (length(toRemove) > 0) {
+	finalTable <- finalTable(-toRemove)
+}
 
 # produce final classes
 finalTable <- addFinal(finalTable)
@@ -163,20 +170,20 @@ finalTable <- addFinal(finalTable)
 
 #+ ConvertoClassesandFactors
 
-#strip out No_Data entries.
-toRemove <- which(finalTable$LEVEL2 == "No_Data")
-finalTable <- finalTable[-toRemove,]
-
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
 refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
 							 "Cropland", "Secondary_Forest", "Infrastructure", 
 							 "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
-							 "Shrubland", "Herbland", "Settlement", "Glacier")
+							 "Shrubland", "Herbland", "Settlement", "Glacier",
+							 "Forest_Lands", "Grasslands", "Settlements", "Wetlands", 
+							 "Other_Lands", 
+							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
+							 "WC", "WS", "OS", "Catchall")
 
 # Add the factors to the table
-finalTable$reference <- factor(finalTable$LEVEL2, refLevels)
+finalTable$reference <- factor(finalTable$refClass, refLevels)
 finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 
 # Convert factors to integers. Subtracting one as GEE begins with 0. 
