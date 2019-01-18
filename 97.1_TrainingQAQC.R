@@ -8,7 +8,7 @@
 
 #' Set working directory to where data is being stored.
 #'+ setwd
-setwd("~/R/validation")
+setwd("~/R/projects/validation")
 
 #' ### Required packages
 #+ Packages
