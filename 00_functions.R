@@ -157,6 +157,58 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
   return(samples)
 }
 
+#' ### GEE Map class conversions  
+#' The class of each sample point is collected as an intergers when the sample 
+#' is generated in Google Earth Engine. These interger codes need to be 
+#' converted into text (and later, a factor) for building an error matrix.
+#' 
+#' __Land cover class codes__  
+#' AREA SIN COBERTURA VEGETAL:0  
+#' ARTIFICIAL:1  
+#' BOSQUE NATIVO:2  
+#' CULTIVO ANUAL:3  
+#' CULTIVO PERMANENTE:4  
+#' CULTIVO SEMIPERMANENTE:5  
+#' INFRAESTRUCTURA:6   
+#' MOSAICO AGROPECUARIO:7   
+#' NATURAL:8   
+#' PARAMOS:9  
+#' PASTIZAL:10   
+#' PLANTACION FORESTAL:11  
+#' VEGETACION ARBUSTIVA:12  
+#' VEGETACION HERBACEA:13  
+#' ZONAS POBLADAS:14  
+#' GLACIAL:15
+#' 
+#+ Convert GEE codes in the exported table into class values. 
+# Adding the Level 2 Classes.
+# Note that the codes below are temporary, and for script development,
+# and will be replaced when the LULC change product is produced. 
+convertToClasses <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			MapClass = case_when(
+				CLASS == 0 ~ "Non-vegetated",
+				CLASS == 1 ~ "Artificial_Water",
+				CLASS == 2 ~ "Primary_Forest",
+				CLASS == 3 ~ "Cropland",
+				CLASS == 5 ~ "Secondary_Forest",
+				CLASS == 6 ~ "Infrastructure",
+				CLASS == 8 ~ "Natural_Water",
+				CLASS == 9 ~ "Paramo",
+				CLASS == 10 ~ "Mangrove",
+				CLASS == 11 ~ "Plantation_Forest",
+				CLASS == 12 ~ "Shrubland",
+				CLASS == 13 ~ "Herbland",
+				CLASS == 14 ~ "Settlement",
+				CLASS == 15 ~ "Glacier"
+			)
+		)
+	return(reclassed)
+}
+
+
 #' ### CEO Point Table Reclassification Functions
 #'
 #' `addTopClasses` takes a raw point table produced by Collect Earth Online, and
@@ -300,7 +352,7 @@ addLevel2 <- function(table){
 #' Grasslands = Herbland, Shrubland, Paramo  
 #' Croplands = Cropland  
 #' Wetlands = Aritifical Water, Natural Water  
-#' Settlements = Settlement, Infrastructure  
+#' Settlement = Settlement, Infrastructure  
 #' Other Lands = Glacier, Non-vegetated, Other, Mosaic  
 #' No Data = No Data  
 
@@ -332,52 +384,90 @@ addLevel1 <- function(table){
 	return(reclassed)
 }
 
-#' #### Map class conversions  
-#' The class of each sample point is collected as an intergers when the sample 
-#' is generated in Google Earth Engine. These interger codes need to be 
-#' converted into text (and later, a factor) for building an error matrix.
+#' #### Final class production  
+#' The final land cover class is produced from both time steps. If change has
+#' taken place, then a change class is assigned. If change has not occurred,
+#' then the stable class is retained. The final classes and their numerical
+#' codes are listed below (subject to update and change).
 #' 
-#' __Land cover class codes__  
-#' AREA SIN COBERTURA VEGETAL:0  
-#' ARTIFICIAL:1  
-#' BOSQUE NATIVO:2  
-#' CULTIVO ANUAL:3  
-#' CULTIVO PERMANENTE:4  
-#' CULTIVO SEMIPERMANENTE:5  
-#' INFRAESTRUCTURA:6   
-#' MOSAICO AGROPECUARIO:7   
-#' NATURAL:8   
-#' PARAMOS:9  
-#' PASTIZAL:10   
-#' PLANTACION FORESTAL:11  
-#' VEGETACION ARBUSTIVA:12  
-#' VEGETACION HERBACEA:13  
-#' ZONAS POBLADAS:14  
-#' GLACIAL:15
+#' __Final LULC classes and codes__  
 #' 
-#+ Convert GEE codes in the exported table into class values. 
-# Adding the Level 2 Classes.
-# Note that the codes below are temporary, and for script development,
-# and will be replaced when the LULC change product is produced. 
-convertToClasses <- function(table){
+#' _Stable Level 2 Classes_  
+#' Bosque Primario -> Bosque Primario = 0  
+#' Bosque Secundario -> Bosque Secundario = 1  
+#' Plantacion Forestal -> Plantacion Forestal = 2  
+#' Manglar -> Manglar = 3  
+#' Vegetacion Arbustiva -> Vegetacion Arbustiva = 4  
+#' Paramo -> Paramo = 5  
+#' Vegetacion herbacea -> Vegetacion herbacea = 6  
+#' Cultivo -> Cultivo = 7   
+#' Cuerpo de Agua Natural -> Cuerpo de Agua Natural = 8   
+#' Cuerpo de Agua Artificial -> Cuerpo de Agua Artificial = 9  
+#' Area Poblada -> Area Poblada = 10   
+#' Infraestructura -> Infraestructura = 11  
+#' Area sin Cobertura Vegetal -> Area sin Cobertura Vegetal = 12  
+#' Glaciar-> Glaciar = 13  
+#' 
+#' _Stable Level 1 Classes (internal change)_  
+#' Tierras Forestales -> Tierras Forestales (FF) = 14  
+#' Pastizal -> Pastizal (GG) = 15  
+#' Asentamientos -> Asentamientos (SS) = 16  
+#' Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
+#' Otros Suelos -> Otros Suelos (OO) = 18  
+#' 
+#' _Change Classes_  
+#' Tierras Forestales -> Cultivo (FC) = 19  
+#' Tierras Forestales -> Pastizal (FG) = 20
+#' Tierras Forestales -> Asentamientos (FS) = 21  
+#' Tierras Forestales -> Cuerpo de Agua (FW) = 22   
+#' Cultivo -> Pastizal (CG) = 23   
+#' Cultivo -> Tierras Forestales (CF) = 24   
+#' Cultivo -> Asentamientos (CS) = 25  
+#' Pastizal -> Cultivo (GC) = 26  
+#' Pastizal -> Tierras Forestales (GF) = 27  
+#' Pastizal -> Asentamientos (GS) = 28  
+#' Cuerpo de Agua -> Cultivo (WC) = 29  
+#' Cuerpo de Agua -> Asentamientos (WS) = 30  
+#' Otros Suelos -> Asentamientos (OS) = 31  
+#' Todos los Otros Cambios (Catchall) = 32  
+
+# Note that the code below is temporary, and for script development,
+# and will be adjusted when the LULC change product is produced. 
+
+addFinal <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
 		mutate(
-			MapClass = case_when(
-				CLASS == 0 ~ "Non-vegetated",
-				CLASS == 1 ~ "Artificial_Water",
-				CLASS == 2 ~ "Primary_Forest",
-				CLASS == 3 ~ "Cropland",
-				CLASS == 5 ~ "Secondary_Forest",
-				CLASS == 6 ~ "Infrastructure",
-				CLASS == 8 ~ "Natural_Water",
-				CLASS == 9 ~ "Paramo",
-				CLASS == 10 ~ "Mangrove",
-				CLASS == 11 ~ "Plantation_Forest",
-				CLASS == 12 ~ "Shrubland",
-				CLASS == 13 ~ "Herbland",
-				CLASS == 14 ~ "Settlement",
-				CLASS == 15 ~ "Glacier"
+			refClass = case_when(
+				T1L2 == T2L2 ~ T2L2,
+				T1L1 == T2L1 ~ T2L1,
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Croplands" ~ "FC",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Grasslands" ~ "FG",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Settlements" ~ "FS",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Wetlands" ~ "FW",
+				T1L1 == "Croplands" & 
+					T2L1 == "Forest_Lands" ~ "CF",
+				T1L1 == "Croplands" & 
+					T2L1 == "Grasslands" ~ "CG",
+				T1L1 == "Croplands" & 
+					T2L1 == "Settlements" ~ "CS",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Croplands" ~ "GC",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Forest_Lands" ~ "GF",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Settlements" ~ "GS",
+				T1L1 == "Wetlands" & 
+					T2L1 == "Croplands" ~ "WC",
+				T1L1 == "Wetlands" & 
+					T2L1 == "Settlements" ~ "WS",
+				T1L1 == "Other_Lands" & 
+					T2L1 == "Settlements" ~ "OS",
+				TRUE ~ "Catchall"
 			)
 		)
 	return(reclassed)
