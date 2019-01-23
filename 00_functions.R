@@ -307,7 +307,7 @@ addLevel2 <- function(table){
 				SECONDARY_TREE >= 30 ~ "Secondary_Forest",
 				PLANTATION_TREE >= 30 ~ "Plantation_Forest",
 				MANGROVE >= 30 ~ "Mangrove",
-				HERBACEOUS_GRASS_VEGETATION >= 30 ~ "Herbland",
+				HERBACEOUS_VEGETATION >= 30 ~ "Herbland",
 				SHRUB_VEGETATION >= 30 ~ "Shrubland",
 				PARAMO_VEGETATION > 0 ~ "Paramo",
 				CROPS >= 50 ~ "Cropland",
