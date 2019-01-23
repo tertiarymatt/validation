@@ -1,9 +1,10 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 18, 2019
+January 22, 2019
 
-Set working directory to where data is being stored. + setwd
+Set working directory to where data is being stored.
++ setwd
 
 ``` r
 setwd("~/R/projects/validation")
@@ -15,14 +16,14 @@ Required packages
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -62,32 +63,32 @@ ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
 colnames(ceoTable)
 ```
 
-    ##  [1] "PLOT_ID"                          "CENTER_LON"                      
-    ##  [3] "CENTER_LAT"                       "SIZE_M"                          
-    ##  [5] "SHAPE"                            "FLAGGED"                         
-    ##  [7] "ANALYSES"                         "SAMPLE_POINTS"                   
-    ##  [9] "USER_ID"                          "ANALYSIS_DURATION"               
-    ## [11] "COLLECTION_TIME"                  "PL_LONGITUDE"                    
-    ## [13] "PL_LATITUDE"                      "PL_PLOTID"                       
-    ## [15] "CLASS"                            "2014:PRIMARY TREE"               
-    ## [17] "2014:SECONDARY TREE"              "2014:PLANTATION TREE"            
-    ## [19] "2014:MANGROVE"                    "2014:HERBACEOUS/GRASS VEGETATION"
-    ## [21] "2014:SHRUB VEGETATION"            "2014:PARAMO VEGETATION"          
-    ## [23] "2014:CROPS"                       "2014:NATURAL WATER"              
-    ## [25] "2014:ARTIFICIAL WATER"            "2014:WETLAND VEGETATION"         
-    ## [27] "2014:HOUSING STRUCTURE"           "2014:INFRASTRUCTURE"             
-    ## [29] "2014:ROADS AND LOTS"              "2014:SETTLEMENT VEGETATION"      
-    ## [31] "2014:BARE GROUND"                 "2014:SNOW/ICE"                   
-    ## [33] "2014:OTHER"                       "2014:CLOUDS/UNINTERPRETABLE"     
-    ## [35] "2016:PRIMARY TREE"                "2016:SECONDARY TREE"             
-    ## [37] "2016:PLANTATION TREE"             "2016:MANGROVE"                   
-    ## [39] "2016:HERBACEOUS/GRASS VEGETATION" "2016:SHRUB VEGETATION"           
-    ## [41] "2016:PARAMO VEGETATION"           "2016:CROPS"                      
-    ## [43] "2016:NATURAL WATER"               "2016:ARTIFICIAL WATER"           
-    ## [45] "2016:WETLAND VEGETATION"          "2016:HOUSING STRUCTURE"          
-    ## [47] "2016:INFRASTRUCTURE"              "2016:ROADS AND LOTS"             
-    ## [49] "2016:SETTLEMENT VEGETATION"       "2016:BARE GROUND"                
-    ## [51] "2016:SNOW/ICE"                    "2016:OTHER"                      
+    ##  [1] "PLOT_ID"                     "CENTER_LON"                 
+    ##  [3] "CENTER_LAT"                  "SIZE_M"                     
+    ##  [5] "SHAPE"                       "FLAGGED"                    
+    ##  [7] "ANALYSES"                    "SAMPLE_POINTS"              
+    ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
+    ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
+    ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
+    ## [15] "CLASS"                       "2014:PRIMARY TREE"          
+    ## [17] "2014:SECONDARY TREE"         "2014:PLANTATION TREE"       
+    ## [19] "2014:MANGROVE"               "2014:HERBACEOUS VEGETATION" 
+    ## [21] "2014:SHRUB VEGETATION"       "2014:PARAMO VEGETATION"     
+    ## [23] "2014:CROPS"                  "2014:NATURAL WATER"         
+    ## [25] "2014:ARTIFICIAL WATER"       "2014:WETLAND VEGETATION"    
+    ## [27] "2014:HOUSING STRUCTURE"      "2014:INFRASTRUCTURE"        
+    ## [29] "2014:ROADS AND LOTS"         "2014:SETTLEMENT VEGETATION" 
+    ## [31] "2014:BARE GROUND"            "2014:SNOW/ICE"              
+    ## [33] "2014:OTHER"                  "2014:CLOUDS/UNINTERPRETABLE"
+    ## [35] "2016:PRIMARY TREE"           "2016:SECONDARY TREE"        
+    ## [37] "2016:PLANTATION TREE"        "2016:MANGROVE"              
+    ## [39] "2016:HERBACEOUS VEGETATION"  "2016:SHRUB VEGETATION"      
+    ## [41] "2016:PARAMO VEGETATION"      "2016:CROPS"                 
+    ## [43] "2016:NATURAL WATER"          "2016:ARTIFICIAL WATER"      
+    ## [45] "2016:WETLAND VEGETATION"     "2016:HOUSING STRUCTURE"     
+    ## [47] "2016:INFRASTRUCTURE"         "2016:ROADS AND LOTS"        
+    ## [49] "2016:SETTLEMENT VEGETATION"  "2016:BARE GROUND"           
+    ## [51] "2016:SNOW/ICE"               "2016:OTHER"                 
     ## [53] "2016:CLOUDS/UNINTERPRETABLE"
 
 ``` r
@@ -113,23 +114,23 @@ time2 <-  bind_cols(metadata, time2)
 colnames(time1)
 ```
 
-    ##  [1] "PLOT_ID"                          "CENTER_LON"                      
-    ##  [3] "CENTER_LAT"                       "SIZE_M"                          
-    ##  [5] "SHAPE"                            "FLAGGED"                         
-    ##  [7] "ANALYSES"                         "SAMPLE_POINTS"                   
-    ##  [9] "USER_ID"                          "ANALYSIS_DURATION"               
-    ## [11] "COLLECTION_TIME"                  "PL_LONGITUDE"                    
-    ## [13] "PL_LATITUDE"                      "PL_PLOTID"                       
-    ## [15] "CLASS"                            "MapClass"                        
-    ## [17] "2014:PRIMARY TREE"                "2014:SECONDARY TREE"             
-    ## [19] "2014:PLANTATION TREE"             "2014:MANGROVE"                   
-    ## [21] "2014:HERBACEOUS/GRASS VEGETATION" "2014:SHRUB VEGETATION"           
-    ## [23] "2014:PARAMO VEGETATION"           "2014:CROPS"                      
-    ## [25] "2014:NATURAL WATER"               "2014:ARTIFICIAL WATER"           
-    ## [27] "2014:WETLAND VEGETATION"          "2014:HOUSING STRUCTURE"          
-    ## [29] "2014:INFRASTRUCTURE"              "2014:ROADS AND LOTS"             
-    ## [31] "2014:SETTLEMENT VEGETATION"       "2014:BARE GROUND"                
-    ## [33] "2014:SNOW/ICE"                    "2014:OTHER"                      
+    ##  [1] "PLOT_ID"                     "CENTER_LON"                 
+    ##  [3] "CENTER_LAT"                  "SIZE_M"                     
+    ##  [5] "SHAPE"                       "FLAGGED"                    
+    ##  [7] "ANALYSES"                    "SAMPLE_POINTS"              
+    ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
+    ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
+    ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
+    ## [15] "CLASS"                       "MapClass"                   
+    ## [17] "2014:PRIMARY TREE"           "2014:SECONDARY TREE"        
+    ## [19] "2014:PLANTATION TREE"        "2014:MANGROVE"              
+    ## [21] "2014:HERBACEOUS VEGETATION"  "2014:SHRUB VEGETATION"      
+    ## [23] "2014:PARAMO VEGETATION"      "2014:CROPS"                 
+    ## [25] "2014:NATURAL WATER"          "2014:ARTIFICIAL WATER"      
+    ## [27] "2014:WETLAND VEGETATION"     "2014:HOUSING STRUCTURE"     
+    ## [29] "2014:INFRASTRUCTURE"         "2014:ROADS AND LOTS"        
+    ## [31] "2014:SETTLEMENT VEGETATION"  "2014:BARE GROUND"           
+    ## [33] "2014:SNOW/ICE"               "2014:OTHER"                 
     ## [35] "2014:CLOUDS/UNINTERPRETABLE"
 
 ``` r
@@ -229,14 +230,14 @@ finalTable$T1L1 <- reclassedTime1$LEVEL1
 finalTable$T1L2 <- reclassedTime1$LEVEL2
 finalTable$T2L1 <- reclassedTime2$LEVEL1
 finalTable$T2L2 <- reclassedTime2$LEVEL2
-finalTable$changeL1 <- finalTable$T1L1 == finalTable$T2L1
-finalTable$changeL2 <- finalTable$T1L2 == finalTable$T2L2
+finalTable$changeL1 <- finalTable$T1L1 != finalTable$T2L1
+finalTable$changeL2 <- finalTable$T1L2 != finalTable$T2L2
 
 
 #strip out No_Data entries.
 toRemove <- which(finalTable$T1L2 == "No_Data" | finalTable$T2L2 == "No_Data")
 if (length(toRemove) > 0) {
-    finalTable <- finalTable(-toRemove)
+    finalTable <- finalTable[-toRemove]
 }
 
 # produce final classes
@@ -275,6 +276,7 @@ write_csv(finalTable, "data/finalTable.csv")
 Import class data, reformat the feature properties to make a tidy export. Earth Engine exports a set of lists, with numbers formatted in a slightly odd manner. The lines below convert this into a clean set of areas and associated classes.
 
 ``` r
+#import area dta exported by GEE.
 rawAreas <- read_csv("data/Class_Areas.csv")
 ```
 

@@ -6,7 +6,7 @@
 #' ---
 #'
 
-#' Set working directory to where data is being stored.
+#' Set working directory to where data is being stored.  
 #'+ setwd
 setwd("~/R/projects/validation")
 
@@ -151,14 +151,14 @@ finalTable$T1L1 <- reclassedTime1$LEVEL1
 finalTable$T1L2 <- reclassedTime1$LEVEL2
 finalTable$T2L1 <- reclassedTime2$LEVEL1
 finalTable$T2L2 <- reclassedTime2$LEVEL2
-finalTable$changeL1 <- finalTable$T1L1 == finalTable$T2L1
-finalTable$changeL2 <- finalTable$T1L2 == finalTable$T2L2
+finalTable$changeL1 <- finalTable$T1L1 != finalTable$T2L1
+finalTable$changeL2 <- finalTable$T1L2 != finalTable$T2L2
 
 
 #strip out No_Data entries.
 toRemove <- which(finalTable$T1L2 == "No_Data" | finalTable$T2L2 == "No_Data")
 if (length(toRemove) > 0) {
-	finalTable <- finalTable(-toRemove)
+	finalTable <- finalTable[-toRemove]
 }
 
 # produce final classes
