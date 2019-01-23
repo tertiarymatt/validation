@@ -11,6 +11,9 @@
 setwd("~/R/projects/validation")
 
 #' ### Required packages
+#' You may need to install tidyverse to make this script function. To do so,
+#'  uncomment the following line.
+#'  install.packages("tidyverse")
 #+ Packages
 library(tidyverse)
 source("00_functions.R")
