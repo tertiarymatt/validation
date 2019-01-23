@@ -32,13 +32,14 @@ summary(ceoTable)
 colnames(ceoTable)
 
 # class names need to be pulled from each project.
-classes <- colnames(ceoTable[17:35]) %>% 
+classCol <- c(17:35)
+classes <- colnames(ceoTable[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
 	gsub(" ", "_", .) %>% 
 	gsub("/", "_", .)
 
-colnames(ceoTable)[17:35] <- classes
+colnames(ceoTable)[classCol] <- classes
 colnames(ceoTable)
 
 #' ### Code block for visualizing the outputs of a CEO project, to give 
@@ -87,7 +88,7 @@ select(ceoTable, classes) %>%
 
 #+ Find dominant landcover elements
 ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
-													classfields = c(17:35))
+													classfields = classCol)
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
