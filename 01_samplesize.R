@@ -30,6 +30,10 @@ source("00_functions.R")
 #' After you know the percentage of change, determine the total sample size, 
 #' using the following code (or one of the other sample size approaches availabe
 #' in the 00_function.R).  
+#' 
+#' `genSample1()` is an implementation of the typical sample size
+#' calcuation, using only the target accuracy (p0), the half-width of the
+#' Confidence Interval (h), and the tolerance for Type I error (alpha).  
 
 #+ Sample Size
 # Calculate overall sample size
