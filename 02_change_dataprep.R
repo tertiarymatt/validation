@@ -223,7 +223,9 @@ areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>%
 	gsub("]", "", ., fixed = TRUE) %>% 
 	strsplit(., ", ")
 
+# make the area table
 cleanAreas <- data.frame(areas, areaClasses[[1]])
+names(cleanAreas) <- c("area", "class")
 
 # Export table for upload to SEPAL
 write_csv(cleanAreas, "data/area_rast.csv")
