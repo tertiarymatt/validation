@@ -163,22 +163,22 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
 #' converted into text (and later, a factor) for building an error matrix.
 #' 
 #' __Land cover class codes__  
-#' AREA SIN COBERTURA VEGETAL:0  
-#' ARTIFICIAL:1  
-#' BOSQUE NATIVO:2  
-#' CULTIVO ANUAL:3  
-#' CULTIVO PERMANENTE:4  
-#' CULTIVO SEMIPERMANENTE:5  
-#' INFRAESTRUCTURA:6   
-#' MOSAICO AGROPECUARIO:7   
-#' NATURAL:8   
-#' PARAMOS:9  
-#' PASTIZAL:10   
-#' PLANTACION FORESTAL:11  
-#' VEGETACION ARBUSTIVA:12  
-#' VEGETACION HERBACEA:13  
-#' ZONAS POBLADAS:14  
-#' GLACIAL:15
+#' - AREA SIN COBERTURA VEGETAL:0  
+#' - ARTIFICIAL:1  
+#' - BOSQUE NATIVO:2  
+#' - CULTIVO ANUAL:3  
+#' - CULTIVO PERMANENTE:4  
+#' - CULTIVO SEMIPERMANENTE:5  
+#' - INFRAESTRUCTURA:6   
+#' - MOSAICO AGROPECUARIO:7   
+#' - NATURAL:8   
+#' - PARAMOS:9  
+#' - PASTIZAL:10   
+#' - PLANTACION FORESTAL:11  
+#' - VEGETACION ARBUSTIVA:12  
+#' - VEGETACION HERBACEA:13  
+#' - ZONAS POBLADAS:14  
+#' - GLACIAL:15
 #' 
 #+ Convert GEE codes in the exported table into class values. 
 # Adding the Level 2 Classes.
@@ -282,19 +282,19 @@ addTopClasses <- function(inTable = NULL, plotfield = 1, flagfield = 6,
 #' 
 #' #### Level 2 Class Thresholds:  
 #' (note these will be updated to Spanish class names)  
-#' Primary Forest = Primary tree >= 30%   
-#' Secondary Forest = Secondary tree >= 30%    
-#' Plantation = Plantation tree >= 30%   
-#' Mangrove = Mangrove >= 30%   
-#' Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%   
-#' Shrubland = Shrub vegetation >= 30%, Tree < 30%   
-#' Paramo = Paramo > 0%   
-#' Cropland = Crops >= 50%    
-#' Water = Natural water >= 50% | Wetland vegetation >= 50%  
-#' Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%   
-#' Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%   
-#' Non-vegetated = barren >= 70%   
-#' Glacier = Snow/Ice >= 70%   
+#' - Primary Forest = Primary tree >= 30%   
+#' - Secondary Forest = Secondary tree >= 30%    
+#' - Plantation = Plantation tree >= 30%   
+#' - Mangrove = Mangrove >= 30%   
+#' - Grass/herbland = Herbaceous veg > 0% & Tree < 30% & Shrub < 30%   
+#' - Shrubland = Shrub vegetation >= 30%, Tree < 30%   
+#' - Paramo = Paramo > 0%   
+#' - Cropland = Crops >= 50%    
+#' - Water = Natural water >= 50% | Wetland vegetation >= 50%  
+#' - Settlement = Houses & Commercial >= 30% | Urban vegetation >= 30%   
+#' - Infrastructure = Roads and Lots >= 30% | Infrastructure building >= 30%   
+#' - Non-vegetated = barren >= 70%   
+#' - Glacier = Snow/Ice >= 70%   
 
 #+ Level2Classes
 # Adding the Level 2 Classes. 
@@ -348,13 +348,13 @@ addLevel2 <- function(table){
 }
 
 #' #### Level 1 LULC Conversions:
-#' Forest Lands = Primary, Secondary, Plantation, Mangrove  
-#' Grasslands = Herbland, Shrubland, Paramo  
-#' Croplands = Cropland  
-#' Wetlands = Aritifical Water, Natural Water  
-#' Settlement = Settlement, Infrastructure  
-#' Other Lands = Glacier, Non-vegetated, Other, Mosaic  
-#' No Data = No Data  
+#' - Forest Lands = Primary, Secondary, Plantation, Mangrove  
+#' - Grasslands = Herbland, Shrubland, Paramo  
+#' - Croplands = Cropland  
+#' - Wetlands = Aritifical Water, Natural Water  
+#' - Settlement = Settlement, Infrastructure  
+#' - Other Lands = Glacier, Non-vegetated, Other, Mosaic  
+#' - No Data = No Data  
 
 # Adding the Level one classes.
 addLevel1 <- function(table){
@@ -393,43 +393,43 @@ addLevel1 <- function(table){
 #' __Final LULC classes and codes__  
 #' 
 #' _Stable Level 2 Classes_  
-#' Bosque Primario -> Bosque Primario = 0  
-#' Bosque Secundario -> Bosque Secundario = 1  
-#' Plantacion Forestal -> Plantacion Forestal = 2  
-#' Manglar -> Manglar = 3  
-#' Vegetacion Arbustiva -> Vegetacion Arbustiva = 4  
-#' Paramo -> Paramo = 5  
-#' Vegetacion herbacea -> Vegetacion herbacea = 6  
-#' Cultivo -> Cultivo = 7   
-#' Cuerpo de Agua Natural -> Cuerpo de Agua Natural = 8   
-#' Cuerpo de Agua Artificial -> Cuerpo de Agua Artificial = 9  
-#' Area Poblada -> Area Poblada = 10   
-#' Infraestructura -> Infraestructura = 11  
-#' Area sin Cobertura Vegetal -> Area sin Cobertura Vegetal = 12  
-#' Glaciar-> Glaciar = 13  
+#' - Bosque Primario -> Bosque Primario = 0  
+#' - Bosque Secundario -> Bosque Secundario = 1  
+#' - Plantacion Forestal -> Plantacion Forestal = 2  
+#' - Manglar -> Manglar = 3  
+#' - Vegetacion Arbustiva -> Vegetacion Arbustiva = 4  
+#' - Paramo -> Paramo = 5  
+#' - Vegetacion herbacea -> Vegetacion herbacea = 6  
+#' - Cultivo -> Cultivo = 7   
+#' - Cuerpo de Agua Natural -> Cuerpo de Agua Natural = 8   
+#' - Cuerpo de Agua Artificial -> Cuerpo de Agua Artificial = 9  
+#' - Area Poblada -> Area Poblada = 10   
+#' - Infraestructura -> Infraestructura = 11  
+#' - Area sin Cobertura Vegetal -> Area sin Cobertura Vegetal = 12  
+#' - Glaciar-> Glaciar = 13  
 #' 
 #' _Stable Level 1 Classes (internal change)_  
-#' Tierras Forestales -> Tierras Forestales (FF) = 14  
-#' Pastizal -> Pastizal (GG) = 15  
-#' Asentamientos -> Asentamientos (SS) = 16  
-#' Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
-#' Otros Suelos -> Otros Suelos (OO) = 18  
+#' - Tierras Forestales -> Tierras Forestales (FF) = 14  
+#' - Pastizal -> Pastizal (GG) = 15  
+#' - Asentamientos -> Asentamientos (SS) = 16  
+#' - Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
+#' - Otros Suelos -> Otros Suelos (OO) = 18  
 #' 
 #' _Change Classes_  
-#' Tierras Forestales -> Cultivo (FC) = 19  
-#' Tierras Forestales -> Pastizal (FG) = 20
-#' Tierras Forestales -> Asentamientos (FS) = 21  
-#' Tierras Forestales -> Cuerpo de Agua (FW) = 22   
-#' Cultivo -> Pastizal (CG) = 23   
-#' Cultivo -> Tierras Forestales (CF) = 24   
-#' Cultivo -> Asentamientos (CS) = 25  
-#' Pastizal -> Cultivo (GC) = 26  
-#' Pastizal -> Tierras Forestales (GF) = 27  
-#' Pastizal -> Asentamientos (GS) = 28  
-#' Cuerpo de Agua -> Cultivo (WC) = 29  
-#' Cuerpo de Agua -> Asentamientos (WS) = 30  
-#' Otros Suelos -> Asentamientos (OS) = 31  
-#' Todos los Otros Cambios (Catchall) = 32  
+#' - Tierras Forestales -> Cultivo (FC) = 19  
+#' - Tierras Forestales -> Pastizal (FG) = 20
+#' - Tierras Forestales -> Asentamientos (FS) = 21  
+#' - Tierras Forestales -> Cuerpo de Agua (FW) = 22   
+#' - Cultivo -> Pastizal (CG) = 23   
+#' - Cultivo -> Tierras Forestales (CF) = 24   
+#' - Cultivo -> Asentamientos (CS) = 25  
+#' - Pastizal -> Cultivo (GC) = 26  
+#' - Pastizal -> Tierras Forestales (GF) = 27  
+#' - Pastizal -> Asentamientos (GS) = 28  
+#' - Cuerpo de Agua -> Cultivo (WC) = 29  
+#' - Cuerpo de Agua -> Asentamientos (WS) = 30  
+#' - Otros Suelos -> Asentamientos (OS) = 31  
+#' - Todos los Otros Cambios (Catchall) = 32  
 
 # Note that the code below is temporary, and for script development,
 # and will be adjusted when the LULC change product is produced. 
