@@ -421,7 +421,8 @@ The final land cover class is produced from both time steps. If change has taken
 
 *Change Classes*
 - Tierras Forestales -&gt; Cultivo (FC) = 19
-- Tierras Forestales -&gt; Pastizal (FG) = 20 - Tierras Forestales -&gt; Asentamientos (FS) = 21
+- Tierras Forestales -&gt; Pastizal (FG) = 20
+- Tierras Forestales -&gt; Asentamientos (FS) = 21
 - Tierras Forestales -&gt; Cuerpo de Agua (FW) = 22
 - Cultivo -&gt; Pastizal (CG) = 23
 - Cultivo -&gt; Tierras Forestales (CF) = 24

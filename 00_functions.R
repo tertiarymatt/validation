@@ -417,7 +417,7 @@ addLevel1 <- function(table){
 #' 
 #' _Change Classes_  
 #' - Tierras Forestales -> Cultivo (FC) = 19  
-#' - Tierras Forestales -> Pastizal (FG) = 20
+#' - Tierras Forestales -> Pastizal (FG) = 20  
 #' - Tierras Forestales -> Asentamientos (FS) = 21  
 #' - Tierras Forestales -> Cuerpo de Agua (FW) = 22   
 #' - Cultivo -> Pastizal (CG) = 23   
