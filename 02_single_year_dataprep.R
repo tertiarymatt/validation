@@ -32,6 +32,7 @@ summary(ceoTable)
 colnames(ceoTable)
 
 # class names need to be pulled from each project.
+# The classCol variable MUST be updated! 
 classCol <- c(17:35)
 classes <- colnames(ceoTable[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
@@ -170,7 +171,7 @@ finalTable <- finalTable[-toRemove,]
 refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
 							 "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
 							 "Plantacion_Forestal", "Vegetacion_Arbustiva", 
-							 "Vegetacion_Herbacea", "Area_Poblada", "Glaciar")
+							 "Area_Poblada", "Glaciar")
 
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$LEVEL2, refLevels)
@@ -194,7 +195,7 @@ write_csv(finalTable, "data/finalTable.csv")
 rawAreas <- read_csv("data/Class_Areas.csv")
 
 #clean up GEE formatting
-areas <- gsub("[", "", rawAreas$area, fixed = TRUE) %>% 
+areas <- gsub("[", "", rawAreas$areas, fixed = TRUE) %>% 
 	gsub("]", "", ., fixed = TRUE) %>% 
 	strsplit(., ", ")
 
