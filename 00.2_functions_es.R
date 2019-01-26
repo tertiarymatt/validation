@@ -189,22 +189,22 @@ convertToClasses <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				CLASS == 0 ~ "Area_Sin_Cobertura_Vegetal",
-				CLASS == 1 ~ "Artificial",
-				CLASS == 2 ~ "Bosque",
-				CLASS == 3 ~ "Cultivo",
-				CLASS == 4 ~ "Cultivo",
-				CLASS == 5 ~ "Cultivo",
-				CLASS == 6 ~ "Infraestructura",
-				CLASS == 7 ~ "Cultivo",
-				CLASS == 8 ~ "Natural",
-				CLASS == 9 ~ "Paramos",
-				CLASS == 10 ~ "Vegetacion_Herbacea",
-				CLASS == 11 ~ "Plantacion_Forestal",
-				CLASS == 12 ~ "Vegetacion_Arbustiva",
-				CLASS == 13 ~ "Vegetacion_Herbacea",
-				CLASS == 14 ~ "Area_Poblada",
-				CLASS == 15 ~ "Glaciar"
+				PL_CLASS == 0 ~ "Area_Sin_Cobertura_Vegetal",
+				PL_CLASS == 1 ~ "Artificial",
+				PL_CLASS == 2 ~ "Bosque",
+				PL_CLASS == 3 ~ "Cultivo",
+				PL_CLASS == 4 ~ "Cultivo",
+				PL_CLASS == 5 ~ "Cultivo",
+				PL_CLASS == 6 ~ "Infraestructura",
+				PL_CLASS == 7 ~ "Cultivo",
+				PL_CLASS == 8 ~ "Natural",
+				PL_CLASS == 9 ~ "Paramos",
+				PL_CLASS == 10 ~ "Vegetacion_Herbacea",
+				PL_CLASS == 11 ~ "Plantacion_Forestal",
+				PL_CLASS == 12 ~ "Vegetacion_Arbustiva",
+				PL_CLASS == 13 ~ "Vegetacion_Herbacea",
+				PL_CLASS == 14 ~ "Area_Poblada",
+				PL_CLASS == 15 ~ "Glaciar"
 			)
 		)
 	return(reclassed)
@@ -310,7 +310,7 @@ addLevel2 <- function(table){
 				ARBOL_DE_PLANTACION >= 30 ~ "Plantacion_Forestal",
 				ARBOL_DE_MANGLE >= 30 ~ "Manglar",
 				VEGETACION_HERBACEA_PASTOS >= 30 ~ "Vegetacion_Herbacea",
-				VEGETATION_ARBUSTIVA >= 30 ~ "Vegetacion_Arbustiva",
+				VEGETACION_ARBUSTIVA >= 30 ~ "Vegetacion_Arbustiva",
 				VEGETACION_DE_PARAMO > 0 ~ "Paramos",
 				CULTIVOS >= 50 ~ "Cultivo",
 				AGUA_NATURAL + 
@@ -322,13 +322,13 @@ addLevel2 <- function(table){
 				VEGETACION_DE_HUMEDALES >= 50 ~ "Natural",
 				ESTRUCTURA_DE_VIVIENDA + 
 					VEGETACION_DE_ASENTAMIENTOS + 
-					CARRETERAS_Y_LOTAS >= 30 ~ "Area_Poblada",
-				CARRETERAS_Y_LOTAS >= 30 & 
+					CARRETERAS_Y_LOTES >= 30 ~ "Area_Poblada",
+				CARRETERAS_Y_LOTES >= 30 & 
 					ESTRUCTURA_DE_VIVIENDA > 0 ~ "Area_Poblada",
 				INFRAESTRUCTURA + 
 					VEGETACION_DE_ASENTAMIENTOS + 
-					CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructura",
-				CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructura",
+					CARRETERAS_Y_LOTES >= 30 ~ "Infraestructura",
+				CARRETERAS_Y_LOTES >= 30 ~ "Infraestructura",
 				SUELO_DESNUDO >= 70 ~ "Area_Sin_Cobertura_Vegetal",
 				SUELO_DESNUDO +
 					ESTRUCTURA_DE_VIVIENDA +
@@ -337,8 +337,8 @@ addLevel2 <- function(table){
 					INFRAESTRUCTURA +
 					VEGETACION_DE_ASENTAMIENTOS >= 30 ~ "Infraestructura",
 				SUELO_DESNUDO +
-					CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructurae",
-				NIEVE/HIELO +
+					CARRETERAS_Y_LOTES >= 30 ~ "Infraestructurae",
+				NIEVE_HIELO +
 					SUELO_DESNUDO >= 70 ~ "Glaciar",
 				OTRO >= 50 ~ "Otro",
 				NUBE_ININTELIGIBLE >= 50 ~ "Sin_Datos",
