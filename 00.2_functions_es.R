@@ -341,7 +341,7 @@ addLevel2 <- function(table){
 				NIEVE/HIELO +
 					SUELO_DESNUDO >= 70 ~ "Glaciar",
 				OTRO >= 50 ~ "Otro",
-				NUBE_ININTELIGIBLE >= 50 ~ "Sin_Datos",
+				NIEVE_ININTELIGIBLE >= 50 ~ "Sin_Datos",
 				Primary == "FLAGGED" ~ "Sin_Datos",
 				TRUE ~ "Mosaico"
 			)
