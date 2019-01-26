@@ -163,7 +163,9 @@ finalTable <- convertToClasses(reclassed)
 
 #strip out No_Data entries.
 toRemove <- which(finalTable$LEVEL2 == "No_Data")
-finalTable <- finalTable[-toRemove,]
+if (length(toRemove) > 0) {
+	finalTable <- finalTable[-toRemove]
+}
 
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
