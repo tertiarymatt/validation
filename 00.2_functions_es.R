@@ -305,45 +305,45 @@ addLevel2 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL2 = case_when(
-				PRIMARY_TREE >= 30 ~ "Primary_Forest",
-				SECONDARY_TREE >= 30 ~ "Secondary_Forest",
-				PLANTATION_TREE >= 30 ~ "Plantation_Forest",
-				MANGROVE >= 30 ~ "Mangrove",
-				HERBACEOUS_VEGETATION >= 30 ~ "Herbland",
-				SHRUB_VEGETATION >= 30 ~ "Shrubland",
-				PARAMO_VEGETATION > 0 ~ "Paramo",
-				CROPS >= 50 ~ "Cropland",
-				NATURAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Natural_Water",
-				ARTIFICIAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
-				WETLAND_VEGETATION >= 50 & 
-					ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
-				WETLAND_VEGETATION >= 50 ~ "Natural_Water",
-				HOUSING_STRUCTURE + 
-					SETTLEMENT_VEGETATION + 
-					ROADS_AND_LOTS >= 30 ~ "Settlement",
-				ROADS_AND_LOTS >= 30 & 
-					HOUSING_STRUCTURE > 0 ~ "Settlement",
-				INFRASTRUCTURE + 
-					SETTLEMENT_VEGETATION + 
-					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-				BARE_GROUND >= 70 ~ "Non-vegetated",
-				BARE_GROUND +
-					HOUSING_STRUCTURE +
-					SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
-				BARE_GROUND +
-					INFRASTRUCTURE +
-					SETTLEMENT_VEGETATION >= 30 ~ "Infrastructure",
-				BARE_GROUND +
-					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-				SNOW_ICE +
-					BARE_GROUND >= 70 ~ "Glacier",
-				OTHER >= 50 ~ "Other",
-				CLOUDS_UNINTERPRETABLE >= 50 ~ "No_Data",
-				Primary == "FLAGGED" ~ "No_Data",
-				TRUE ~ "Mosaic"
+				ARBOL_PRIMARIO >= 30 ~ "Bosque_Primario",
+				ARBOL_SECUNDARIO >= 30 ~ "Bosque_Secundario",
+				ARBOL_DE_PLANTACION >= 30 ~ "Plantacion_Forestal",
+				ARBOL_DE_MANGLE >= 30 ~ "Manglar",
+				VEGETACION_HERBACEA_PASTOS >= 30 ~ "Vegetacion_Herbacea",
+				VEGETATION_ARBUSTIVA >= 30 ~ "Vegetacion_Arbustiva",
+				VEGETACION_DE_PARAMO > 0 ~ "Paramo",
+				CULTIVOS >= 50 ~ "Cultivo",
+				AGUA_NATURAL + 
+					VEGETACION_DE_HUMEDALES >= 50 ~  "Natural",
+				AGUA_ARTIFICIAL + 
+					VEGETACION_DE_HUMEDALES >= 50 ~  "Artificial",
+				VEGETACION_DE_HUMEDALES >= 50 & 
+					AGUA_ARTIFICIAL > 0 ~ "Artificial",
+				VEGETACION_DE_HUMEDALES >= 50 ~ "Natural",
+				ESTRUCTURA_DE_VIVIENDA + 
+					VEGETACION_DE_ASENTAMIENTOS + 
+					CARRETERAS_Y_LOTAS >= 30 ~ "Area_Poblada",
+				CARRETERAS_Y_LOTAS >= 30 & 
+					ESTRUCTURA_DE_VIVIENDA > 0 ~ "Area_Poblada",
+				INFRAESTRUCTURA + 
+					VEGETACION_DE_ASENTAMIENTOS + 
+					CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructura",
+				CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructura",
+				SUELO_DESNUDO >= 70 ~ "Area_Sin_Cobertura_Vegetal",
+				SUELO_DESNUDO +
+					ESTRUCTURA_DE_VIVIENDA +
+					VEGETACION_DE_ASENTAMIENTOS >= 30 ~ "Area_Poblada",
+				SUELO_DESNUDO +
+					INFRAESTRUCTURA +
+					VEGETACION_DE_ASENTAMIENTOS >= 30 ~ "Infraestructura",
+				SUELO_DESNUDO +
+					CARRETERAS_Y_LOTAS >= 30 ~ "Infraestructurae",
+				NIEVE/HIELO +
+					SUELO_DESNUDO >= 70 ~ "Glaciar",
+				OTRO >= 50 ~ "Otro",
+				NIEVE_ININTELIGIBLE >= 50 ~ "Sin_Datos",
+				Primary == "FLAGGED" ~ "Sin_Datos",
+				TRUE ~ "Mosaico"
 			)
 		)
 	return(reclassed)
@@ -364,23 +364,23 @@ addLevel1 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL1 = case_when(
-				LEVEL2 == "Primary_Forest" |
-					LEVEL2 == "Secondary_Forest" |
-					LEVEL2 == "Plantation_Forest" |
-					LEVEL2 == "Mangrove" ~ "Forest_Lands",
-				LEVEL2 == "Herbland" | 
-					LEVEL2 == "Shrubland" | 
-					LEVEL2 == "Paramo" ~ "Grasslands",
-				LEVEL2 == "Cropland" ~ "Croplands",
-				LEVEL2 == "Natural_Water" |
-					LEVEL2 == "Artificial_Water" ~ "Wetlands",
-				LEVEL2 == "Settlement" |
-					LEVEL2 == "Infrastructure" ~ "Settlements",
-				LEVEL2 == "Glacier" |
-					LEVEL2 == "Non-vegetated" |
-					LEVEL2 == "Other" |
-					LEVEL2 == "Mosaic" ~ "Other_Lands",
-				LEVEL2 == "No_Data" ~ "No_Data"
+				LEVEL2 == "Bosque_Primario" |
+					LEVEL2 == "Bosque_Secundario" |
+					LEVEL2 == "Plantacion_Forestal" |
+					LEVEL2 == "Manglar" ~ "Bosque",
+				LEVEL2 == "Vegetacion_Herbacea" | 
+					LEVEL2 == "Vegetacion_Arbustiva" | 
+					LEVEL2 == "Paramo" ~ "Vegetacion_Arbustiva_Y_Herbacea",
+				LEVEL2 == "Cultivo" ~ "Tierra_Agropecuaria",
+				LEVEL2 == "Natural" |
+					LEVEL2 == "Artificial" ~ "Cuerpo_de_Agua",
+				LEVEL2 == "Area_Poblada" |
+					LEVEL2 == "Infraestructura" ~ "Zona_Antropica",
+				LEVEL2 == "Glaciar" |
+					LEVEL2 == "Area_Sin_Cobertura_Vegetal" |
+					LEVEL2 == "Otro" |
+					LEVEL2 == "Mosaico" ~ "Otras_Tierras",
+				LEVEL2 == "Sin_Datos" ~ "Sin_Datos"
 			)
 		)
 	return(reclassed)
@@ -411,26 +411,25 @@ addLevel1 <- function(table){
 #' - Glaciar-> Glaciar = 13  
 #' 
 #' _Stable Level 1 Classes (internal change)_  
-#' - Tierras Forestales -> Tierras Forestales (FF) = 14  
-#' - Pastizal -> Pastizal (GG) = 15  
-#' - Asentamientos -> Asentamientos (SS) = 16  
+#' - BosquePastizal -> Bosque (GG) = 15  
+#' - Zona  Antropica -> Zona  Antropica (SS) = 16  
 #' - Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
-#' - Otros Suelos -> Otros Suelos (OO) = 18  
+#' - Otros Tierras -> Otros Tierras (OO) = 18  
 #' 
 #' _Change Classes_  
-#' - Tierras Forestales -> Cultivo (FC) = 19  
-#' - Tierras Forestales -> Pastizal (FG) = 20  
-#' - Tierras Forestales -> Asentamientos (FS) = 21  
-#' - Tierras Forestales -> Cuerpo de Agua (FW) = 22   
-#' - Cultivo -> Pastizal (CG) = 23   
-#' - Cultivo -> Tierras Forestales (CF) = 24   
-#' - Cultivo -> Asentamientos (CS) = 25  
-#' - Pastizal -> Cultivo (GC) = 26  
-#' - Pastizal -> Tierras Forestales (GF) = 27  
-#' - Pastizal -> Asentamientos (GS) = 28  
-#' - Cuerpo de Agua -> Cultivo (WC) = 29  
-#' - Cuerpo de Agua -> Asentamientos (WS) = 30  
-#' - Otros Suelos -> Asentamientos (OS) = 31  
+#' - Bosque -> Tierra Agropecuaria (FC) = 19  
+#' - Bosque -> Vegetacion arbustiva y Herbacea (FG) = 20  
+#' - Bosque -> Zona  Antropica (FS) = 21  
+#' - Bosque -> Cuerpo de Agua (FW) = 22   
+#' - Tierra Agropecuaria -> Vegetacion arbustiva y Herbacea (CG) = 23   
+#' - Tierra Agropecuaria -> Bosque (CF) = 24   
+#' - Tierra Agropecuaria -> Zona  Antropica (CS) = 25  
+#' - Vegetacion arbustiva y Herbacea -> Tierra Agropecuaria (GC) = 26  
+#' - Vegetacion arbustiva y Herbacea -> Tierras Forestales (GF) = 27  
+#' - Vegetacion arbustiva y Herbacea -> Zona  Antropica (GS) = 28  
+#' - Cuerpo de Agua -> Tierra Agropecuaria (WC) = 29  
+#' - Cuerpo de Agua -> Zona  Antropica (WS) = 30  
+#' - Otros Tierras -> Zona  Antropica (OS) = 31  
 #' - Todos los Otros Cambios (Catchall) = 32  
 
 # Note that the code below is temporary, and for script development,
@@ -443,32 +442,32 @@ addFinal <- function(table){
 			refClass = case_when(
 				T1L2 == T2L2 ~ T2L2,
 				T1L1 == T2L1 ~ T2L1,
-				T1L1 == "Forest_Lands" & 
-					T2L1 == "Croplands" ~ "FC",
-				T1L1 == "Forest_Lands" & 
-					T2L1 == "Grasslands" ~ "FG",
-				T1L1 == "Forest_Lands" & 
-					T2L1 == "Settlements" ~ "FS",
-				T1L1 == "Forest_Lands" & 
-					T2L1 == "Wetlands" ~ "FW",
-				T1L1 == "Croplands" & 
-					T2L1 == "Forest_Lands" ~ "CF",
-				T1L1 == "Croplands" & 
-					T2L1 == "Grasslands" ~ "CG",
-				T1L1 == "Croplands" & 
-					T2L1 == "Settlements" ~ "CS",
-				T1L1 == "Grasslands" & 
-					T2L1 == "Croplands" ~ "GC",
-				T1L1 == "Grasslands" & 
-					T2L1 == "Forest_Lands" ~ "GF",
-				T1L1 == "Grasslands" & 
-					T2L1 == "Settlements" ~ "GS",
-				T1L1 == "Wetlands" & 
-					T2L1 == "Croplands" ~ "WC",
-				T1L1 == "Wetlands" & 
-					T2L1 == "Settlements" ~ "WS",
-				T1L1 == "Other_Lands" & 
-					T2L1 == "Settlements" ~ "OS",
+				T1L1 == "Bosque" & 
+					T2L1 == "Tierra_Agropecuaria" ~ "FC",
+				T1L1 == "Bosque" & 
+					T2L1 == "Vegetacion_Arbustiva_Y_Herbacea" ~ "FG",
+				T1L1 == "Bosque" & 
+					T2L1 == "Zona_Antropica" ~ "FS",
+				T1L1 == "Bosque" & 
+					T2L1 == "Cuerpo_de_Agua" ~ "FW",
+				T1L1 == "Tierra_Agropecuaria" & 
+					T2L1 == "Bosque" ~ "CF",
+				T1L1 == "Tierra_Agropecuaria" & 
+					T2L1 == "Vegetacion_Arbustiva_Y_Herbacea" ~ "CG",
+				T1L1 == "Tierra_Agropecuaria" & 
+					T2L1 == "Zona_Antropica" ~ "CS",
+				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+					T2L1 == "Tierra_Agropecuaria" ~ "GC",
+				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+					T2L1 == "Bosque" ~ "GF",
+				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+					T2L1 == "Zona_Antropica" ~ "GS",
+				T1L1 == "Cuerpo_de_Agua" & 
+					T2L1 == "Tierra_Agropecuaria" ~ "WC",
+				T1L1 == "Cuerpo_de_Agua" & 
+					T2L1 == "Zona_Antropica" ~ "WS",
+				T1L1 == "Otras_Tierras" & 
+					T2L1 == "Zona_Antropica" ~ "OS",
 				TRUE ~ "Catchall"
 			)
 		)
