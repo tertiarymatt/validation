@@ -189,20 +189,22 @@ convertToClasses <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				CLASS == 0 ~ "Non-vegetated",
-				CLASS == 1 ~ "Artificial_Water",
-				CLASS == 2 ~ "Primary_Forest",
-				CLASS == 3 ~ "Cropland",
-				CLASS == 5 ~ "Secondary_Forest",
-				CLASS == 6 ~ "Infrastructure",
-				CLASS == 8 ~ "Natural_Water",
-				CLASS == 9 ~ "Paramo",
-				CLASS == 10 ~ "Mangrove",
-				CLASS == 11 ~ "Plantation_Forest",
-				CLASS == 12 ~ "Shrubland",
-				CLASS == 13 ~ "Herbland",
-				CLASS == 14 ~ "Settlement",
-				CLASS == 15 ~ "Glacier"
+				CLASS == 0 ~ "AREA_SIN_COBERTURA_VEGETAL",
+				CLASS == 1 ~ "ARTIFICIAL",
+				CLASS == 2 ~ "BOSQUE_NATIVO",
+				CLASS == 3 ~ "CULTIVO",
+				CLASS == 4 ~ "CULTIVO",
+				CLASS == 5 ~ "CULTIVO",
+				CLASS == 6 ~ "INFRAESTRUCTURA",
+				CLASS == 7 ~ "CULTIVO",
+				CLASS == 8 ~ "NATURAL",
+				CLASS == 9 ~ "PARAMOS",
+				CLASS == 10 ~ "PASTIZAL",
+				CLASS == 11 ~ "PLANTACION_FORESTALt",
+				CLASS == 12 ~ "VEGETACION_ARBUSTIVA",
+				CLASS == 13 ~ "VEGETACION_HERBACEA",
+				CLASS == 14 ~ "ZONAS_POBLADAS",
+				CLASS == 15 ~ "GLACIAL"
 			)
 		)
 	return(reclassed)

@@ -163,22 +163,25 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
 #' converted into text (and later, a factor) for building an error matrix.
 #' 
 #' __Land cover class codes__  
-#' - AREA SIN COBERTURA VEGETAL:0  
-#' - ARTIFICIAL:1  
-#' - BOSQUE NATIVO:2  
-#' - CULTIVO ANUAL:3  
-#' - CULTIVO PERMANENTE:4  
-#' - CULTIVO SEMIPERMANENTE:5  
-#' - INFRAESTRUCTURA:6   
-#' - MOSAICO AGROPECUARIO:7   
-#' - NATURAL:8   
-#' - PARAMOS:9  
-#' - PASTIZAL:10   
-#' - PLANTACION FORESTAL:11  
-#' - VEGETACION ARBUSTIVA:12  
-#' - VEGETACION HERBACEA:13  
-#' - ZONAS POBLADAS:14  
-#' - GLACIAL:15
+#' - Area poblada: 1  
+#' - Infraestructura: 1  
+#' - Area sin cobertura vegetal: 20  
+#' - Glaciar: 21  
+#' - Artificial: 3  
+#' - Natural: 3  
+#' - Bosque native: 40  
+#' - Plantacion forestal: 41  
+#' - Manglar: 42  
+#' - Bosque Secundario: 43  
+#' - Cultivo annual: 50  
+#' - Cultivo permanente: 51  
+#' - Cultivo semipermanente: 52  
+#' - Mosaico Agropecuario: 53  
+#' - Paramo: 60  
+#' - Vegetacion arbustiva: 61  
+#' - Vegetacion herbacea: 62  
+#' - Pastizal: 63  
+
 #' 
 #+ Convert GEE codes in the exported table into class values. 
 # Adding the Level 2 Classes.
