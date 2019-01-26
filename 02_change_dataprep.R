@@ -174,12 +174,12 @@ finalTable <- addFinal(finalTable)
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
-							 "Cropland", "Secondary_Forest", "Infrastructure", 
-							 "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
-							 "Shrubland", "Herbland", "Settlement", "Glacier",
-							 "Forest_Lands", "Grasslands", "Settlements", "Wetlands", 
-							 "Other_Lands", 
+refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
+							 "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
+							 "Plantacion_Forestal", "Vegetacion_Arbustiva", 
+							 "Vegetacion_Herbacea", "Area_Poblada", "Glaciar",
+							 "Bosque", "Vegetacion_Arbustiva_Y_Herbacea","Zona_Antropica",
+							 "Cuerpo_de_Agua", "Otras_Tierras",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
 							 "WC", "WS", "OS", "Catchall")
 

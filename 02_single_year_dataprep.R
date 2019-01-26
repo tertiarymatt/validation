@@ -14,7 +14,7 @@ setwd("~/R/projects/validation")
 #+ Packages
 library(tidyverse)
 library(stringr)
-source('00_functions.R')
+source('00.2_functions_es.R')
 
 #' This script is used to import the photo-interpreted points after they have
 #' been produced in Collect Earth Online. The process is as follows.  
@@ -167,10 +167,10 @@ finalTable <- finalTable[-toRemove,]
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
-							 "Cropland", "Secondary_Forest", "Infrastructure", 
-							 "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
-							 "Shrubland", "Herbland", "Settlement", "Glacier")
+refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
+							 "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
+							 "Plantacion_Forestal", "Vegetacion_Arbustiva", 
+							 "Vegetacion_Herbacea", "Area_Poblada", "Glaciar")
 
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$LEVEL2, refLevels)

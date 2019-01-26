@@ -1,7 +1,7 @@
 Determining Sample Size
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 18, 2019
+January 26, 2019
 
 Set working directory to where data is being stored. + setwd
 
@@ -11,23 +11,25 @@ setwd("~/R/projects/validation")
 
 ### Required packages
 
+You may need to install tidyverse to make this script function. To do so, uncomment the following line. install.packages("tidyverse")
+
 ``` r
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
-source("00_functions.R")
+source("00.2_functions_es.R")
 ```
 
 ### This section is used to determing sample size needed for the project.
@@ -37,6 +39,8 @@ Before running this script, use the [`01_ChangePercentage` Earth Engine script](
 ### Sample Size Determination
 
 After you know the percentage of change, determine the total sample size, using the following code (or one of the other sample size approaches availabe in the 00\_function.R).
+
+`genSample1()` is an implementation of the typical sample size calcuation, using only the target accuracy (p0), the half-width of the Confidence Interval (h), and the tolerance for Type I error (alpha).
 
 ``` r
 # Calculate overall sample size

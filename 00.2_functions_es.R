@@ -189,22 +189,22 @@ convertToClasses <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				CLASS == 0 ~ "AREA_SIN_COBERTURA_VEGETAL",
-				CLASS == 1 ~ "ARTIFICIAL",
-				CLASS == 2 ~ "BOSQUE_NATIVO",
-				CLASS == 3 ~ "CULTIVO",
-				CLASS == 4 ~ "CULTIVO",
-				CLASS == 5 ~ "CULTIVO",
-				CLASS == 6 ~ "INFRAESTRUCTURA",
-				CLASS == 7 ~ "CULTIVO",
-				CLASS == 8 ~ "NATURAL",
-				CLASS == 9 ~ "PARAMOS",
-				CLASS == 10 ~ "PASTIZAL",
-				CLASS == 11 ~ "PLANTACION_FORESTALt",
-				CLASS == 12 ~ "VEGETACION_ARBUSTIVA",
-				CLASS == 13 ~ "VEGETACION_HERBACEA",
-				CLASS == 14 ~ "ZONAS_POBLADAS",
-				CLASS == 15 ~ "GLACIAL"
+				CLASS == 0 ~ "Area_Sin_Cobertura_Vegetal",
+				CLASS == 1 ~ "Artificial",
+				CLASS == 2 ~ "Bosque",
+				CLASS == 3 ~ "Cultivo",
+				CLASS == 4 ~ "Cultivo",
+				CLASS == 5 ~ "Cultivo",
+				CLASS == 6 ~ "Infraestructura",
+				CLASS == 7 ~ "Cultivo",
+				CLASS == 8 ~ "Natural",
+				CLASS == 9 ~ "Paramos",
+				CLASS == 10 ~ "Vegetacion_Herbacea",
+				CLASS == 11 ~ "Plantacion_Forestal",
+				CLASS == 12 ~ "Vegetacion_Arbustiva",
+				CLASS == 13 ~ "Vegetacion_Herbacea",
+				CLASS == 14 ~ "Area_Poblada",
+				CLASS == 15 ~ "Glaciar"
 			)
 		)
 	return(reclassed)
@@ -305,13 +305,13 @@ addLevel2 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL2 = case_when(
-				ARBOL_PRIMARIO >= 30 ~ "Bosque_Primario",
-				ARBOL_SECUNDARIO >= 30 ~ "Bosque_Secundario",
+				ARBOL_PRIMARIO >= 30 ~ "Bosque",
+				ARBOL_SECUNDARIO >= 30 ~ "Bosque",
 				ARBOL_DE_PLANTACION >= 30 ~ "Plantacion_Forestal",
 				ARBOL_DE_MANGLE >= 30 ~ "Manglar",
 				VEGETACION_HERBACEA_PASTOS >= 30 ~ "Vegetacion_Herbacea",
 				VEGETATION_ARBUSTIVA >= 30 ~ "Vegetacion_Arbustiva",
-				VEGETACION_DE_PARAMO > 0 ~ "Paramo",
+				VEGETACION_DE_PARAMO > 0 ~ "Paramos",
 				CULTIVOS >= 50 ~ "Cultivo",
 				AGUA_NATURAL + 
 					VEGETACION_DE_HUMEDALES >= 50 ~  "Natural",
@@ -364,13 +364,12 @@ addLevel1 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL1 = case_when(
-				LEVEL2 == "Bosque_Primario" |
-					LEVEL2 == "Bosque_Secundario" |
+				LEVEL2 == "Bosque" |
 					LEVEL2 == "Plantacion_Forestal" |
 					LEVEL2 == "Manglar" ~ "Bosque",
 				LEVEL2 == "Vegetacion_Herbacea" | 
 					LEVEL2 == "Vegetacion_Arbustiva" | 
-					LEVEL2 == "Paramo" ~ "Vegetacion_Arbustiva_Y_Herbacea",
+					LEVEL2 == "Paramos" ~ "Vegetacion_Arbustiva_Y_Herbacea",
 				LEVEL2 == "Cultivo" ~ "Tierra_Agropecuaria",
 				LEVEL2 == "Natural" |
 					LEVEL2 == "Artificial" ~ "Cuerpo_de_Agua",

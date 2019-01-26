@@ -16,7 +16,7 @@ setwd("~/R/projects/validation")
 #'  install.packages("tidyverse")
 #+ Packages
 library(tidyverse)
-source("00_functions.R")
+source("00.2_functions_es.R")
 
 #' ### This section is used to determing sample size needed for the project.  
 #' Before running this script, use the [`01_ChangePercentage` Earth Engine 
