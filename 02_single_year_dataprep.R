@@ -11,12 +11,12 @@
 setwd("~/R/projects/validation")
 
 #' Required packages
-#' To use the spanish class functions file, change `source()` to 
-#' `00.2_funcitons_es.R`.
+#' To use the english class functions file, change `source()` to 
+#' `00.1_funcitons_en.R`.
 #+ Packages
 library(tidyverse)
 library(stringr)
-source('00.1_functions_en.R')
+source('00.2_functions_es.R')
 
 #' This script is used to import the photo-interpreted points after they have
 #' been produced in Collect Earth Online. The process is as follows.  
@@ -29,13 +29,13 @@ source('00.1_functions_en.R')
 #' Import raw data, strip out unneeded name components of class fields. 
 
 #+ Inmport Data
-ceoTable <- read_csv("data/validation_error_matrix_dev.csv")
+ceoTable <- read_csv("data/ceo-plantilla-de-validacion-plot-data-2019-01-26.csv")
 summary(ceoTable)
 colnames(ceoTable)
 
 # class names need to be pulled from each project.
 # The classCol variable MUST be updated! 
-classCol <- c(17:35)
+classCol <- c(16:34)
 classes <- colnames(ceoTable[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
