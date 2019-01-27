@@ -11,10 +11,12 @@
 setwd("~/R/projects/validation")
 
 #' Required packages
+#' To use the spanish class functions file, change `source()` to 
+#' `00.2_funcitons_es.R`.
 #+ Packages
 library(tidyverse)
 library(stringr)
-source('00.2_functions_es.R')
+source('00.1_functions_en.R')
 
 #' This script is used to import the photo-interpreted points after they have
 #' been produced in Collect Earth Online. The process is as follows.  
