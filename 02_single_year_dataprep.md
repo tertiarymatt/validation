@@ -1,7 +1,7 @@
 Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 18, 2019
+January 27, 2019
 
 Set working directory to where data is being stored. + setwd
 
@@ -9,26 +9,26 @@ Set working directory to where data is being stored. + setwd
 setwd("~/R/projects/validation")
 ```
 
-Required packages
+Required packages To use the english class functions file, change `source()` to `00.1_funcitons_en.R`.
 
 ``` r
 library(tidyverse)
 ```
 
-    ## -- Attaching packages --------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages -------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+    ## -- Conflicts ----------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 library(stringr)
-source('00_functions.R')
+source('00.2_functions_es.R')
 ```
 
 This script is used to import the photo-interpreted points after they have been produced in Collect Earth Online. The process is as follows.
@@ -42,7 +42,7 @@ This script is used to import the photo-interpreted points after they have been 
 Import raw data, strip out unneeded name components of class fields.
 
 ``` r
-ceoTable <- read_csv("data/validation_error_matrix_dev.csv")
+ceoTable <- read_csv("data/ceo-plantilla-de-validacion-plot-data-2019-01-26.csv")
 ```
 
     ## Parsed with column specification:
@@ -61,147 +61,201 @@ ceoTable <- read_csv("data/validation_error_matrix_dev.csv")
 summary(ceoTable)
 ```
 
-    ##     PLOT_ID         CENTER_LON       CENTER_LAT          SIZE_M  
-    ##  Min.   :  1.00   Min.   :-80.99   Min.   :-4.4231   Min.   :30  
-    ##  1st Qu.: 28.00   1st Qu.:-79.83   1st Qu.:-2.6064   1st Qu.:30  
-    ##  Median : 55.50   Median :-78.93   Median :-1.8533   Median :30  
-    ##  Mean   : 69.25   Mean   :-78.97   Mean   :-1.7867   Mean   :30  
-    ##  3rd Qu.:110.25   3rd Qu.:-78.34   3rd Qu.:-0.6755   3rd Qu.:30  
-    ##  Max.   :165.00   Max.   :-75.59   Max.   : 1.3180   Max.   :30  
+    ##     PLOT_ID       CENTER_LON       CENTER_LAT          SIZE_M  
+    ##  Min.   :   1   Min.   :-91.62   Min.   :-4.9944   Min.   :30  
+    ##  1st Qu.:1501   1st Qu.:-79.56   1st Qu.:-2.2574   1st Qu.:30  
+    ##  Median :3000   Median :-78.77   Median :-1.3320   Median :30  
+    ##  Mean   :3000   Mean   :-78.78   Mean   :-1.4136   Mean   :30  
+    ##  3rd Qu.:4500   3rd Qu.:-77.49   3rd Qu.:-0.3734   3rd Qu.:30  
+    ##  Max.   :6000   Max.   :-75.23   Max.   : 1.4519   Max.   :30  
+    ##                                                                
     ##     SHAPE            FLAGGED           ANALYSES SAMPLE_POINTS
-    ##  Length:220         Mode :logical   Min.   :0   Min.   :25   
-    ##  Class :character   FALSE:187       1st Qu.:0   1st Qu.:25   
-    ##  Mode  :character   TRUE :33        Median :0   Median :25   
+    ##  Length:6000        Mode :logical   Min.   :0   Min.   :25   
+    ##  Class :character   FALSE:6000      1st Qu.:0   1st Qu.:25   
+    ##  Mode  :character                   Median :0   Median :25   
     ##                                     Mean   :0   Mean   :25   
     ##                                     3rd Qu.:0   3rd Qu.:25   
     ##                                     Max.   :0   Max.   :25   
+    ##                                                              
     ##    USER_ID          ANALYSIS_DURATION COLLECTION_TIME              
-    ##  Length:220         Mode:logical      Min.   :2018-12-30 03:12:30  
-    ##  Class :character   NA's:220          1st Qu.:2018-12-31 00:22:54  
-    ##  Mode  :character                     Median :2019-01-02 13:04:37  
-    ##                                       Mean   :2019-01-02 11:40:06  
-    ##                                       3rd Qu.:2019-01-03 20:46:30  
-    ##                                       Max.   :2019-01-07 18:21:16  
-    ##   PL_LONGITUDE     PL_LATITUDE        PL_PLOTID        PL_FID_REFDTA  
-    ##  Min.   :-80.99   Min.   :-4.4231   Min.   :    1.00   Min.   :   76  
-    ##  1st Qu.:-79.83   1st Qu.:-2.6064   1st Qu.:   55.75   1st Qu.: 7842  
-    ##  Median :-78.93   Median :-1.8533   Median :  110.50   Median :22649  
-    ##  Mean   :-78.97   Mean   :-1.7867   Mean   : 5280.06   Mean   :20777  
-    ##  3rd Qu.:-78.34   3rd Qu.:-0.6755   3rd Qu.:  305.25   3rd Qu.:31750  
-    ##  Max.   :-75.59   Max.   : 1.3180   Max.   :41851.00   Max.   :41936  
-    ##      CLASS        LAND COVER:PRIMARY TREE LAND COVER:SECONDARY TREE
-    ##  Min.   : 0.000   Min.   :  0.000         Min.   :  0.000          
-    ##  1st Qu.: 2.000   1st Qu.:  0.000         1st Qu.:  0.000          
-    ##  Median : 9.000   Median :  0.000         Median :  0.000          
-    ##  Mean   : 7.982   Mean   :  9.745         Mean   :  3.509          
-    ##  3rd Qu.:13.000   3rd Qu.:  0.000         3rd Qu.:  0.000          
-    ##  Max.   :15.000   Max.   :100.000         Max.   :100.000          
-    ##  LAND COVER:PLANTATION TREE LAND COVER:MANGROVE
-    ##  Min.   :  0.0              Min.   :  0.000    
-    ##  1st Qu.:  0.0              1st Qu.:  0.000    
-    ##  Median :  0.0              Median :  0.000    
-    ##  Mean   :  1.4              Mean   :  3.382    
-    ##  3rd Qu.:  0.0              3rd Qu.:  0.000    
-    ##  Max.   :100.0              Max.   :100.000    
-    ##  LAND COVER:HERBACEOUS/GRASS VEGETATION LAND COVER:SHRUB VEGETATION
-    ##  Min.   :  0.00                         Min.   :  0.0              
-    ##  1st Qu.:  0.00                         1st Qu.:  0.0              
-    ##  Median :  0.00                         Median :  0.0              
-    ##  Mean   : 15.27                         Mean   : 16.8              
-    ##  3rd Qu.:  8.00                         3rd Qu.:  9.0              
-    ##  Max.   :100.00                         Max.   :100.0              
-    ##  LAND COVER:PARAMO VEGETATION LAND COVER:CROPS  LAND COVER:NATURAL WATER
-    ##  Min.   :  0.000              Min.   :  0.000   Min.   :  0.000         
-    ##  1st Qu.:  0.000              1st Qu.:  0.000   1st Qu.:  0.000         
-    ##  Median :  0.000              Median :  0.000   Median :  0.000         
-    ##  Mean   :  2.055              Mean   :  4.109   Mean   :  4.382         
-    ##  3rd Qu.:  0.000              3rd Qu.:  0.000   3rd Qu.:  0.000         
-    ##  Max.   :100.000              Max.   :100.000   Max.   :100.000         
-    ##  LAND COVER:ARTIFICIAL WATER LAND COVER:WETLAND VEGETATION
-    ##  Min.   :  0.000             Min.   :  0.0000             
-    ##  1st Qu.:  0.000             1st Qu.:  0.0000             
-    ##  Median :  0.000             Median :  0.0000             
-    ##  Mean   :  2.982             Mean   :  0.9455             
-    ##  3rd Qu.:  0.000             3rd Qu.:  0.0000             
-    ##  Max.   :100.000             Max.   :100.0000             
-    ##  LAND COVER:HOUSING STRUCTURE LAND COVER:INFRASTRUCTURE
-    ##  Min.   : 0.0000              Min.   :  0.0000         
-    ##  1st Qu.: 0.0000              1st Qu.:  0.0000         
-    ##  Median : 0.0000              Median :  0.0000         
-    ##  Mean   : 0.7273              Mean   :  0.5091         
-    ##  3rd Qu.: 0.0000              3rd Qu.:  0.0000         
-    ##  Max.   :60.0000              Max.   :100.0000         
-    ##  LAND COVER:ROADS AND LOTS LAND COVER:SETTLEMENT VEGETATION
-    ##  Min.   : 0.000            Min.   :  0.000                 
-    ##  1st Qu.: 0.000            1st Qu.:  0.000                 
-    ##  Median : 0.000            Median :  0.000                 
-    ##  Mean   : 1.855            Mean   :  1.727                 
-    ##  3rd Qu.: 0.000            3rd Qu.:  0.000                 
-    ##  Max.   :72.000            Max.   :100.000                 
-    ##  LAND COVER:BARE GROUND LAND COVER:SNOW/ICE LAND COVER:OTHER
-    ##  Min.   :  0.000        Min.   :  0.000     Min.   :0       
-    ##  1st Qu.:  0.000        1st Qu.:  0.000     1st Qu.:0       
-    ##  Median :  0.000        Median :  0.000     Median :0       
-    ##  Mean   :  4.255        Mean   :  3.745     Mean   :0       
-    ##  3rd Qu.:  0.000        3rd Qu.:  0.000     3rd Qu.:0       
-    ##  Max.   :100.000        Max.   :100.000     Max.   :0       
-    ##  LAND COVER:CLOUDS/UNINTERPRETABLE
-    ##  Min.   :  0.0                    
-    ##  1st Qu.:  0.0                    
-    ##  Median :  0.0                    
-    ##  Mean   :  7.6                    
-    ##  3rd Qu.:  0.0                    
-    ##  Max.   :100.0
+    ##  Length:6000        Mode:logical      Min.   :2019-01-26 17:36:23  
+    ##  Class :character   NA's:6000         1st Qu.:2019-01-26 17:44:09  
+    ##  Mode  :character                     Median :2019-01-26 17:46:51  
+    ##                                       Mean   :2019-01-26 17:45:48  
+    ##                                       3rd Qu.:2019-01-26 17:48:29  
+    ##                                       Max.   :2019-01-26 17:50:00  
+    ##                                       NA's   :5975                 
+    ##   PL_LONGITUDE     PL_LATITUDE        PL_PLOTID       PL_CLASS     
+    ##  Min.   :-91.62   Min.   :-4.9944   Min.   :   0   Min.   : 1.000  
+    ##  1st Qu.:-79.56   1st Qu.:-2.2574   1st Qu.:1500   1st Qu.: 4.000  
+    ##  Median :-78.77   Median :-1.3320   Median :3000   Median : 4.000  
+    ##  Mean   :-78.78   Mean   :-1.4136   Mean   :3000   Mean   : 6.288  
+    ##  3rd Qu.:-77.49   3rd Qu.:-0.3734   3rd Qu.:4499   3rd Qu.: 5.000  
+    ##  Max.   :-75.23   Max.   : 1.4519   Max.   :5999   Max.   :42.000  
+    ##                                                                    
+    ##  COBERTURA TERRESTRE:ARBOL PRIMARIO COBERTURA TERRESTRE:ARBOL SECUNDARIO
+    ##  Min.   :  0.00000                  Min.   :  0.00000                   
+    ##  1st Qu.:  0.00000                  1st Qu.:  0.00000                   
+    ##  Median :  0.00000                  Median :  0.00000                   
+    ##  Mean   :  0.01667                  Mean   :  0.01667                   
+    ##  3rd Qu.:  0.00000                  3rd Qu.:  0.00000                   
+    ##  Max.   :100.00000                  Max.   :100.00000                   
+    ##                                                                         
+    ##  COBERTURA TERRESTRE:ARBOL DE PLANTACION
+    ##  Min.   :0e+00                          
+    ##  1st Qu.:0e+00                          
+    ##  Median :0e+00                          
+    ##  Mean   :5e-02                          
+    ##  3rd Qu.:0e+00                          
+    ##  Max.   :1e+02                          
+    ##                                         
+    ##  COBERTURA TERRESTRE:ARBOL DE MANGLE
+    ##  Min.   :  0.00000                  
+    ##  1st Qu.:  0.00000                  
+    ##  Median :  0.00000                  
+    ##  Mean   :  0.01667                  
+    ##  3rd Qu.:  0.00000                  
+    ##  Max.   :100.00000                  
+    ##                                     
+    ##  COBERTURA TERRESTRE:VEGETACION HERBACEA/PASTOS
+    ##  Min.   :  0.00000                             
+    ##  1st Qu.:  0.00000                             
+    ##  Median :  0.00000                             
+    ##  Mean   :  0.03333                             
+    ##  3rd Qu.:  0.00000                             
+    ##  Max.   :100.00000                             
+    ##                                                
+    ##  COBERTURA TERRESTRE:VEGETACION ARBUSTIVA
+    ##  Min.   :  0.00000                       
+    ##  1st Qu.:  0.00000                       
+    ##  Median :  0.00000                       
+    ##  Mean   :  0.01667                       
+    ##  3rd Qu.:  0.00000                       
+    ##  Max.   :100.00000                       
+    ##                                          
+    ##  COBERTURA TERRESTRE:VEGETACION DE PARAMO COBERTURA TERRESTRE:CULTIVOS
+    ##  Min.   :  0.00000                        Min.   :  0.00000           
+    ##  1st Qu.:  0.00000                        1st Qu.:  0.00000           
+    ##  Median :  0.00000                        Median :  0.00000           
+    ##  Mean   :  0.01667                        Mean   :  0.08333           
+    ##  3rd Qu.:  0.00000                        3rd Qu.:  0.00000           
+    ##  Max.   :100.00000                        Max.   :100.00000           
+    ##                                                                       
+    ##  COBERTURA TERRESTRE:AGUA NATURAL COBERTURA TERRESTRE:AGUA ARTIFICIAL
+    ##  Min.   :0                        Min.   :0                          
+    ##  1st Qu.:0                        1st Qu.:0                          
+    ##  Median :0                        Median :0                          
+    ##  Mean   :0                        Mean   :0                          
+    ##  3rd Qu.:0                        3rd Qu.:0                          
+    ##  Max.   :0                        Max.   :0                          
+    ##                                                                      
+    ##  COBERTURA TERRESTRE:VEGETACION DE HUMEDALES
+    ##  Min.   :0                                  
+    ##  1st Qu.:0                                  
+    ##  Median :0                                  
+    ##  Mean   :0                                  
+    ##  3rd Qu.:0                                  
+    ##  Max.   :0                                  
+    ##                                             
+    ##  COBERTURA TERRESTRE:ESTRUCTURA DE VIVIENDA
+    ##  Min.   :  0.00000                         
+    ##  1st Qu.:  0.00000                         
+    ##  Median :  0.00000                         
+    ##  Mean   :  0.05067                         
+    ##  3rd Qu.:  0.00000                         
+    ##  Max.   :100.00000                         
+    ##                                            
+    ##  COBERTURA TERRESTRE:INFRAESTRUCTURA
+    ##  Min.   :  0.00000                  
+    ##  1st Qu.:  0.00000                  
+    ##  Median :  0.00000                  
+    ##  Mean   :  0.03333                  
+    ##  3rd Qu.:  0.00000                  
+    ##  Max.   :100.00000                  
+    ##                                     
+    ##  COBERTURA TERRESTRE:CARRETERAS Y LOTES
+    ##  Min.   : 0.00000                      
+    ##  1st Qu.: 0.00000                      
+    ##  Median : 0.00000                      
+    ##  Mean   : 0.01867                      
+    ##  3rd Qu.: 0.00000                      
+    ##  Max.   :40.00000                      
+    ##                                        
+    ##  COBERTURA TERRESTRE:VEGETACION DE ASENTAMIENTOS
+    ##  Min.   :0                                      
+    ##  1st Qu.:0                                      
+    ##  Median :0                                      
+    ##  Mean   :0                                      
+    ##  3rd Qu.:0                                      
+    ##  Max.   :0                                      
+    ##                                                 
+    ##  COBERTURA TERRESTRE:SUELO DESNUDO COBERTURA TERRESTRE:NIEVE/HIELO
+    ##  Min.   : 0.000                    Min.   :  0.00000              
+    ##  1st Qu.: 0.000                    1st Qu.:  0.00000              
+    ##  Median : 0.000                    Median :  0.00000              
+    ##  Mean   : 0.014                    Mean   :  0.01667              
+    ##  3rd Qu.: 0.000                    3rd Qu.:  0.00000              
+    ##  Max.   :84.000                    Max.   :100.00000              
+    ##                                                                   
+    ##  COBERTURA TERRESTRE:OTRO COBERTURA TERRESTRE:NUBE/ININTELIGIBLE
+    ##  Min.   :  0.00000        Min.   :  0.00000                     
+    ##  1st Qu.:  0.00000        1st Qu.:  0.00000                     
+    ##  Median :  0.00000        Median :  0.00000                     
+    ##  Mean   :  0.01667        Mean   :  0.01667                     
+    ##  3rd Qu.:  0.00000        3rd Qu.:  0.00000                     
+    ##  Max.   :100.00000        Max.   :100.00000                     
+    ## 
 
 ``` r
 colnames(ceoTable)
 ```
 
-    ##  [1] "PLOT_ID"                               
-    ##  [2] "CENTER_LON"                            
-    ##  [3] "CENTER_LAT"                            
-    ##  [4] "SIZE_M"                                
-    ##  [5] "SHAPE"                                 
-    ##  [6] "FLAGGED"                               
-    ##  [7] "ANALYSES"                              
-    ##  [8] "SAMPLE_POINTS"                         
-    ##  [9] "USER_ID"                               
-    ## [10] "ANALYSIS_DURATION"                     
-    ## [11] "COLLECTION_TIME"                       
-    ## [12] "PL_LONGITUDE"                          
-    ## [13] "PL_LATITUDE"                           
-    ## [14] "PL_PLOTID"                             
-    ## [15] "PL_FID_REFDTA"                         
-    ## [16] "CLASS"                                 
-    ## [17] "LAND COVER:PRIMARY TREE"               
-    ## [18] "LAND COVER:SECONDARY TREE"             
-    ## [19] "LAND COVER:PLANTATION TREE"            
-    ## [20] "LAND COVER:MANGROVE"                   
-    ## [21] "LAND COVER:HERBACEOUS/GRASS VEGETATION"
-    ## [22] "LAND COVER:SHRUB VEGETATION"           
-    ## [23] "LAND COVER:PARAMO VEGETATION"          
-    ## [24] "LAND COVER:CROPS"                      
-    ## [25] "LAND COVER:NATURAL WATER"              
-    ## [26] "LAND COVER:ARTIFICIAL WATER"           
-    ## [27] "LAND COVER:WETLAND VEGETATION"         
-    ## [28] "LAND COVER:HOUSING STRUCTURE"          
-    ## [29] "LAND COVER:INFRASTRUCTURE"             
-    ## [30] "LAND COVER:ROADS AND LOTS"             
-    ## [31] "LAND COVER:SETTLEMENT VEGETATION"      
-    ## [32] "LAND COVER:BARE GROUND"                
-    ## [33] "LAND COVER:SNOW/ICE"                   
-    ## [34] "LAND COVER:OTHER"                      
-    ## [35] "LAND COVER:CLOUDS/UNINTERPRETABLE"
+    ##  [1] "PLOT_ID"                                        
+    ##  [2] "CENTER_LON"                                     
+    ##  [3] "CENTER_LAT"                                     
+    ##  [4] "SIZE_M"                                         
+    ##  [5] "SHAPE"                                          
+    ##  [6] "FLAGGED"                                        
+    ##  [7] "ANALYSES"                                       
+    ##  [8] "SAMPLE_POINTS"                                  
+    ##  [9] "USER_ID"                                        
+    ## [10] "ANALYSIS_DURATION"                              
+    ## [11] "COLLECTION_TIME"                                
+    ## [12] "PL_LONGITUDE"                                   
+    ## [13] "PL_LATITUDE"                                    
+    ## [14] "PL_PLOTID"                                      
+    ## [15] "PL_CLASS"                                       
+    ## [16] "COBERTURA TERRESTRE:ARBOL PRIMARIO"             
+    ## [17] "COBERTURA TERRESTRE:ARBOL SECUNDARIO"           
+    ## [18] "COBERTURA TERRESTRE:ARBOL DE PLANTACION"        
+    ## [19] "COBERTURA TERRESTRE:ARBOL DE MANGLE"            
+    ## [20] "COBERTURA TERRESTRE:VEGETACION HERBACEA/PASTOS" 
+    ## [21] "COBERTURA TERRESTRE:VEGETACION ARBUSTIVA"       
+    ## [22] "COBERTURA TERRESTRE:VEGETACION DE PARAMO"       
+    ## [23] "COBERTURA TERRESTRE:CULTIVOS"                   
+    ## [24] "COBERTURA TERRESTRE:AGUA NATURAL"               
+    ## [25] "COBERTURA TERRESTRE:AGUA ARTIFICIAL"            
+    ## [26] "COBERTURA TERRESTRE:VEGETACION DE HUMEDALES"    
+    ## [27] "COBERTURA TERRESTRE:ESTRUCTURA DE VIVIENDA"     
+    ## [28] "COBERTURA TERRESTRE:INFRAESTRUCTURA"            
+    ## [29] "COBERTURA TERRESTRE:CARRETERAS Y LOTES"         
+    ## [30] "COBERTURA TERRESTRE:VEGETACION DE ASENTAMIENTOS"
+    ## [31] "COBERTURA TERRESTRE:SUELO DESNUDO"              
+    ## [32] "COBERTURA TERRESTRE:NIEVE/HIELO"                
+    ## [33] "COBERTURA TERRESTRE:OTRO"                       
+    ## [34] "COBERTURA TERRESTRE:NUBE/ININTELIGIBLE"
 
 ``` r
 # class names need to be pulled from each project.
-classes <- colnames(ceoTable[17:35]) %>% 
+# The classCol variable MUST be updated! 
+classCol <- c(16:34)
+classes <- colnames(ceoTable[classCol]) %>% 
     str_split(., coll(":"), simplify = TRUE) %>% 
     .[,2] %>% 
     gsub(" ", "_", .) %>% 
     gsub("/", "_", .)
 
-colnames(ceoTable)[17:35] <- classes
+colnames(ceoTable)[classCol] <- classes
 colnames(ceoTable)
 ```
 
@@ -212,17 +266,16 @@ colnames(ceoTable)
     ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
     ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
     ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
-    ## [15] "PL_FID_REFDTA"               "CLASS"                      
-    ## [17] "PRIMARY_TREE"                "SECONDARY_TREE"             
-    ## [19] "PLANTATION_TREE"             "MANGROVE"                   
-    ## [21] "HERBACEOUS_GRASS_VEGETATION" "SHRUB_VEGETATION"           
-    ## [23] "PARAMO_VEGETATION"           "CROPS"                      
-    ## [25] "NATURAL_WATER"               "ARTIFICIAL_WATER"           
-    ## [27] "WETLAND_VEGETATION"          "HOUSING_STRUCTURE"          
-    ## [29] "INFRASTRUCTURE"              "ROADS_AND_LOTS"             
-    ## [31] "SETTLEMENT_VEGETATION"       "BARE_GROUND"                
-    ## [33] "SNOW_ICE"                    "OTHER"                      
-    ## [35] "CLOUDS_UNINTERPRETABLE"
+    ## [15] "PL_CLASS"                    "ARBOL_PRIMARIO"             
+    ## [17] "ARBOL_SECUNDARIO"            "ARBOL_DE_PLANTACION"        
+    ## [19] "ARBOL_DE_MANGLE"             "VEGETACION_HERBACEA_PASTOS" 
+    ## [21] "VEGETACION_ARBUSTIVA"        "VEGETACION_DE_PARAMO"       
+    ## [23] "CULTIVOS"                    "AGUA_NATURAL"               
+    ## [25] "AGUA_ARTIFICIAL"             "VEGETACION_DE_HUMEDALES"    
+    ## [27] "ESTRUCTURA_DE_VIVIENDA"      "INFRAESTRUCTURA"            
+    ## [29] "CARRETERAS_Y_LOTES"          "VEGETACION_DE_ASENTAMIENTOS"
+    ## [31] "SUELO_DESNUDO"               "NIEVE_HIELO"                
+    ## [33] "OTRO"                        "NUBE_ININTELIGIBLE"
 
 ### Code block for visualizing the outputs of a CEO project, to give
 
@@ -283,7 +336,7 @@ Use \`addTopClasses()\`\` to take a raw plot table produced by Collect Earth Onl
 
 ``` r
 ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
-                                                    classfields = c(17:35))
+                                                    classfields = classCol)
 ```
 
 Then use primary and/or secondary classes and threshold values to convert to end classification.
@@ -343,31 +396,32 @@ reclassed <- addLevel1(reclassed)
 reclassed
 ```
 
-    ## # A tibble: 220 x 39
+    ## # A tibble: 6,000 x 38
     ##    PLOT_ID CENTER_LON CENTER_LAT SIZE_M SHAPE FLAGGED ANALYSES
     ##      <dbl>      <dbl>      <dbl>  <dbl> <chr> <lgl>      <dbl>
-    ##  1      35      -76.7      0.129     30 squa~ FALSE          0
-    ##  2      37      -78.6     -0.767     30 squa~ FALSE          0
-    ##  3      39      -78.7     -2.55      30 squa~ FALSE          0
-    ##  4      43      -79.7     -2.31      30 squa~ FALSE          0
-    ##  5      45      -77.1     -0.558     30 squa~ FALSE          0
-    ##  6      47      -79.3     -4.25      30 squa~ FALSE          0
-    ##  7      49      -78.8     -1.26      30 squa~ FALSE          0
-    ##  8      23      -78.6     -1.26      30 squa~ FALSE          0
-    ##  9      26      -78.6     -1.26      30 squa~ FALSE          0
-    ## 10      27      -78.8     -2.07      30 squa~ FALSE          0
-    ## # ... with 210 more rows, and 32 more variables: SAMPLE_POINTS <dbl>,
+    ##  1       1      -79.1     -0.139     30 squa~ FALSE          0
+    ##  2       2      -79.4     -2.71      30 squa~ FALSE          0
+    ##  3       3      -79.4     -0.330     30 squa~ FALSE          0
+    ##  4       4      -76.0     -0.822     30 squa~ FALSE          0
+    ##  5       5      -79.9     -0.381     30 squa~ FALSE          0
+    ##  6       6      -79.8     -3.55      30 squa~ FALSE          0
+    ##  7       7      -79.7     -1.03      30 squa~ FALSE          0
+    ##  8       8      -79.2     -1.35      30 squa~ FALSE          0
+    ##  9       9      -77.2      0.132     30 squa~ FALSE          0
+    ## 10      10      -79.1     -0.418     30 squa~ FALSE          0
+    ## # ... with 5,990 more rows, and 31 more variables: SAMPLE_POINTS <dbl>,
     ## #   USER_ID <chr>, ANALYSIS_DURATION <lgl>, COLLECTION_TIME <dttm>,
     ## #   PL_LONGITUDE <dbl>, PL_LATITUDE <dbl>, PL_PLOTID <dbl>,
-    ## #   PL_FID_REFDTA <dbl>, CLASS <dbl>, PRIMARY_TREE <dbl>,
-    ## #   SECONDARY_TREE <dbl>, PLANTATION_TREE <dbl>, MANGROVE <dbl>,
-    ## #   HERBACEOUS_GRASS_VEGETATION <dbl>, SHRUB_VEGETATION <dbl>,
-    ## #   PARAMO_VEGETATION <dbl>, CROPS <dbl>, NATURAL_WATER <dbl>,
-    ## #   ARTIFICIAL_WATER <dbl>, WETLAND_VEGETATION <dbl>,
-    ## #   HOUSING_STRUCTURE <dbl>, INFRASTRUCTURE <dbl>, ROADS_AND_LOTS <dbl>,
-    ## #   SETTLEMENT_VEGETATION <dbl>, BARE_GROUND <dbl>, SNOW_ICE <dbl>,
-    ## #   OTHER <dbl>, CLOUDS_UNINTERPRETABLE <dbl>, Primary <chr>,
-    ## #   Secondary <chr>, LEVEL2 <chr>, LEVEL1 <chr>
+    ## #   PL_CLASS <dbl>, ARBOL_PRIMARIO <dbl>, ARBOL_SECUNDARIO <dbl>,
+    ## #   ARBOL_DE_PLANTACION <dbl>, ARBOL_DE_MANGLE <dbl>,
+    ## #   VEGETACION_HERBACEA_PASTOS <dbl>, VEGETACION_ARBUSTIVA <dbl>,
+    ## #   VEGETACION_DE_PARAMO <dbl>, CULTIVOS <dbl>, AGUA_NATURAL <dbl>,
+    ## #   AGUA_ARTIFICIAL <dbl>, VEGETACION_DE_HUMEDALES <dbl>,
+    ## #   ESTRUCTURA_DE_VIVIENDA <dbl>, INFRAESTRUCTURA <dbl>,
+    ## #   CARRETERAS_Y_LOTES <dbl>, VEGETACION_DE_ASENTAMIENTOS <dbl>,
+    ## #   SUELO_DESNUDO <dbl>, NIEVE_HIELO <dbl>, OTRO <dbl>,
+    ## #   NUBE_ININTELIGIBLE <dbl>, Primary <chr>, Secondary <chr>,
+    ## #   LEVEL2 <chr>, LEVEL1 <chr>
 
 The SEPAL stratified estimator tool works with integer classes. However, the data have been imported and prepared as characters. This section is for converting map values and validation values to integer values, and will export a csv file that can be uploaded into SEPAL.
 
@@ -379,15 +433,17 @@ finalTable <- convertToClasses(reclassed)
 
 #strip out No_Data entries.
 toRemove <- which(finalTable$LEVEL2 == "No_Data")
-finalTable <- finalTable[-toRemove,]
+if (length(toRemove) > 0) {
+    finalTable <- finalTable[-toRemove]
+}
 
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
-                             "Cropland", "Secondary_Forest", "Infrastructure", 
-                             "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
-                             "Shrubland", "Herbland", "Settlement", "Glacier")
+refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
+                             "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
+                             "Plantacion_Forestal", "Vegetacion_Arbustiva", 
+                             "Area_Poblada", "Glaciar")
 
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$LEVEL2, refLevels)
@@ -406,6 +462,7 @@ write_csv(finalTable, "data/finalTable.csv")
 Import class data, reformat the feature properties to make a tidy export. Earth Engine exports a set of lists, with numbers formatted in a slightly odd manner. The lines below convert this into a clean set of areas and associated classes.
 
 ``` r
+#import area dta exported by GEE.
 rawAreas <- read_csv("data/Class_Areas.csv")
 ```
 
@@ -438,7 +495,28 @@ areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>%
     strsplit(., ", ")
 
 cleanAreas <- data.frame(areas, areaClasses[[1]])
+cleanAreas
+```
 
+    ##           areas areaClasses..1..
+    ## 1  0.000000e+00                0
+    ## 2  6.775595e+09                1
+    ## 3  4.848717e+09                2
+    ## 4  1.109274e+10                3
+    ## 5  1.371502e+11                4
+    ## 6  6.215711e+10                5
+    ## 7  1.787481e+03                6
+    ## 8  1.067806e+08                7
+    ## 9  1.432138e+10                8
+    ## 10 1.182804e+10                9
+    ## 11 5.700854e+09               10
+    ## 12 1.161763e+04               11
+    ## 13 1.429933e+04               12
+    ## 14 7.149121e+03               13
+    ## 15 2.681210e+03               14
+    ## 16 1.608619e+04               15
+
+``` r
 # Export table for upload to SEPAL
 write_csv(cleanAreas, "data/area_rast.csv")
 ```
