@@ -197,7 +197,7 @@ write_csv(finalTable, "data/finalTable.csv")
 rawAreas <- read_csv("data/Class_Areas.csv")
 
 #clean up GEE formatting
-areas <- gsub("[", "", rawAreas$areas, fixed = TRUE) %>% 
+areas <- gsub("[", "", rawAreas$area, fixed = TRUE) %>% 
 	gsub("]", "", ., fixed = TRUE) %>% 
 	strsplit(., ", ")
 
@@ -216,6 +216,7 @@ areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>%
 	strsplit(., ", ")
 
 cleanAreas <- data.frame(areas, areaClasses[[1]])
+cleanAreas
 
 # Export table for upload to SEPAL
 write_csv(cleanAreas, "data/area_rast.csv")
