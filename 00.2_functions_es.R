@@ -190,14 +190,14 @@ convertToClasses <- function(table){
 		mutate(
 			MapClass = case_when(
 				PL_CLASS == 0 ~ "Area_Sin_Cobertura_Vegetal",
-				PL_CLASS == 1 ~ "Artificial",
+				PL_CLASS == 1 ~ "Cuerpo_de_Agua_Artificial",
 				PL_CLASS == 2 ~ "Bosque",
 				PL_CLASS == 3 ~ "Cultivo",
 				PL_CLASS == 4 ~ "Cultivo",
 				PL_CLASS == 5 ~ "Cultivo",
 				PL_CLASS == 6 ~ "Infraestructura",
 				PL_CLASS == 7 ~ "Cultivo",
-				PL_CLASS == 8 ~ "Natural",
+				PL_CLASS == 8 ~ "Cuerpo_de_Agua_Natural",
 				PL_CLASS == 9 ~ "Paramos",
 				PL_CLASS == 10 ~ "Vegetacion_Herbacea",
 				PL_CLASS == 11 ~ "Plantacion_Forestal",
@@ -410,7 +410,7 @@ addLevel1 <- function(table){
 #' - Glaciar-> Glaciar = 13  
 #' 
 #' _Stable Level 1 Classes (internal change)_  
-#' - BosquePastizal -> Bosque (GG) = 15  
+#' - Vegetacion arbustiva y Herbacea-> Vegetacion arbustiva y Herbacea(GG) = 15  
 #' - Zona  Antropica -> Zona  Antropica (SS) = 16  
 #' - Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
 #' - Otros Tierras -> Otros Tierras (OO) = 18  
