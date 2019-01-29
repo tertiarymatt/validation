@@ -172,10 +172,10 @@ if (length(toRemove) > 0) {
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
-							 "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
-							 "Plantacion_Forestal", "Vegetacion_Arbustiva", 
-							 "Area_Poblada", "Glaciar")
+refLevels <- c("Area_Sin_Cobertura_Vegetal", "Cuerpo_de_Agua_Artificial", 
+							 "Bosque", "Cultivo", "Infraestructura", "Cuerpo_de_Agua_Natural", "Paramos", "Vegetacion_Herbacea",
+							 "Plantacion_Forestal", "Vegetacion_Arbustiva", "Area_Poblada", 
+							 "Glaciar")
 
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$LEVEL2, refLevels)

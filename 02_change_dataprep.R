@@ -11,10 +11,12 @@
 setwd("~/R/projects/validation")
 
 #' Required packages
+#' To use the english class functions file, change `source()` to 
+#' `00.1_funcitons_en.R`.
 #+ Packages
 library(tidyverse)
 library(stringr)
-source('00_functions.R')
+source('00.2_functions_es.R')
 
 #' This script is used to import the photo-interpreted points for change
 #' data (two years of data) after they have been produced in Collect Earth 
@@ -31,7 +33,7 @@ source('00_functions.R')
 #' Import raw data, strip out unneeded name components of class fields. 
 
 #+ Inmport and Prepare Data
-ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
+ceoTable <- read_csv("data/ceo-plantilla-de-validacion-(dos-anos)-plot-data-2019-01-28_2.csv")
 colnames(ceoTable)
 
 # Split table into pieces, reassemble into single year tables
@@ -174,10 +176,11 @@ finalTable <- addFinal(finalTable)
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Area_Sin_Cobertura_Vegetal", "Artificial", "Bosque", "Cultivo",
-							 "Infraestructura", "Natural", "Paramos", "Vegetacion_Herbacea",
-							 "Plantacion_Forestal", "Vegetacion_Arbustiva", 
-							 "Vegetacion_Herbacea", "Area_Poblada", "Glaciar",
+refLevels <- c("Bosque_Primario", "Bosque_Secundario", "Plantacion_Forestal",   
+							 "Manglar", "Vegetacion_Arbustiva", "Paramos", 
+							 "Vegetacion_Herbacea", "Cultivo", "Cuerpo_de_Agua_Natural",
+							 "Cuerpo_de_Agua_Artificial", "Area_Poblada", "Infraestructura",
+							 "Area_Sin_Cobertura_Vegetal", "Glaciar",
 							 "Bosque", "Vegetacion_Arbustiva_Y_Herbacea","Zona_Antropica",
 							 "Cuerpo_de_Agua", "Otras_Tierras",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
