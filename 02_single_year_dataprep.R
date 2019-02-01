@@ -215,9 +215,15 @@ areas <- number * 10 ^ exponent
 
 areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>% 
 	gsub("]", "", ., fixed = TRUE) %>% 
-	strsplit(., ", ")
+	str_split(., coll(", "), simplify = TRUE) %>% 
+	gsub(" ", "_", ., fixed = TRUE)
 
-cleanAreas <- data.frame(areas, areaClasses[[1]])
+#make into factor, and int for export
+areaClasses <- factor(areaClasses[1,], refLevels)
+class <- as.numeric(areaClasses) - 1
+
+cleanAreas <- data.frame(areas, class)
+names(cleanAreas) <- c("area", "class")
 cleanAreas
 
 # Export table for upload to SEPAL

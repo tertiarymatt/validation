@@ -180,9 +180,8 @@ refLevels <- c("Bosque_Primario", "Bosque_Secundario", "Plantacion_Forestal",
 							 "Manglar", "Vegetacion_Arbustiva", "Paramos", 
 							 "Vegetacion_Herbacea", "Cultivo", "Cuerpo_de_Agua_Natural",
 							 "Cuerpo_de_Agua_Artificial", "Area_Poblada", "Infraestructura",
-							 "Area_Sin_Cobertura_Vegetal", "Glaciar",
-							 "Bosque", "Vegetacion_Arbustiva_Y_Herbacea","Zona_Antropica",
-							 "Cuerpo_de_Agua", "Otras_Tierras",
+							 "Area_sin_Cobertura_Vegetal", "Glaciar",
+							 "FF", "GG","SS", "WW", "OO",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
 							 "WC", "WS", "OS", "Catchall")
 
@@ -224,11 +223,17 @@ areas <- number * 10 ^ exponent
 
 areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>% 
 	gsub("]", "", ., fixed = TRUE) %>% 
-	strsplit(., ", ")
+	str_split(., coll(", "), simplify = TRUE) %>% 
+	gsub(" ", "_", ., fixed = TRUE)
+areaClasses[1,]
 
-# make the area table
-cleanAreas <- data.frame(areas, areaClasses[[1]])
+#make into factor, and int for export
+areaClasses <- factor(areaClasses[1,], refLevels)
+class <- as.numeric(areaClasses) - 1
+
+cleanAreas <- data.frame(areas, class)
 names(cleanAreas) <- c("area", "class")
+cleanAreas
 
 # Export table for upload to SEPAL
 write_csv(cleanAreas, "data/area_rast.csv")

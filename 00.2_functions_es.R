@@ -369,14 +369,14 @@ addLevel1 <- function(table){
 					LEVEL2 == "Manglar" ~ "Bosque",
 				LEVEL2 == "Vegetacion_Herbacea" | 
 					LEVEL2 == "Vegetacion_Arbustiva" | 
-					LEVEL2 == "Paramos" ~ "Vegetacion_Arbustiva_Y_Herbacea",
+					LEVEL2 == "Paramos" ~ "Vegetacion_Arbustiva_y_Herbacea",
 				LEVEL2 == "Cultivo" ~ "Tierra_Agropecuaria",
 				LEVEL2 == "Natural" |
 					LEVEL2 == "Artificial" ~ "Cuerpo_de_Agua",
 				LEVEL2 == "Area_Poblada" |
 					LEVEL2 == "Infraestructura" ~ "Zona_Antropica",
 				LEVEL2 == "Glaciar" |
-					LEVEL2 == "Area_Sin_Cobertura_Vegetal" |
+					LEVEL2 == "Area_sin_Cobertura_Vegetal" |
 					LEVEL2 == "Otro" |
 					LEVEL2 == "Mosaico" ~ "Otras_Tierras",
 				LEVEL2 == "Sin_Datos" ~ "Sin_Datos"
@@ -410,6 +410,7 @@ addLevel1 <- function(table){
 #' - Glaciar-> Glaciar = 13  
 #' 
 #' _Stable Level 1 Classes (internal change)_  
+#' - Bosque -> Bosque (FF) = 14
 #' - Vegetacion arbustiva y Herbacea-> Vegetacion arbustiva y Herbacea(GG) = 15  
 #' - Zona  Antropica -> Zona  Antropica (SS) = 16  
 #' - Cuerpo de Agua -> Cuerpo de Agua (WW) = 17  
@@ -444,7 +445,7 @@ addFinal <- function(table){
 				T1L1 == "Bosque" & 
 					T2L1 == "Tierra_Agropecuaria" ~ "FC",
 				T1L1 == "Bosque" & 
-					T2L1 == "Vegetacion_Arbustiva_Y_Herbacea" ~ "FG",
+					T2L1 == "Vegetacion_Arbustiva_y_Herbacea" ~ "FG",
 				T1L1 == "Bosque" & 
 					T2L1 == "Zona_Antropica" ~ "FS",
 				T1L1 == "Bosque" & 
@@ -452,14 +453,14 @@ addFinal <- function(table){
 				T1L1 == "Tierra_Agropecuaria" & 
 					T2L1 == "Bosque" ~ "CF",
 				T1L1 == "Tierra_Agropecuaria" & 
-					T2L1 == "Vegetacion_Arbustiva_Y_Herbacea" ~ "CG",
+					T2L1 == "Vegetacion_Arbustiva_y_Herbacea" ~ "CG",
 				T1L1 == "Tierra_Agropecuaria" & 
 					T2L1 == "Zona_Antropica" ~ "CS",
-				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+				T1L1 == "Vegetacion_Arbustiva_y_Herbacea" & 
 					T2L1 == "Tierra_Agropecuaria" ~ "GC",
-				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+				T1L1 == "Vegetacion_Arbustiva_y_Herbacea" & 
 					T2L1 == "Bosque" ~ "GF",
-				T1L1 == "Vegetacion_Arbustiva_Y_Herbacea" & 
+				T1L1 == "Vegetacion_Arbustiva_y_Herbacea" & 
 					T2L1 == "Zona_Antropica" ~ "GS",
 				T1L1 == "Cuerpo_de_Agua" & 
 					T2L1 == "Tierra_Agropecuaria" ~ "WC",
