@@ -1,7 +1,7 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-January 22, 2019
+February 01, 2019
 
 Set working directory to where data is being stored.
 + setwd
@@ -10,26 +10,26 @@ Set working directory to where data is being stored.
 setwd("~/R/projects/validation")
 ```
 
-Required packages
+Required packages To use the english class functions file, change `source()` to `00.1_funcitons_en.R`.
 
 ``` r
 library(tidyverse)
 ```
 
-    ## -- Attaching packages -------------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 library(stringr)
-source('00_functions.R')
+source('00.2_functions_es.R')
 ```
 
 This script is used to import the photo-interpreted points for change data (two years of data) after they have been produced in Collect Earth Online. The process is as follows.
@@ -44,7 +44,7 @@ This script is used to import the photo-interpreted points for change data (two 
 Import raw data, strip out unneeded name components of class fields.
 
 ``` r
-ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
+ceoTable <- read_csv("data/validation_example_data.csv")
 ```
 
     ## Parsed with column specification:
@@ -52,9 +52,10 @@ ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
     ##   .default = col_double(),
     ##   SHAPE = col_character(),
     ##   FLAGGED = col_logical(),
-    ##   USER_ID = col_character(),
+    ##   USER_ID = col_logical(),
     ##   ANALYSIS_DURATION = col_logical(),
-    ##   COLLECTION_TIME = col_datetime(format = "")
+    ##   COLLECTION_TIME = col_logical(),
+    ##   PL_PLOTID = col_character()
     ## )
 
     ## See spec(...) for full column specifications.
@@ -63,33 +64,59 @@ ceoTable <- read_csv("data/ceo-two-time-training-1.3-plot-data-2019-01-16.csv")
 colnames(ceoTable)
 ```
 
-    ##  [1] "PLOT_ID"                     "CENTER_LON"                 
-    ##  [3] "CENTER_LAT"                  "SIZE_M"                     
-    ##  [5] "SHAPE"                       "FLAGGED"                    
-    ##  [7] "ANALYSES"                    "SAMPLE_POINTS"              
-    ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
-    ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
-    ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
-    ## [15] "CLASS"                       "2014:PRIMARY TREE"          
-    ## [17] "2014:SECONDARY TREE"         "2014:PLANTATION TREE"       
-    ## [19] "2014:MANGROVE"               "2014:HERBACEOUS VEGETATION" 
-    ## [21] "2014:SHRUB VEGETATION"       "2014:PARAMO VEGETATION"     
-    ## [23] "2014:CROPS"                  "2014:NATURAL WATER"         
-    ## [25] "2014:ARTIFICIAL WATER"       "2014:WETLAND VEGETATION"    
-    ## [27] "2014:HOUSING STRUCTURE"      "2014:INFRASTRUCTURE"        
-    ## [29] "2014:ROADS AND LOTS"         "2014:SETTLEMENT VEGETATION" 
-    ## [31] "2014:BARE GROUND"            "2014:SNOW/ICE"              
-    ## [33] "2014:OTHER"                  "2014:CLOUDS/UNINTERPRETABLE"
-    ## [35] "2016:PRIMARY TREE"           "2016:SECONDARY TREE"        
-    ## [37] "2016:PLANTATION TREE"        "2016:MANGROVE"              
-    ## [39] "2016:HERBACEOUS VEGETATION"  "2016:SHRUB VEGETATION"      
-    ## [41] "2016:PARAMO VEGETATION"      "2016:CROPS"                 
-    ## [43] "2016:NATURAL WATER"          "2016:ARTIFICIAL WATER"      
-    ## [45] "2016:WETLAND VEGETATION"     "2016:HOUSING STRUCTURE"     
-    ## [47] "2016:INFRASTRUCTURE"         "2016:ROADS AND LOTS"        
-    ## [49] "2016:SETTLEMENT VEGETATION"  "2016:BARE GROUND"           
-    ## [51] "2016:SNOW/ICE"               "2016:OTHER"                 
-    ## [53] "2016:CLOUDS/UNINTERPRETABLE"
+    ##  [1] "PLOT_ID"                           
+    ##  [2] "CENTER_LON"                        
+    ##  [3] "CENTER_LAT"                        
+    ##  [4] "SIZE_M"                            
+    ##  [5] "SHAPE"                             
+    ##  [6] "FLAGGED"                           
+    ##  [7] "ANALYSES"                          
+    ##  [8] "SAMPLE_POINTS"                     
+    ##  [9] "USER_ID"                           
+    ## [10] "ANALYSIS_DURATION"                 
+    ## [11] "COLLECTION_TIME"                   
+    ## [12] "PL_LONGITUDE"                      
+    ## [13] "PL_LATITUDE"                       
+    ## [14] "PL_PLOTID"                         
+    ## [15] "PL_CLASS"                          
+    ## [16] "ANOS 1:ARBOL PRIMARIO"             
+    ## [17] "ANOS 1:ARBOL SECUNDARIO"           
+    ## [18] "ANOS 1:ARBOL DE PLANTACION"        
+    ## [19] "ANOS 1:ARBOL DE MANGLE"            
+    ## [20] "ANOS 1:VEGETACION HERBACEA/PASTOS" 
+    ## [21] "ANOS 1:VEGETACION ARBUSTIVA"       
+    ## [22] "ANOS 1:VEGETACION DE PARAMO"       
+    ## [23] "ANOS 1:CULTIVOS"                   
+    ## [24] "ANOS 1:AGUA NATURAL"               
+    ## [25] "ANOS 1:AGUA ARTIFICIAL"            
+    ## [26] "ANOS 1:VEGETACION DE HUMEDALES"    
+    ## [27] "ANOS 1:ESTRUCTURA DE VIVIENDA"     
+    ## [28] "ANOS 1:INFRAESTRUCTURA"            
+    ## [29] "ANOS 1:CARRETERAS Y LOTES"         
+    ## [30] "ANOS 1:VEGETACION DE ASENTAMIENTOS"
+    ## [31] "ANOS 1:SUELO DESNUDO"              
+    ## [32] "ANOS 1:NIEVE/HIELO"                
+    ## [33] "ANOS 1:OTRO"                       
+    ## [34] "ANOS 1:NUBE/ININTELIGIBLE"         
+    ## [35] "ANOS 2:ARBOL PRIMARIO"             
+    ## [36] "ANOS 2:ARBOL SECUNDARIO"           
+    ## [37] "ANOS 2:ARBOL DE PLANTACION"        
+    ## [38] "ANOS 2:ARBOL DE MANGLE"            
+    ## [39] "ANOS 2:VEGETACION HERBACEA/PASTOS" 
+    ## [40] "ANOS 2:VEGETACION ARBUSTIVA"       
+    ## [41] "ANOS 2:VEGETACION DE PARAMO"       
+    ## [42] "ANOS :CULTIVOS"                    
+    ## [43] "ANOS 2:AGUA NATURAL"               
+    ## [44] "ANOS 2:AGUA ARTIFICIAL"            
+    ## [45] "ANOS 2:VEGETACION DE HUMEDALES"    
+    ## [46] "ANOS 2:ESTRUCTURA DE VIVIENDA"     
+    ## [47] "ANOS 2:INFRAESTRUCTURA"            
+    ## [48] "ANOS 2:CARRETERAS Y LOTES"         
+    ## [49] "ANOS 2:VEGETACION DE ASENTAMIENTOS"
+    ## [50] "ANOS 2:SUELO DESNUDO"              
+    ## [51] "ANOS 2:NIEVE/HIELO"                
+    ## [52] "ANOS 2:OTRO"                       
+    ## [53] "ANOS 2:NUBE/ININTELIGIBLE"
 
 ``` r
 # Split table into pieces, reassemble into single year tables
@@ -114,24 +141,41 @@ time2 <-  bind_cols(metadata, time2)
 colnames(time1)
 ```
 
-    ##  [1] "PLOT_ID"                     "CENTER_LON"                 
-    ##  [3] "CENTER_LAT"                  "SIZE_M"                     
-    ##  [5] "SHAPE"                       "FLAGGED"                    
-    ##  [7] "ANALYSES"                    "SAMPLE_POINTS"              
-    ##  [9] "USER_ID"                     "ANALYSIS_DURATION"          
-    ## [11] "COLLECTION_TIME"             "PL_LONGITUDE"               
-    ## [13] "PL_LATITUDE"                 "PL_PLOTID"                  
-    ## [15] "CLASS"                       "MapClass"                   
-    ## [17] "2014:PRIMARY TREE"           "2014:SECONDARY TREE"        
-    ## [19] "2014:PLANTATION TREE"        "2014:MANGROVE"              
-    ## [21] "2014:HERBACEOUS VEGETATION"  "2014:SHRUB VEGETATION"      
-    ## [23] "2014:PARAMO VEGETATION"      "2014:CROPS"                 
-    ## [25] "2014:NATURAL WATER"          "2014:ARTIFICIAL WATER"      
-    ## [27] "2014:WETLAND VEGETATION"     "2014:HOUSING STRUCTURE"     
-    ## [29] "2014:INFRASTRUCTURE"         "2014:ROADS AND LOTS"        
-    ## [31] "2014:SETTLEMENT VEGETATION"  "2014:BARE GROUND"           
-    ## [33] "2014:SNOW/ICE"               "2014:OTHER"                 
-    ## [35] "2014:CLOUDS/UNINTERPRETABLE"
+    ##  [1] "PLOT_ID"                           
+    ##  [2] "CENTER_LON"                        
+    ##  [3] "CENTER_LAT"                        
+    ##  [4] "SIZE_M"                            
+    ##  [5] "SHAPE"                             
+    ##  [6] "FLAGGED"                           
+    ##  [7] "ANALYSES"                          
+    ##  [8] "SAMPLE_POINTS"                     
+    ##  [9] "USER_ID"                           
+    ## [10] "ANALYSIS_DURATION"                 
+    ## [11] "COLLECTION_TIME"                   
+    ## [12] "PL_LONGITUDE"                      
+    ## [13] "PL_LATITUDE"                       
+    ## [14] "PL_PLOTID"                         
+    ## [15] "PL_CLASS"                          
+    ## [16] "MapClass"                          
+    ## [17] "ANOS 1:ARBOL PRIMARIO"             
+    ## [18] "ANOS 1:ARBOL SECUNDARIO"           
+    ## [19] "ANOS 1:ARBOL DE PLANTACION"        
+    ## [20] "ANOS 1:ARBOL DE MANGLE"            
+    ## [21] "ANOS 1:VEGETACION HERBACEA/PASTOS" 
+    ## [22] "ANOS 1:VEGETACION ARBUSTIVA"       
+    ## [23] "ANOS 1:VEGETACION DE PARAMO"       
+    ## [24] "ANOS 1:CULTIVOS"                   
+    ## [25] "ANOS 1:AGUA NATURAL"               
+    ## [26] "ANOS 1:AGUA ARTIFICIAL"            
+    ## [27] "ANOS 1:VEGETACION DE HUMEDALES"    
+    ## [28] "ANOS 1:ESTRUCTURA DE VIVIENDA"     
+    ## [29] "ANOS 1:INFRAESTRUCTURA"            
+    ## [30] "ANOS 1:CARRETERAS Y LOTES"         
+    ## [31] "ANOS 1:VEGETACION DE ASENTAMIENTOS"
+    ## [32] "ANOS 1:SUELO DESNUDO"              
+    ## [33] "ANOS 1:NIEVE/HIELO"                
+    ## [34] "ANOS 1:OTRO"                       
+    ## [35] "ANOS 1:NUBE/ININTELIGIBLE"
 
 ``` r
 # create class column object to use in script.
@@ -250,12 +294,12 @@ The SEPAL stratified estimator tool works with integer classes. However, the dat
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-refLevels <- c("Non-vegetated", "Artificial_Water", "Primary_Forest", 
-                             "Cropland", "Secondary_Forest", "Infrastructure", 
-                             "Natural_Water", "Paramo", "Mangrove", "Plantation_Forest", 
-                             "Shrubland", "Herbland", "Settlement", "Glacier",
-                             "Forest_Lands", "Grasslands", "Settlements", "Wetlands", 
-                             "Other_Lands", 
+refLevels <- c("Bosque_Primario", "Bosque_Secundario", "Plantacion_Forestal",   
+                             "Manglar", "Vegetacion_Arbustiva", "Paramos", 
+                             "Vegetacion_Herbacea", "Cultivo", "Cuerpo_de_Agua_Natural",
+                             "Cuerpo_de_Agua_Artificial", "Area_Poblada", "Infraestructura",
+                             "Area_sin_Cobertura_Vegetal", "Glaciar",
+                             "FF", "GG","SS", "WW", "OO",
                              "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
                              "WC", "WS", "OS", "Catchall")
 
@@ -306,10 +350,75 @@ areas <- number * 10 ^ exponent
 
 areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>% 
     gsub("]", "", ., fixed = TRUE) %>% 
-    strsplit(., ", ")
+    str_split(., coll(", "), simplify = TRUE) %>% 
+    gsub(" ", "_", ., fixed = TRUE)
+areaClasses[1,]
+```
 
-cleanAreas <- data.frame(areas, areaClasses[[1]])
+    ##  [1] "Area_Poblada"               "Area_sin_Cobertura_Vegetal"
+    ##  [3] "Bosque_Primario"            "Bosque_Secundario"         
+    ##  [5] "CF"                         "CG"                        
+    ##  [7] "CS"                         "Catchall"                  
+    ##  [9] "Cuerpo_de_Agua_Artificial"  "Cuerpo_de_Agua_Natural"    
+    ## [11] "Cultivo"                    "FC"                        
+    ## [13] "FF"                         "FG"                        
+    ## [15] "FS"                         "FW"                        
+    ## [17] "GC"                         "GF"                        
+    ## [19] "GG"                         "GS"                        
+    ## [21] "Glaciar"                    "Infraestructura"           
+    ## [23] "Manglar"                    "OO"                        
+    ## [25] "OS"                         "Paramos"                   
+    ## [27] "Plantacion_Forestal"        "SS"                        
+    ## [29] "Vegetacion_Arbustiva"       "Vegetacion_Herbacea"       
+    ## [31] "WC"                         "WS"                        
+    ## [33] "WW"
 
+``` r
+#make into factor, and int for export
+areaClasses <- factor(areaClasses[1,], refLevels)
+class <- as.numeric(areaClasses) - 1
+
+cleanAreas <- data.frame(areas, class)
+names(cleanAreas) <- c("area", "class")
+cleanAreas
+```
+
+    ##            area class
+    ## 1  1.473673e+10    10
+    ## 2  6.344665e+09    12
+    ## 3  0.000000e+00     0
+    ## 4  4.922942e+09     1
+    ## 5  2.008248e+08    24
+    ## 6  2.005668e+08    23
+    ## 7  2.007140e+08    25
+    ## 8  0.000000e+00    32
+    ## 9  7.126884e+10     9
+    ## 10 5.336693e+05     8
+    ## 11 8.015594e+08     7
+    ## 12 2.010898e+08    19
+    ## 13 2.008546e+08    14
+    ## 14 2.004212e+08    20
+    ## 15 2.007980e+08    21
+    ## 16 2.004237e+08    22
+    ## 17 2.004390e+08    26
+    ## 18 2.010278e+08    27
+    ## 19 2.005466e+08    15
+    ## 20 2.003602e+08    28
+    ## 21 0.000000e+00    13
+    ## 22 1.197711e+10    11
+    ## 23 1.403022e+08     3
+    ## 24 2.011601e+08    18
+    ## 25 2.001793e+08    31
+    ## 26 1.211343e+11     5
+    ## 27 5.027924e+09     2
+    ## 28 2.012743e+08    16
+    ## 29 5.916729e+09     4
+    ## 30 6.079320e+09     6
+    ## 31 2.008316e+08    29
+    ## 32 2.010221e+08    30
+    ## 33 2.003751e+08    17
+
+``` r
 # Export table for upload to SEPAL
 write_csv(cleanAreas, "data/area_rast.csv")
 ```
