@@ -189,27 +189,43 @@ convertToClasses <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				PL_CLASS == 0 ~ "Area_Sin_Cobertura_Vegetal",
-				PL_CLASS == 1 ~ "Cuerpo_de_Agua_Artificial",
-				PL_CLASS == 2 ~ "Bosque",
-				PL_CLASS == 3 ~ "Cultivo",
-				PL_CLASS == 4 ~ "Cultivo",
-				PL_CLASS == 5 ~ "Cultivo",
-				PL_CLASS == 6 ~ "Infraestructura",
-				PL_CLASS == 7 ~ "Cultivo",
+				PL_CLASS == 0 ~ "Bosque_Primario",
+				PL_CLASS == 1 ~ "Bosque_Secundario",
+				PL_CLASS == 2 ~ "Plantacion_Forestal",  
+				PL_CLASS == 3 ~ "Manglar",
+				PL_CLASS == 4 ~ "Vegetacion_Arbustiva",
+				PL_CLASS == 5 ~ "Paramos", 
+				PL_CLASS == 6 ~ "Vegetacion_Herbacea",
+				PL_CLASS == 7 ~ "Cultivo", 
 				PL_CLASS == 8 ~ "Cuerpo_de_Agua_Natural",
-				PL_CLASS == 9 ~ "Paramos",
-				PL_CLASS == 10 ~ "Vegetacion_Herbacea",
-				PL_CLASS == 11 ~ "Plantacion_Forestal",
-				PL_CLASS == 12 ~ "Vegetacion_Arbustiva",
-				PL_CLASS == 13 ~ "Vegetacion_Herbacea",
-				PL_CLASS == 14 ~ "Area_Poblada",
-				PL_CLASS == 15 ~ "Glaciar"
+				PL_CLASS == 9 ~ "Cuerpo_de_Agua_Artificial",
+				PL_CLASS == 10 ~ "Area_Poblada",
+				PL_CLASS == 11 ~ "Infraestructura",
+				PL_CLASS == 12 ~ "Area_sin_Cobertura_Vegetal",
+				PL_CLASS == 13 ~ "Glaciar",
+				PL_CLASS == 14 ~ "FF",
+				PL_CLASS == 15 ~ "GG",
+				PL_CLASS == 16 ~ "SS",
+				PL_CLASS == 17 ~ "WW",
+				PL_CLASS == 18 ~ "OO",
+				PL_CLASS == 19 ~ "FC",
+				PL_CLASS == 20 ~ "FG",
+				PL_CLASS == 21 ~ "FS",
+				PL_CLASS == 22 ~ "FW",
+				PL_CLASS == 23 ~ "CG",
+				PL_CLASS == 24 ~ "CF",
+				PL_CLASS == 25 ~ "CS",
+				PL_CLASS == 26 ~ "GC", 
+				PL_CLASS == 27 ~ "GF",
+				PL_CLASS == 28 ~ "GS",
+				PL_CLASS == 29 ~ "WC",
+				PL_CLASS == 30 ~ "WS",
+				PL_CLASS == 31 ~ "OS", 
+				PL_CLASS == 32 ~ "Catchall"
 			)
 		)
 	return(reclassed)
 }
-
 
 #' ### CEO Point Table Reclassification Functions
 #'
@@ -305,8 +321,8 @@ addLevel2 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL2 = case_when(
-				ARBOL_PRIMARIO >= 30 ~ "Bosque",
-				ARBOL_SECUNDARIO >= 30 ~ "Bosque",
+				ARBOL_PRIMARIO >= 30 ~ "Bosque_Primario",
+				ARBOL_SECUNDARIO >= 30 ~ "Bosque_Secundario",
 				ARBOL_DE_PLANTACION >= 30 ~ "Plantacion_Forestal",
 				ARBOL_DE_MANGLE >= 30 ~ "Manglar",
 				VEGETACION_HERBACEA_PASTOS >= 30 ~ "Vegetacion_Herbacea",
@@ -314,12 +330,12 @@ addLevel2 <- function(table){
 				VEGETACION_DE_PARAMO > 0 ~ "Paramos",
 				CULTIVOS >= 50 ~ "Cultivo",
 				AGUA_NATURAL + 
-					VEGETACION_DE_HUMEDALES >= 50 ~  "Natural",
+					VEGETACION_DE_HUMEDALES >= 50 ~  "Cuerpo_de_Agua_Natural",
 				AGUA_ARTIFICIAL + 
-					VEGETACION_DE_HUMEDALES >= 50 ~  "Artificial",
+					VEGETACION_DE_HUMEDALES >= 50 ~  "Cuerpo_de_Agua_Artificial",
 				VEGETACION_DE_HUMEDALES >= 50 & 
-					AGUA_ARTIFICIAL > 0 ~ "Artificial",
-				VEGETACION_DE_HUMEDALES >= 50 ~ "Natural",
+					AGUA_ARTIFICIAL > 0 ~ "Cuerpo_de_Agua_Artificial",
+				VEGETACION_DE_HUMEDALES >= 50 ~ "Cuerpo_de_Agua_Natural",
 				ESTRUCTURA_DE_VIVIENDA + 
 					VEGETACION_DE_ASENTAMIENTOS + 
 					CARRETERAS_Y_LOTES >= 30 ~ "Area_Poblada",
@@ -329,7 +345,7 @@ addLevel2 <- function(table){
 					VEGETACION_DE_ASENTAMIENTOS + 
 					CARRETERAS_Y_LOTES >= 30 ~ "Infraestructura",
 				CARRETERAS_Y_LOTES >= 30 ~ "Infraestructura",
-				SUELO_DESNUDO >= 70 ~ "Area_Sin_Cobertura_Vegetal",
+				SUELO_DESNUDO >= 70 ~ "Area_sin_Cobertura_Vegetal",
 				SUELO_DESNUDO +
 					ESTRUCTURA_DE_VIVIENDA +
 					VEGETACION_DE_ASENTAMIENTOS >= 30 ~ "Area_Poblada",
@@ -364,15 +380,16 @@ addLevel1 <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			LEVEL1 = case_when(
-				LEVEL2 == "Bosque" |
+				LEVEL2 == "Bosque_Primario" |
+					LEVEL2 == "Bosque_Secundario" |
 					LEVEL2 == "Plantacion_Forestal" |
 					LEVEL2 == "Manglar" ~ "Bosque",
 				LEVEL2 == "Vegetacion_Herbacea" | 
 					LEVEL2 == "Vegetacion_Arbustiva" | 
 					LEVEL2 == "Paramos" ~ "Vegetacion_Arbustiva_y_Herbacea",
 				LEVEL2 == "Cultivo" ~ "Tierra_Agropecuaria",
-				LEVEL2 == "Natural" |
-					LEVEL2 == "Artificial" ~ "Cuerpo_de_Agua",
+				LEVEL2 == "Cuerpo_de_Agua_Natural" |
+					LEVEL2 == "Cuerpo_de_Agua_Artificial" ~ "Cuerpo_de_Agua",
 				LEVEL2 == "Area_Poblada" |
 					LEVEL2 == "Infraestructura" ~ "Zona_Antropica",
 				LEVEL2 == "Glaciar" |
@@ -441,6 +458,16 @@ addFinal <- function(table){
 		mutate(
 			refClass = case_when(
 				T1L2 == T2L2 ~ T2L2,
+				T1L1 == T2L1 & 
+					T2L1 == "Bosque" ~ "FF",
+				T1L1 == T2L1 & 
+					T2L1 == "Vegetacion_Arbustiva_y_Herbacea" ~ "GG",
+				T1L1 == T2L1 & 
+					T2L1 == "Zona_Antropica" ~ "SS",
+				T1L1 == T2L1 & 
+					T2L1 == "Otras_Tierras" ~ "OO",
+				T1L1 == T2L1 & 
+					T2L1 == "Cuerpo_de_Agua" ~ "WW",
 				T1L1 == T2L1 ~ T2L1,
 				T1L1 == "Bosque" & 
 					T2L1 == "Tierra_Agropecuaria" ~ "FC",

@@ -33,7 +33,7 @@ source('00.2_functions_es.R')
 #' Import raw data, strip out unneeded name components of class fields. 
 
 #+ Inmport and Prepare Data
-ceoTable <- read_csv("data/ceo-plantilla-de-validacion-(dos-anos)-plot-data-2019-01-28_2.csv")
+ceoTable <- read_csv("data/validation_example_data.csv")
 colnames(ceoTable)
 
 # Split table into pieces, reassemble into single year tables

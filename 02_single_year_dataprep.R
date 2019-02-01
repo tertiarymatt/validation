@@ -36,6 +36,7 @@ colnames(ceoTable)
 # class names need to be pulled from each project.
 # The classCol variable MUST be updated! 
 classCol <- c(16:34)
+
 classes <- colnames(ceoTable[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
