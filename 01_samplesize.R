@@ -71,8 +71,8 @@ actualN
 
 #+ Create Error Matrix. 
 error <- matrix(nrow = 2, ncol = 2, 
-                c(0.025, 0.00625, 
-                  0.00625, 0.9625))
+                c(0.02, 0.005, 
+                  0.005, 0.97))
 
 # Check that error matrix is correctly made. 
 checkErrorMatrix(error)
