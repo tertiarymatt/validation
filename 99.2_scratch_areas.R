@@ -60,24 +60,36 @@ accurates <- calcAccuracies(strata_totals, sample_totals, rfcodes, totarea_pix,
 									propsAndVars)
 accurates
 
-#' To run this on other data, here are the data one needs:
+#' ### Summary of implementing this approach
+
+#' To run this on other data, here are the data one needs:  
 #' 1. **orig_strata**, a vector with numeric codes representing the original 
 #' stratification of each sample.  
-#' 1. **ref_label**, a vector with numeric codes representing the reference label 
+#' 2. **ref_label**, a vector with numeric codes representing the reference label 
 #' for that year/map, for each sample.  
-#' 1. **map_label**, a vector with numeric codes representing the map labels, for
+#' 3. **map_label**, a vector with numeric codes representing the map labels, for
 #' each sample.  
-#' 1. **strata_totals**, a dataframe with two columns and number of rows equal to 
+#' 4. **strata_totals**, a dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification and the second must 
 #' have the total number of PIXELS of each class in that original strata map.  
-#' 1. **sample_totals**, a dataframe with two columns and number of rows equal to 
+#' 5. **sample_totals**, a dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification, and the second must
 #' have the total number of SAMPLE UNITS of each class collected from that 
 #' original strata map.  
-#' 1. **rfcodes**, a vector with numeric values representing the reference codes
-#' present in ALL of the periods. 
-#' 1. **pixel**, the pixel size of the maps being analyzed.  
-#' 1. **totarea_pix**, an integer with the total number of pixels present in the 
+#' 6. **rfcodes**, a vector with numeric values representing the reference codes
+#' present in ALL of the periods.  
+#' 7. **pixel**, the pixel size of the maps being analyzed.  
+#' 8. **totarea_pix**, an integer with the total number of pixels present in the 
 #' original stratification map (this can be calculated from other values).  
+#' 
+#' ####TODO  
+#' 1. [ ] **orig_strata**   
+#' 2. [ ] **ref_label**  
+#' 3. [ ] **map_label**  
+#' 4. [ ] **strata_totals**  
+#' 5. [ ] **sample_totals**    
+#' 6. [ ] **rfcodes**  
+#' 7. [ ] **pixel**  
+#' 8. [ ] **totarea_pix**  
