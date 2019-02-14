@@ -26,21 +26,27 @@
 #' 
 #' **orig_strata** Vector with numeric codes representing the original 
 #' stratification of each sample.  
+#' 
 #' **ref_label** Vector with numeric codes representing the reference label 
 #' for that year/map, for each sample.  
+#' 
 #' **map_label** Vector with numeric codes representing the map labels, for
 #' each sample.  
+#' 
 #' **strata_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification and the second must 
 #' have the total number of PIXELS of each class in that original strata map.  
+#' 
 #' **sample_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification, and the second must
 #' have the total number of SAMPLE UNITS of each class collected from that 
 #' original strata map.  
+#' 
 #' **rfcodes** Vector with numeric values representing the reference codes
 #' present in ALL of the periods.  
+#' 
 #' **Returns** List with: dataframe with proportion (mean) of reference labels 
 #' present on each sample strata class (ref_prop) and dataframe with its 
 #' variance (ref_var), dataframe with proportion (mean) of map labels present 
@@ -188,19 +194,24 @@ calcPropsAndVars <- function(orig_strata, ref_label, map_label,
 #' **strata_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification and the second must 
-#' have the total number of PIXELS of each class in that original strata map.  
+#' have the total number of PIXELS of each class in that original strata map. 
+#'  
 #' **sample_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification, and the second must
 #' have the total number of SAMPLE UNITS  of each class collected from that 
 #' original strata map.  
+#' 
 #' **ref_var** Dataframe with reference class variance for (column) per 
 #' original strata class (row).  
+#' 
 #' **rfcodes** Vector with all the unique numerical classes present in the 
 #' REFERENCE data . This is required to facilitate the calculations for multiple
 #' maps/years when not all the reference classes are present in every map.  
+#' 
 #' **totarea_pix** Integer with the total number of pixels present in the 
 #' original stratification map.  
+#' 
 #' **Returns** Vector with standard error of unbiased area proportions per reference
 #' class.  
 
@@ -229,10 +240,14 @@ calcPropSE = function(strata_totals, sample_totals, ref_var,
 #' described below.  
 #' **totarea_pix** Integer with the total number of pixels present in the 
 #' original stratification map.  
+#' 
 #' **class_prop** Vector of area proportions per reference class.  
+#' 
 #' **se** Vector with standard error of unbiased area proportions per 
 #' reference class.  
+#' 
 #' **pixel** Pixel size in square meters; for landsat, this is 30.  
+#' 
 #' **return** List with vector of areas in ha (area), vector of HALF the width 
 #' confidence interval (ci), vector of higher and lower confidence interval 
 #' limits (upper_ci, lower_ci) and margin of error (me).  
@@ -258,37 +273,50 @@ calcUnbiasedArea = function(totarea_pix, class_prop, se, pixel){
 #' **strata_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification and the second must 
-#' have the total number of PIXELS of each class in that original strata map.  
+#' have the total number of PIXELS of each class in that original strata map.
+#'   
 #' **sample_totals** Dataframe with two columns and number of rows equal to 
 #' the total number of classes in the original strata. The first column must 
 #' have the same codes found in the original stratification, and the second must
 #' have the total number of SAMPLE UNITS of each class collected from that 
 #' original strata map.  
+#' 
 #' **rfcodes** Vector with numeric values representing the reference codes
 #' present in ALL of the periods.  
+#' 
 #' **totarea_pix** Integer with the total number of pixels present in the 
 #' original stratification map.  
 #' 
 #' The following inputs must be contained in a list of data frames
 #' that are input as the parameter **props_and_vars**. They are produced
 #' by `calcPropsAndVars()` function.
+#' 
 #' **ref_prop** Dataframe with proportions (mean) of reference labels 
 #' (columns) present on each sample strata class (rows).  
+#' 
 #' **ref_var** Dataframe of variances of reference labels (columns)
 #' present on each sample strata class (rows).  
+#' 
 #' **map_prop** Dataframe of proportions (mean) of map labels (columns)
 #' present on each sample strata class (rows).  
+#' 
 #' **map_var** Dataframe of variances of map labels (columns) present on each
 #' sample strata class (rows).  
+#' 
 #' **map_and_ref_prop** Dataframe of proportions (mean) of matching reference
 #' and map labels (columns) present on each sample strata class (rows).  
+#' 
 #' **map_and_ref_var** Dataframe of variances of matching reference and 
 #' map labels (columns) present on each sample strata class (rows) .  
+#' 
 #' **overall_acc_prop** Vector of proportions of all map labels equal to 
 #' reference labels present in stratum.  
+#' 
 #' **overall_acc_var** Vector of variances of all map labels equal to 
 #' reference labels present in stratum.  
+#' 
 #' **users_cov** Dataframe of user's accuracy covariances per strata.  
+#' 
 #' **producers_cov** Dataframe of producer's accuracy covariances per strata
 #' with its variance (map_and_ref_var), dataframe with proportion of all map 
 #' labels equal to reference labels present in stratum (overall_acc_prop) and 
