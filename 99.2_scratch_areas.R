@@ -85,11 +85,17 @@ accurates
 #' original stratification map (this can be calculated from other values).  
 #' 
 #' ####TODO  
-#' 1. [ ] **orig_strata**   
-#' 2. [ ] **ref_label**  
-#' 3. [ ] **map_label**  
-#' 4. [ ] **strata_totals**  
-#' 5. [ ] **sample_totals**    
-#' 6. [ ] **rfcodes**  
-#' 7. [ ] **pixel**  
-#' 8. [ ] **totarea_pix**  
+#' 0. [ ] **Collate CEO data**: bring together all samples, unify with original 
+#' data derived from GEE/MAE to get stratifying map classes and old validation
+#' back into the file.
+#' 0. [ ] **Process CEO data** run through data prep scripts to get ref classes.   
+#' 1. [ ] **orig_strata**: More or less done, when the collation is complete,
+#' can be pulled out of that data.  
+#' 2. [ ] **ref_label**:  Pull out of processed CEO data.    
+#' 3. [ ] **map_label**:  Data goes back into GEE to sample final maps.    
+#' 4. [ ] **strata_totals**: exported with samples, needs to be processed and
+#'  converted into pixel counts.    
+#' 5. [ ] **sample_totals**: Derived from a summary of the collatted CEO data.      
+#' 6. [ ] **rfcodes**:  Easy-peasy lemon squeezy.    
+#' 7. [ ] **pixel**  = 30.  
+#' 8. [ ] **totarea_pix**: Easy to get from total areas.    
