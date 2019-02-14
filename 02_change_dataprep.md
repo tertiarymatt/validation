@@ -1,7 +1,7 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-February 01, 2019
+February 14, 2019
 
 Set working directory to where data is being stored.
 + setwd
@@ -16,14 +16,14 @@ Required packages To use the english class functions file, change `source()` to 
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ---------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -44,7 +44,7 @@ This script is used to import the photo-interpreted points for change data (two 
 Import raw data, strip out unneeded name components of class fields.
 
 ``` r
-ceoTable <- read_csv("data/validation_example_data.csv")
+ceoTable <- read_csv("data/test/validation_example_data.csv")
 ```
 
     ## Parsed with column specification:
@@ -312,7 +312,7 @@ finalTable$reference <- as.numeric(finalTable$reference) - 1
 finalTable$predicted <- as.numeric(finalTable$predicted) - 1
 
 # Export table for upload to SEPAL
-write_csv(finalTable, "data/finalTable.csv")
+write_csv(finalTable, "data/exports/finalTable.csv")
 ```
 
 ### Importing class area data.
@@ -321,7 +321,7 @@ Import class data, reformat the feature properties to make a tidy export. Earth 
 
 ``` r
 #import area dta exported by GEE.
-rawAreas <- read_csv("data/Class_Areas.csv")
+rawAreas <- read_csv("data/areas/Class_Areas.csv")
 ```
 
     ## Parsed with column specification:
@@ -356,22 +356,12 @@ areaClasses[1,]
 ```
 
     ##  [1] "Area_Poblada"               "Area_sin_Cobertura_Vegetal"
-    ##  [3] "Bosque_Primario"            "Bosque_Secundario"         
-    ##  [5] "CF"                         "CG"                        
-    ##  [7] "CS"                         "Catchall"                  
-    ##  [9] "Cuerpo_de_Agua_Artificial"  "Cuerpo_de_Agua_Natural"    
-    ## [11] "Cultivo"                    "FC"                        
-    ## [13] "FF"                         "FG"                        
-    ## [15] "FS"                         "FW"                        
-    ## [17] "GC"                         "GF"                        
-    ## [19] "GG"                         "GS"                        
-    ## [21] "Glaciar"                    "Infraestructura"           
-    ## [23] "Manglar"                    "OO"                        
-    ## [25] "OS"                         "Paramos"                   
-    ## [27] "Plantacion_Forestal"        "SS"                        
-    ## [29] "Vegetacion_Arbustiva"       "Vegetacion_Herbacea"       
-    ## [31] "WC"                         "WS"                        
-    ## [33] "WW"
+    ##  [3] "Bosque_Nativo"              "Cuerpo_de_Agua_Artificial" 
+    ##  [5] "Cuerpo_de_Agua_Natural"     "Cultivo"                   
+    ##  [7] "Glaciar"                    "Infraestructura"           
+    ##  [9] "Manglar"                    "Paramos"                   
+    ## [11] "Plantacion_Forestal"        "Vegetacion_Arbustiva"      
+    ## [13] "Vegetacion_Herbacea"
 
 ``` r
 #make into factor, and int for export
@@ -384,41 +374,21 @@ cleanAreas
 ```
 
     ##            area class
-    ## 1  1.473673e+10    10
-    ## 2  6.344665e+09    12
-    ## 3  0.000000e+00     0
-    ## 4  4.922942e+09     1
-    ## 5  2.008248e+08    24
-    ## 6  2.005668e+08    23
-    ## 7  2.007140e+08    25
-    ## 8  0.000000e+00    32
-    ## 9  7.126884e+10     9
-    ## 10 5.336693e+05     8
-    ## 11 8.015594e+08     7
-    ## 12 2.010898e+08    19
-    ## 13 2.008546e+08    14
-    ## 14 2.004212e+08    20
-    ## 15 2.007980e+08    21
-    ## 16 2.004237e+08    22
-    ## 17 2.004390e+08    26
-    ## 18 2.010278e+08    27
-    ## 19 2.005466e+08    15
-    ## 20 2.003602e+08    28
-    ## 21 0.000000e+00    13
-    ## 22 1.197711e+10    11
-    ## 23 1.403022e+08     3
-    ## 24 2.011601e+08    18
-    ## 25 2.001793e+08    31
-    ## 26 1.211343e+11     5
-    ## 27 5.027924e+09     2
-    ## 28 2.012743e+08    16
-    ## 29 5.916729e+09     4
-    ## 30 6.079320e+09     6
-    ## 31 2.008316e+08    29
-    ## 32 2.010221e+08    30
-    ## 33 2.003751e+08    17
+    ## 1    2206426880    10
+    ## 2     753163456    12
+    ## 3  123703328768    NA
+    ## 4    1421516032     9
+    ## 5    2321152256     8
+    ## 6   85598445568     7
+    ## 7      62692268    13
+    ## 8     210792672    11
+    ## 9     745222208     3
+    ## 10  15045940224     5
+    ## 11   1078450304     2
+    ## 12   7171517952     4
+    ## 13    787508608     6
 
 ``` r
 # Export table for upload to SEPAL
-write_csv(cleanAreas, "data/area_rast.csv")
+write_csv(cleanAreas, "data/exports/area_rast.csv")
 ```

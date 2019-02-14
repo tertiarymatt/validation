@@ -33,7 +33,7 @@ source('00.2_functions_es.R')
 #' Import raw data, strip out unneeded name components of class fields. 
 
 #+ Inmport and Prepare Data
-ceoTable <- read_csv("data/validation_example_data.csv")
+ceoTable <- read_csv("data/test/validation_example_data.csv")
 colnames(ceoTable)
 
 # Split table into pieces, reassemble into single year tables
@@ -194,7 +194,7 @@ finalTable$reference <- as.numeric(finalTable$reference) - 1
 finalTable$predicted <- as.numeric(finalTable$predicted) - 1
 
 # Export table for upload to SEPAL
-write_csv(finalTable, "data/finalTable.csv")
+write_csv(finalTable, "data/exports/finalTable.csv")
 
 #' ### Importing class area data.  
 #' Import class data, reformat the feature properties to make a tidy export.
@@ -204,7 +204,7 @@ write_csv(finalTable, "data/finalTable.csv")
 
 #+ AreaData
 #import area dta exported by GEE.
-rawAreas <- read_csv("data/Class_Areas.csv")
+rawAreas <- read_csv("data/areas/Class_Areas.csv")
 
 #clean up GEE formatting
 areas <- gsub("[", "", rawAreas$area, fixed = TRUE) %>% 
@@ -236,4 +236,4 @@ names(cleanAreas) <- c("area", "class")
 cleanAreas
 
 # Export table for upload to SEPAL
-write_csv(cleanAreas, "data/area_rast.csv")
+write_csv(cleanAreas, "data/exports/area_rast.csv")
