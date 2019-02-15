@@ -192,25 +192,23 @@ convertToClasses <- function(table){
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				CLASS == 0 ~ "Non-vegetated",
-				CLASS == 1 ~ "Artificial_Water",
-				CLASS == 2 ~ "Primary_Forest",
-				CLASS == 3 ~ "Cropland",
-				CLASS == 5 ~ "Secondary_Forest",
-				CLASS == 6 ~ "Infrastructure",
-				CLASS == 8 ~ "Natural_Water",
-				CLASS == 9 ~ "Paramo",
-				CLASS == 10 ~ "Mangrove",
-				CLASS == 11 ~ "Plantation_Forest",
-				CLASS == 12 ~ "Shrubland",
-				CLASS == 13 ~ "Herbland",
-				CLASS == 14 ~ "Settlement",
-				CLASS == 15 ~ "Glacier"
+				CLASS == 1 ~ "Cropland",
+				CLASS == 2 ~ "Surface_Water",
+				CLASS == 3 ~ "Barren",
+				CLASS == 4 ~ "Settlement",
+				CLASS == 5 ~ "Primary_Forest",
+				CLASS == 6 ~ "Surface_Water",
+				CLASS == 7 ~ "Plantation_Forest",
+				CLASS == 8 ~ "Settlement",
+				CLASS == 9 ~ "Shrubland",
+				CLASS == 10 ~ "Herbland",
+				CLASS == 11 ~ "Paramos",
+				CLASS == 12 ~ "Glacier",
+				CLASS == 13 ~ "Mangrove"
 			)
 		)
 	return(reclassed)
 }
-
 
 #' ### CEO Point Table Reclassification Functions
 #'
@@ -307,20 +305,20 @@ addLevel2 <- function(table){
 		mutate(
 			LEVEL2 = case_when(
 				PRIMARY_TREE >= 30 ~ "Primary_Forest",
-				SECONDARY_TREE >= 30 ~ "Secondary_Forest",
+				SECONDARY_TREE >= 30 ~ "Primary_Forest", #this obviously needs changing
 				PLANTATION_TREE >= 30 ~ "Plantation_Forest",
 				MANGROVE >= 30 ~ "Mangrove",
 				HERBACEOUS_VEGETATION >= 30 ~ "Herbland",
 				SHRUB_VEGETATION >= 30 ~ "Shrubland",
-				PARAMO_VEGETATION > 0 ~ "Paramo",
+				PARAMO_VEGETATION > 0 ~ "Paramos",
 				CROPS >= 50 ~ "Cropland",
 				NATURAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Natural_Water",
+					WETLAND_VEGETATION >= 50 ~  "Surface_Water",
 				ARTIFICIAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
+					WETLAND_VEGETATION >= 50 ~  "Surface_Water",
 				WETLAND_VEGETATION >= 50 & 
-					ARTIFICIAL_WATER > 0 ~ "Artificial_Water",
-				WETLAND_VEGETATION >= 50 ~ "Natural_Water",
+					NATURAL_WATER > 0 ~ "Surface_Water",
+				WETLAND_VEGETATION >= 50 ~ "Surface_Water",
 				HOUSING_STRUCTURE + 
 					SETTLEMENT_VEGETATION + 
 					ROADS_AND_LOTS >= 30 ~ "Settlement",
@@ -330,7 +328,7 @@ addLevel2 <- function(table){
 					SETTLEMENT_VEGETATION + 
 					ROADS_AND_LOTS >= 30 ~ "Infrastructure",
 				ROADS_AND_LOTS >= 30 ~ "Infrastructure",
-				BARE_GROUND >= 70 ~ "Non-vegetated",
+				BARE_GROUND >= 70 ~ "Barren",
 				BARE_GROUND +
 					HOUSING_STRUCTURE +
 					SETTLEMENT_VEGETATION >= 30 ~ "Settlement",
@@ -354,7 +352,7 @@ addLevel2 <- function(table){
 #' - Forest Lands = Primary, Secondary, Plantation, Mangrove  
 #' - Grasslands = Herbland, Shrubland, Paramo  
 #' - Croplands = Cropland  
-#' - Wetlands = Aritifical Water, Natural Water  
+#' - Wetlands = Aritifical Water, Surface Water  
 #' - Settlement = Settlement, Infrastructure  
 #' - Other Lands = Glacier, Non-vegetated, Other, Mosaic  
 #' - No Data = No Data  
@@ -371,14 +369,14 @@ addLevel1 <- function(table){
 					LEVEL2 == "Mangrove" ~ "Forest_Lands",
 				LEVEL2 == "Herbland" | 
 					LEVEL2 == "Shrubland" | 
-					LEVEL2 == "Paramo" ~ "Grasslands",
+					LEVEL2 == "Paramos" ~ "Grasslands",
 				LEVEL2 == "Cropland" ~ "Croplands",
-				LEVEL2 == "Natural_Water" |
-					LEVEL2 == "Artificial_Water" ~ "Wetlands",
+				LEVEL2 == "Surface_Water" |
+					LEVEL2 == "Surface_Water" ~ "Wetlands",
 				LEVEL2 == "Settlement" |
 					LEVEL2 == "Infrastructure" ~ "Settlements",
 				LEVEL2 == "Glacier" |
-					LEVEL2 == "Non-vegetated" |
+					LEVEL2 == "Barren" |
 					LEVEL2 == "Other" |
 					LEVEL2 == "Mosaic" ~ "Other_Lands",
 				LEVEL2 == "No_Data" ~ "No_Data"
@@ -443,7 +441,16 @@ addFinal <- function(table){
 		mutate(
 			refClass = case_when(
 				T1L2 == T2L2 ~ T2L2,
-				T1L1 == T2L1 ~ T2L1,
+				T1L1 == T2L1 & 
+					T2L1 == "Forest_Lands" ~ "FF",
+				T1L1 == T2L1 & 
+					T2L1 == "Grasslands" ~ "GG",
+				T1L1 == T2L1 & 
+					T2L1 == "Settlements" ~ "SS",
+				T1L1 == T2L1 & 
+					T2L1 == "Other_Lands" ~ "OO",
+				T1L1 == T2L1 & 
+					T2L1 == "Wetlands" ~ "WW",
 				T1L1 == "Forest_Lands" & 
 					T2L1 == "Croplands" ~ "FC",
 				T1L1 == "Forest_Lands" & 
