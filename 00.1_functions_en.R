@@ -204,7 +204,26 @@ convertToClasses <- function(table){
 				CLASS == 10 ~ "Herbland",
 				CLASS == 11 ~ "Paramos",
 				CLASS == 12 ~ "Glacier",
-				CLASS == 13 ~ "Mangrove"
+				CLASS == 13 ~ "Mangrove",
+				CLASS == 14 ~ "FF",
+				CLASS == 15 ~ "GG",
+				CLASS == 16 ~ "SS",
+				CLASS == 17 ~ "WW",
+				CLASS == 18 ~ "OO",
+				CLASS == 19 ~ "FC",
+				CLASS == 20 ~ "FG",
+				CLASS == 21 ~ "FS",
+				CLASS == 22 ~ "FW",
+				CLASS == 23 ~ "CG",
+				CLASS == 24 ~ "CF",
+				CLASS == 25 ~ "CS",
+				CLASS == 26 ~ "GC",
+				CLASS == 27 ~ "GF",
+				CLASS == 28 ~ "GS",
+				CLASS == 29 ~ "WC",
+				CLASS == 30 ~ "WS",
+				CLASS == 31 ~ "OS",
+				CLASS == 32 ~ "Catchall"
 			)
 		)
 	return(reclassed)
