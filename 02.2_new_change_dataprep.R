@@ -7,7 +7,7 @@
 #'
 
 #' Set working directory to where data is being stored.  
-#'+ setwd
+#+ setwd
 setwd("~/R/projects/validation")
 
 #' Required packages
@@ -22,12 +22,10 @@ source('00.1_functions_en.R')
 #' data (two years of data) after they have been produced in Collect Earth 
 #' Online. The process is as follows.  
 #' 1. Import all tables.  
+#' 1. Join missing data back into tables.  
 #' 1. Clean and shorten class names.  
 #' 1. Find dominant point classes.  
-#' 1. Convert dominant point classes to LULC classes. 
-#' 1. Format for use in SEPAL.  
-#' 1. Export the data. 
-#' 1. Export class areas for use with the SAE-Analysis tool.  
+#' 1. Convert dominant point classes to LULC classes.  
 #' 
 #' ### Importing data.  
 #' Import raw data, strip out unneeded name components of class fields. 
@@ -213,45 +211,3 @@ finalTable$predicted <- as.numeric(finalTable$predicted)
 
 # Export table for upload to SEPAL
 write_csv(finalTable, "data/exports/finalTable.csv")
-
-#' ### Importing class area data.  
-#' Import class data, reformat the feature properties to make a tidy export.
-#' Earth Engine exports a set of lists, with numbers formatted in a slightly
-#' odd manner. The lines below convert this into a clean set of areas and 
-#' associated classes. 
-
-#+ AreaData
-#import area dta exported by GEE.
-rawAreas <- read_csv("data/areas/Class_Areas.csv")
-
-#clean up GEE formatting
-areas <- gsub("[", "", rawAreas$area, fixed = TRUE) %>% 
-	gsub("]", "", ., fixed = TRUE) %>% 
-	strsplit(., ", ")
-
-#take number strings and split into the base number and an exponent
-areas <- areas[[1]]
-areaTable <- str_split(areas, "E", simplify = T)
-number <- as.numeric(areaTable[,1])
-exponent <- as.numeric(areaTable[,2])
-
-#replace missing exponents with 0, so those numbers are multiplied by 1. 
-exponent[is.na(exponent)] <- 0
-areas <- number * 10 ^ exponent
-
-areaClasses <- gsub("[", "", rawAreas$classes, fixed = TRUE) %>% 
-	gsub("]", "", ., fixed = TRUE) %>% 
-	str_split(., coll(", "), simplify = TRUE) %>% 
-	gsub(" ", "_", ., fixed = TRUE)
-areaClasses[1,]
-
-#make into factor, and int for export
-areaClasses <- factor(areaClasses[1,], refLevels)
-class <- as.numeric(areaClasses) - 1
-
-cleanAreas <- data.frame(areas, class)
-names(cleanAreas) <- c("area", "class")
-cleanAreas
-
-# Export table for upload to SEPAL
-write_csv(cleanAreas, "data/exports/area_table.csv")

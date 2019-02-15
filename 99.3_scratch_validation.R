@@ -28,9 +28,9 @@ source("00.3_area_est_functions_en.R")
 #' 4. [x] **strata_totals:** exported with samples, needs to be processed and
 #'  converted into pixel counts. Trivial.  
 #' 5. [ ] **sample_totals:** Derived from a summary of the collatted CEO data.      
-#' 6. [ ] **rfcodes:**  Easy-peasy lemon squeezy. Reclass possible, though.  
+#' 6. [x] **rfcodes:**  Easy-peasy lemon squeezy. Reclass possible, though.  
 #' 7. [x] **pixel**  = 30.  
-#' 8. [ ] **totarea_pix:** Easy to get from total areas.  
+#' 8. [x] **totarea_pix:** Easy to get from total areas.  
 #' 9. [ ] **Analyze:** Use new functions to rebalance sample and calculate 
 #' accuracies. Rejoice, maybe!  
 #' 10. [ ] **DREAD:** Reclass to improve accuracy and re-run?  
