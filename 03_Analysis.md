@@ -27,11 +27,17 @@ source("00.3_area_est_functions_en.R")
 ### Necessary data
 
 **ceoTable** Outputs of all ceo projects, collated, and unifed with original point metadata. Produced in script `02_change_dataprep.R`.
+
 **orig\_strata** Vector with numeric codes representing the original stratification of each sample.
+
 **ref\_label** Vector with numeric codes representing the reference label for that year/map, for each sample.
+
 **map\_label** Vector with numeric codes representing the map labels, for each sample.
+
 **strata\_totals** Dataframe with two columns and number of rows equal to the total number of classes in the original strata. The first column must have the same codes found in the original stratification and the second must have the total number of PIXELS of each class in that original strata map.
+
 **sample\_totals** Dataframe with two columns and number of rows equal to the total number of classes in the original strata. The first column must have the same codes found in the original stratification, and the second must have the total number of SAMPLE UNITS of each class collected from that original strata map.
+
 **rfcodes** Vector with numeric values representing the reference codes present in ALL of the periods.
 
 ### Setting rfcodes
@@ -177,3 +183,12 @@ strata_totals
     ## 30     29 3.159561e+05
     ## 31     30 7.626350e+03
     ## 32     17 1.120245e+04
+
+### Calculate totarea\_pix
+
+``` r
+totarea_pix <- sum(strata_totals[,2])
+totarea_pix
+```
+
+    ## [1] 285326321

@@ -110,3 +110,9 @@ names(cleanAreas) <- c("class", "area")
 strata_totals <- data.frame(class, areas/pixel^2)
 names(strata_totals) <- c("strata", "pixelcount")
 strata_totals
+
+#' ### Calculate totarea_pix
+
+#+ totalpixels
+totarea_pix <- sum(strata_totals[,2])
+totarea_pix
