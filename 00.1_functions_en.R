@@ -439,8 +439,8 @@ addLevel1 <- function(table){
 					LEVEL2 == "Shrubland" | 
 					LEVEL2 == "Paramos" ~ "Grasslands",
 				LEVEL2 == "Cropland" ~ "Croplands",
-				LEVEL2 == "Surface_Water" |
-					LEVEL2 == "Surface_Water" ~ "Wetlands",
+				LEVEL2 == "Natural_Water" |
+					LEVEL2 == "Artificial_Water" ~ "Wetlands",
 				LEVEL2 == "Settlement" |
 					LEVEL2 == "Infrastructure" ~ "Settlements",
 				LEVEL2 == "Glacier" |
