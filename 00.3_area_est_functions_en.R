@@ -318,11 +318,7 @@ calcUnbiasedArea = function(totarea_pix, class_prop, se, pixel){
 #' **users_cov** Dataframe of user's accuracy covariances per strata.  
 #' 
 #' **producers_cov** Dataframe of producer's accuracy covariances per strata
-#' with its variance (map_and_ref_var), dataframe with proportion of all map 
-#' labels equal to reference labels present in stratum (overall_acc_prop) and 
-#' dataframe with its variance (overall_acc_var) and dataframes associated with 
-#' users's and producer's covariance (users_cov, producers_cov), vector of area 
-#' proportions per class (class_prop).  
+#' with its variance.  
 
 calcAccuracies <-  function(strata_totals, sample_totals, rfcodes, totarea_pix,
 													 props_and_vars){

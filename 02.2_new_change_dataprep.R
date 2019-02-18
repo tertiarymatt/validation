@@ -206,11 +206,11 @@ refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
 							 "WC", "WS", "OS", "Catchall")
 
-ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands", 
+ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
 							 "Settlements", "Other_Lands",
-							 "FF", "GG","SS", "WW", "OO",
-							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-							 "WC", "WS", "OS", "Catchall")
+						 "FF", "GG","SS", "WW", "OO",
+						 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
+						 "WC", "WS", "OS", "Catchall")
 
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$refClass, refLevels)

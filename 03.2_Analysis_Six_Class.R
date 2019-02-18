@@ -16,7 +16,7 @@ source("00.3_area_est_functions_en.R")
 
 #' ### Necessary data  
 #' **ceoTable** Outputs of all ceo projects, collated, and unifed with original
-#' point metadata. Produced in script `02_change_dataprep.R`.  
+#' point metadata. Produced in script `02_new_change_dataprep.R`.  
 #' 
 #' **orig_strata** Vector with numeric codes representing the original 
 #' stratification of each sample.  
