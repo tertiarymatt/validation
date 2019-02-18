@@ -6,9 +6,9 @@
 #' ---
 #'
 
-#' This script contains the functions required for the calculation of the
-#' unbiased areas of map classes when the samples were produced using the
-#' strata of a different map:  
+#' This script contains an example of using the functions required for the 
+#' calculation of the unbiased areas of map classes when the samples were 
+#' produced using the strata of a different map:  
 
 #' 1. Function to calculate strata for any given pair of years  
 #' 1. Calculate unbiased area proportions and variance of reference classes  
