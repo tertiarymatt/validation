@@ -223,4 +223,4 @@ finalTable$predint <- as.numeric(finalTable$predicted)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
 # Export table for upload to SEPAL
-write_csv(finalTable, "data/exports/finalTable.csv")
+write_csv(finalTable, "data/reference/complete/finalTable.csv")
