@@ -191,3 +191,26 @@ unArea <- calcUnbiasedArea(totarea_pix, propsAndVars$class_prop, propSE, pixel)
 
 accurates <- calcAccuracies(strata_totals, sample_totals, rfcodes, totarea_pix, 
 														propsAndVars)
+
+#' ### Making some outputs
+#+ Outputs
+# User's and Producer's Accuracy
+users <- cbind(round(accurates$users_acc*100, 1), 
+							 round(accurates$users_acc_min*100, 1), 
+							 round(accurates$users_acc_max*100, 1))
+colnames(users) <- c("User's", "Min User's", "Max User's")
+
+producers<- cbind(round(accurates$producers_acc*100, 1), 
+							 round(accurates$producers_acc_min*100, 1), 
+							 round(accurates$producers_acc_max*100, 1))
+colnames(producers) <- c("Producer's", "Min Producer's", "Max Producer's")
+
+users
+producers
+
+# Area Estimates
+areaTable <- data.frame(unArea[[1]], unArea[[2]], unArea[[3]], unArea[[4]])
+colnames(areaTable) <- names(unArea[1:4])
+rownames(areaTable) <- names(accurates$users_acc)
+
+round(areaTable, 0)
