@@ -17,7 +17,7 @@
 #' can be pulled out of that data.  
 #' 2. [x] **ref_label:**  Pull out of processed CEO data. Can be completed prior
 #' to having final maps, but is potential chokepoint linked to processing.    
-#' 3. [ ] **map_label:**  Data goes back into GEE to sample final maps.
+#' 3. [x] **map_label:**  Data goes back into GEE to sample final maps.
 #' Obviously constrained by existence of final maps.    
 #' 4. [x] **strata_totals:** exported with samples, needs to be processed and
 #'  converted into pixel counts. Trivial.  
@@ -25,10 +25,10 @@
 #' 6. [x] **rfcodes:**  Easy-peasy lemon squeezy. Reclass possible, though.  
 #' 7. [x] **pixel**  = 30.  
 #' 8. [x] **totarea_pix:** Easy to get from total areas.  
-#' 9. [ ] **Analyze:** Use new functions to rebalance sample and calculate 
+#' 9. [x] **Analyze:** Use new functions to rebalance sample and calculate 
 #' accuracies. Rejoice, maybe!  
 #' 10. [x] **DREAD:** Reclass to improve accuracy and re-run.  
-#' 11. [ ] **Report:** Outline shortly, then simply fill in. 
+#' 11. [x] **Report:** Outline shortly, then simply fill in. 
 #' 
 #' Scratch area below:
 #+ scratch
