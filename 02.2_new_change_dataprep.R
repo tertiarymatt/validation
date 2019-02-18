@@ -47,6 +47,7 @@ extracted
 #drop unneeded fields and convert map classes
 extracted <- extracted[,c(2,3,5,6,7)]
 extracted <- convertMapClasses(extracted)
+extracted <- convertMapClasses6(extracted)
 
 # Import gathered CEO data, prepare
 ceoTable <- read_csv("data/reference/aggregated/ceo_cleaned.csv")
@@ -78,7 +79,7 @@ colnames(time1)
 
 # create class column object to use in script.
 # If the structure of the data changes this MUST be updated.
-classCol <- c(21:39)
+classCol <- c(22:40)
 
 classes <- colnames(time1[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
@@ -184,6 +185,7 @@ if (length(toRemove) > 0) {
 
 # produce final classes
 finalTable <- addFinal(finalTable)
+finalTable <- addIPCC(finalTable)
 
 #' The SEPAL stratified estimator tool works with integer classes. 
 #' However, the data have been imported and prepared as characters. 
@@ -195,14 +197,6 @@ finalTable <- addFinal(finalTable)
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-# refLevels <- c("Bosque_Primario", "Bosque_Secundario", "Plantacion_Forestal",   
-# 							 "Manglar", "Vegetacion_Arbustiva", "Paramos", 
-# 							 "Vegetacion_Herbacea", "Cultivo", "Cuerpo_de_Agua_Natural",
-# 							 "Cuerpo_de_Agua_Artificial", "Area_Poblada", "Infraestructura",
-# 							 "Area_sin_Cobertura_Vegetal", "Glaciar",
-# 							 "FF", "GG","SS", "WW", "OO",
-# 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
-# 							 "WC", "WS", "OS", "Catchall")
 
 refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
 							 "Natural_Water", "Artificial_Water", "Primary_Forest", 
@@ -212,14 +206,24 @@ refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
 							 "WC", "WS", "OS", "Catchall")
 
+ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands", 
+							 "Settlements", "Other_Lands",
+							 "FF", "GG","SS", "WW", "OO",
+							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
+							 "WC", "WS", "OS", "Catchall")
+
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$refClass, refLevels)
+finalTable$reference6 <- factor(finalTable$ref6Class, ref6Levels)
 finalTable$predicted <- factor(finalTable$MapClass, refLevels)
+finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
 finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
 
 # Convert factors to integers. 
 finalTable$refint <- as.numeric(finalTable$reference)
+finalTable$ref6int <- as.numeric(finalTable$reference6)
 finalTable$predint <- as.numeric(finalTable$predicted)
+finalTable$pred6int <- as.numeric(finalTable$predicted6)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
 # Export table for upload to SEPAL

@@ -182,12 +182,9 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
 #' - Vegetacion herbacea: 62  
 #' - Pastizal: 63  
 #'
+#'
 #' Convert GEE codes in the exported table into original strata class values. 
 #+ ConvertStrataCodes. 
-# Adding the Level 2 Classes.
-# Note that the codes below are temporary, and for script development,
-# and will be replaced when the LULC change product is produced. 
-
 convertStrataClasses <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
@@ -230,11 +227,10 @@ convertStrataClasses <- function(table){
 	return(reclassed)
 }
 
-#' Convert GEE codes in the exported table into predicted map class values. 
+#' Convert GEE codes in the exported table into predicted map class values, 
+#' using the level 2 classes. 
+
 #+ ConvertMapCodes. 
-# Adding the Level 2 Classes.
-# Note that the codes below are temporary, and for script development,
-# and will be replaced when the LULC change product is produced. 
 convertMapClasses <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
@@ -277,6 +273,54 @@ convertMapClasses <- function(table){
 		)
 	return(reclassed)
 }
+
+#' Convert GEE codes in the exported table into predicted map class values, 
+#' using IPCC six class Level 1. 
+
+#+ ConvertMapCodes6. 
+convertMapClasses6 <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			MapClass6 = case_when(
+				MAPCLASS == 1 ~ "Settlements",
+				MAPCLASS == 2 ~ "Settlements",
+				MAPCLASS == 3 ~ "Other_Lands",
+				MAPCLASS == 4 ~ "Other_Lands",
+				MAPCLASS == 5 ~ "Wetlands",
+				MAPCLASS == 6 ~ "Wetlands",
+				MAPCLASS == 7 ~ "Forest_Lands",
+				MAPCLASS == 8 ~ "Forest_Lands",
+				MAPCLASS == 9 ~ "Forest_Lands",
+				MAPCLASS == 10 ~ "Forest_Lands",
+				MAPCLASS == 11 ~ "Croplands",
+				MAPCLASS == 12 ~ "Grasslands",
+				MAPCLASS == 13 ~ "Grasslands",
+				MAPCLASS == 14 ~ "Grasslands",
+				MAPCLASS == 15 ~ "FF",
+				MAPCLASS == 16 ~ "GG",
+				MAPCLASS == 17 ~ "SS",
+				MAPCLASS == 18 ~ "WW",
+				MAPCLASS == 19 ~ "OO",
+				MAPCLASS == 20 ~ "FC",
+				MAPCLASS == 21 ~ "FG",
+				MAPCLASS == 22 ~ "FS",
+				MAPCLASS == 23 ~ "FW",
+				MAPCLASS == 24 ~ "CG",
+				MAPCLASS == 25 ~ "CF",
+				MAPCLASS == 26 ~ "CS",
+				MAPCLASS == 27 ~ "GC",
+				MAPCLASS == 28 ~ "GF",
+				MAPCLASS == 29 ~ "GS",
+				MAPCLASS == 30 ~ "WC",
+				MAPCLASS == 31 ~ "WS",
+				MAPCLASS == 32 ~ "OS",
+				MAPCLASS == 33 ~ "Catchall"
+			)
+		)
+	return(reclassed)
+}
+
 
 #' ### CEO Point Table Reclassification Functions
 #'
@@ -500,6 +544,7 @@ addLevel1 <- function(table){
 #' - Otros Suelos -> Asentamientos (OS) = 31  
 #' - Todos los Otros Cambios (Catchall) = 32  
 
+#+ AddFinal
 # Note that the code below is temporary, and for script development,
 # and will be adjusted when the LULC change product is produced. 
 
@@ -509,6 +554,82 @@ addFinal <- function(table){
 		mutate(
 			refClass = case_when(
 				T1L2 == T2L2 ~ T2L2,
+				T1L1 == T2L1 & 
+					T2L1 == "Forest_Lands" ~ "FF",
+				T1L1 == T2L1 & 
+					T2L1 == "Grasslands" ~ "GG",
+				T1L1 == T2L1 & 
+					T2L1 == "Settlements" ~ "SS",
+				T1L1 == T2L1 & 
+					T2L1 == "Other_Lands" ~ "OO",
+				T1L1 == T2L1 & 
+					T2L1 == "Wetlands" ~ "WW",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Croplands" ~ "FC",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Grasslands" ~ "FG",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Settlements" ~ "FS",
+				T1L1 == "Forest_Lands" & 
+					T2L1 == "Wetlands" ~ "FW",
+				T1L1 == "Croplands" & 
+					T2L1 == "Forest_Lands" ~ "CF",
+				T1L1 == "Croplands" & 
+					T2L1 == "Grasslands" ~ "CG",
+				T1L1 == "Croplands" & 
+					T2L1 == "Settlements" ~ "CS",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Croplands" ~ "GC",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Forest_Lands" ~ "GF",
+				T1L1 == "Grasslands" & 
+					T2L1 == "Settlements" ~ "GS",
+				T1L1 == "Wetlands" & 
+					T2L1 == "Croplands" ~ "WC",
+				T1L1 == "Wetlands" & 
+					T2L1 == "Settlements" ~ "WS",
+				T1L1 == "Other_Lands" & 
+					T2L1 == "Settlements" ~ "OS",
+				TRUE ~ "Catchall"
+			)
+		)
+	return(reclassed)
+}
+
+#' #### Final IPCC class production  
+#' The final land cover class is produced from both time steps. If change has
+#' taken place, then a change class is assigned. If change has not occurred,
+#' then the stable class for level one is assigned. 
+#' The final classes and their numerical codes are listed below 
+#' (subject to update and change).
+#' 
+#' __Final LULC classes and codes__  
+#' 
+#' _Stable Level 2 Classes_  
+#' - Bosque Primario -> Bosque Primario = Forest Lands   
+#' - Bosque Secundario -> Bosque Secundario = Forest Lands  
+#' - Plantacion Forestal -> Plantacion Forestal = Forest Lands  
+#' - Manglar -> Manglar = Forest Lands  
+#' - Vegetacion Arbustiva -> Vegetacion Arbustiva = Grasslands  
+#' - Paramo -> Paramo = Grasslands  
+#' - Vegetacion herbacea -> Vegetacion herbacea = Grasslands  
+#' - Cultivo -> Cultivo = Croplands  
+#' - Cuerpo de Agua Natural -> Cuerpo de Agua Natural = Wetlands  
+#' - Cuerpo de Agua Artificial -> Cuerpo de Agua Artificial = Wetlands  
+#' - Area Poblada -> Area Poblada = Settlements    
+#' - Infraestructura -> Infraestructura = Settlements  
+#' - Area sin Cobertura Vegetal -> Area sin Cobertura Vegetal = Other Lands  
+#' - Glaciar-> Glaciar = Other Lands  
+#' 
+#' Unstable classes are assigned as above. 
+
+#+ AddIPCC
+addIPCC <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			ref6Class = case_when(
+				T1L2 == T2L2 ~ T2L1,
 				T1L1 == T2L1 & 
 					T2L1 == "Forest_Lands" ~ "FF",
 				T1L1 == T2L1 & 
