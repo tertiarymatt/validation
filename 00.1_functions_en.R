@@ -670,3 +670,61 @@ addIPCC <- function(table){
 		)
 	return(reclassed)
 }
+
+#' #### Deforestation class production  
+#' Functions for converting classes to deforestation classes. 
+
+# Function for converting IPCC ref classes to deforestation
+addForestRef <- function(table){
+	require(tidyr)
+	reclassed <- table %>%
+		mutate(
+			forest_ref = case_when(
+				reference6 == "Forest_Lands" ~ "Stable_Forest",
+				reference6 == "FF" ~ "Unstable_Forest",
+				reference6 == "FC" ~ "Deforestation",
+				reference6 == "FG" ~ "Deforestation",
+				reference6 == "FW" ~ "Deforestation",
+				reference6 == "FS" ~ "Deforestation",
+				reference6 == "CF" ~ "Reforestation",
+				reference6 == "GF" ~ "Reforestation",
+				TRUE ~ "Non_Forest"
+			)
+		)
+	return(reclassed)
+}
+
+# Function for converting IPCC map classes to deforestation
+addForestPred <- function(table){
+	require(tidyr)
+	reclassed <- table %>%
+		mutate(
+			forest_map = case_when(
+				predicted6 == "Forest_Lands" ~ "Stable_Forest",
+				predicted6 == "FF" ~ "Unstable_Forest",
+				predicted6 == "FC" ~ "Deforestation",
+				predicted6 == "FG" ~ "Deforestation",
+				predicted6 == "FW" ~ "Deforestation",
+				predicted6 == "FS" ~ "Deforestation",
+				predicted6 == "CF" ~ "Reforestation",
+				predicted6 == "GF" ~ "Reforestation",
+				TRUE ~ "Non_Forest"
+			)
+		)
+	return(reclassed)
+}
+
+# Function for converting MAE deforestation classes to deforestation
+addForestMAE <- function(table){
+	require(tidyr)
+	reclassed <- table %>%
+		mutate(
+			forest_mae = case_when(
+				VALID_FIN == "BOSQUE ESTABLE" ~ "Stable_Forest",
+				VALID_FIN == "NO BOSQUE ESTABLE" ~ "Unstable_Forest",
+				VALID_FIN == "DEFORESTACION" ~ "Deforestation",
+				VALID_FIN == "REGENERACION" ~ "Reforestation"
+			)
+		)
+	return(reclassed)
+}
