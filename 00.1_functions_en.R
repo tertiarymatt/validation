@@ -181,49 +181,98 @@ optimizeSplit <-  function(errorMatrix, nTotal, classes){
 #' - Vegetacion arbustiva: 61  
 #' - Vegetacion herbacea: 62  
 #' - Pastizal: 63  
-
-#' 
-#+ Convert GEE codes in the exported table into class values. 
+#'
+#' Convert GEE codes in the exported table into original strata class values. 
+#+ ConvertStrataCodes. 
 # Adding the Level 2 Classes.
 # Note that the codes below are temporary, and for script development,
 # and will be replaced when the LULC change product is produced. 
-convertToClasses <- function(table){
+
+convertStrataClasses <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			StrataClass = case_when(
+				STRATACLASS == 1 ~ "Cropland",
+				STRATACLASS == 2 ~ "Natural_Water",
+				STRATACLASS == 3 ~ "Barren",
+				STRATACLASS == 4 ~ "Settlement",
+				STRATACLASS == 5 ~ "Primary_Forest",
+				STRATACLASS == 6 ~ "Artificial_Water",
+				STRATACLASS == 7 ~ "Plantation_Forest",
+				STRATACLASS == 8 ~ "Infrastructure",
+				STRATACLASS == 9 ~ "Shrubland",
+				STRATACLASS == 10 ~ "Herbland",
+				STRATACLASS == 11 ~ "Paramos",
+				STRATACLASS == 12 ~ "Glacier",
+				STRATACLASS == 13 ~ "Mangrove",
+				STRATACLASS == 14 ~ "FF",
+				STRATACLASS == 15 ~ "GG",
+				STRATACLASS == 16 ~ "SS",
+				STRATACLASS == 17 ~ "WW",
+				STRATACLASS == 18 ~ "OO",
+				STRATACLASS == 19 ~ "FC",
+				STRATACLASS == 20 ~ "FG",
+				STRATACLASS == 21 ~ "FS",
+				STRATACLASS == 22 ~ "FW",
+				STRATACLASS == 23 ~ "CG",
+				STRATACLASS == 24 ~ "CF",
+				STRATACLASS == 25 ~ "CS",
+				STRATACLASS == 26 ~ "GC",
+				STRATACLASS == 27 ~ "GF",
+				STRATACLASS == 28 ~ "GS",
+				STRATACLASS == 29 ~ "WC",
+				STRATACLASS == 30 ~ "WS",
+				STRATACLASS == 31 ~ "OS",
+				STRATACLASS == 32 ~ "Catchall"
+			)
+		)
+	return(reclassed)
+}
+
+#' Convert GEE codes in the exported table into predicted map class values. 
+#+ ConvertMapCodes. 
+# Adding the Level 2 Classes.
+# Note that the codes below are temporary, and for script development,
+# and will be replaced when the LULC change product is produced. 
+convertMapClasses <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
 		mutate(
 			MapClass = case_when(
-				CLASS == 1 ~ "Cropland",
-				CLASS == 2 ~ "Surface_Water",
-				CLASS == 3 ~ "Barren",
-				CLASS == 4 ~ "Settlement",
-				CLASS == 5 ~ "Primary_Forest",
-				CLASS == 6 ~ "Surface_Water",
-				CLASS == 7 ~ "Plantation_Forest",
-				CLASS == 8 ~ "Settlement",
-				CLASS == 9 ~ "Shrubland",
-				CLASS == 10 ~ "Herbland",
-				CLASS == 11 ~ "Paramos",
-				CLASS == 12 ~ "Glacier",
-				CLASS == 13 ~ "Mangrove",
-				CLASS == 14 ~ "FF",
-				CLASS == 15 ~ "GG",
-				CLASS == 16 ~ "SS",
-				CLASS == 17 ~ "WW",
-				CLASS == 18 ~ "OO",
-				CLASS == 19 ~ "FC",
-				CLASS == 20 ~ "FG",
-				CLASS == 21 ~ "FS",
-				CLASS == 22 ~ "FW",
-				CLASS == 23 ~ "CG",
-				CLASS == 24 ~ "CF",
-				CLASS == 25 ~ "CS",
-				CLASS == 26 ~ "GC",
-				CLASS == 27 ~ "GF",
-				CLASS == 28 ~ "GS",
-				CLASS == 29 ~ "WC",
-				CLASS == 30 ~ "WS",
-				CLASS == 31 ~ "OS",
-				CLASS == 32 ~ "Catchall"
+				MAPCLASS == 1 ~ "Settlement",
+				MAPCLASS == 2 ~ "Infrastructure",
+				MAPCLASS == 3 ~ "Barren",
+				MAPCLASS == 4 ~ "Glacier",
+				MAPCLASS == 5 ~ "Natural_Water",
+				MAPCLASS == 6 ~ "Artificial_Water",
+				MAPCLASS == 7 ~ "Primary_Forest",
+				MAPCLASS == 8 ~ "Plantation_Forest",
+				MAPCLASS == 9 ~ "Mangrove",
+				MAPCLASS == 10 ~ "Secondary_Forest",
+				MAPCLASS == 11 ~ "Cropland",
+				MAPCLASS == 12 ~ "Paramos",
+				MAPCLASS == 13 ~ "Shrubland",
+				MAPCLASS == 14 ~ "Herbland",
+				MAPCLASS == 15 ~ "FF",
+				MAPCLASS == 16 ~ "GG",
+				MAPCLASS == 17 ~ "SS",
+				MAPCLASS == 18 ~ "WW",
+				MAPCLASS == 19 ~ "OO",
+				MAPCLASS == 20 ~ "FC",
+				MAPCLASS == 21 ~ "FG",
+				MAPCLASS == 22 ~ "FS",
+				MAPCLASS == 23 ~ "FW",
+				MAPCLASS == 24 ~ "CG",
+				MAPCLASS == 25 ~ "CF",
+				MAPCLASS == 26 ~ "CS",
+				MAPCLASS == 27 ~ "GC",
+				MAPCLASS == 28 ~ "GF",
+				MAPCLASS == 29 ~ "GS",
+				MAPCLASS == 30 ~ "WC",
+				MAPCLASS == 31 ~ "WS",
+				MAPCLASS == 32 ~ "OS",
+				MAPCLASS == 33 ~ "Catchall"
 			)
 		)
 	return(reclassed)
@@ -324,7 +373,7 @@ addLevel2 <- function(table){
 		mutate(
 			LEVEL2 = case_when(
 				PRIMARY_TREE >= 30 ~ "Primary_Forest",
-				SECONDARY_TREE >= 30 ~ "Primary_Forest", #this obviously needs changing
+				SECONDARY_TREE >= 30 ~ "Secondary_Forest", 
 				PLANTATION_TREE >= 30 ~ "Plantation_Forest",
 				MANGROVE >= 30 ~ "Mangrove",
 				HERBACEOUS_VEGETATION >= 30 ~ "Herbland",
@@ -332,12 +381,12 @@ addLevel2 <- function(table){
 				PARAMO_VEGETATION > 0 ~ "Paramos",
 				CROPS >= 50 ~ "Cropland",
 				NATURAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Surface_Water",
+					WETLAND_VEGETATION >= 50 ~  "Natural_Water",
 				ARTIFICIAL_WATER + 
-					WETLAND_VEGETATION >= 50 ~  "Surface_Water",
+					WETLAND_VEGETATION >= 50 ~  "Artificial_Water",
 				WETLAND_VEGETATION >= 50 & 
-					NATURAL_WATER > 0 ~ "Surface_Water",
-				WETLAND_VEGETATION >= 50 ~ "Surface_Water",
+					NATURAL_WATER > 0 ~ "Natural_Water",
+				WETLAND_VEGETATION >= 50 ~ "Natural_Water",
 				HOUSING_STRUCTURE + 
 					SETTLEMENT_VEGETATION + 
 					ROADS_AND_LOTS >= 30 ~ "Settlement",

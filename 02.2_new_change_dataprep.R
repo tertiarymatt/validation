@@ -37,8 +37,19 @@ change <- read_csv("data/points/Validation_Change_Sample_for_CEO.csv")
 
 allPoints <- bind_rows(stable, change)
 
+# add strata classes
+allPoints <- convertStrataClasses(allPoints)
+
+#Import table with map classes
+extracted <- read_csv("data/reference/extractedvalues/SampleMapClasses.csv")
+extracted
+
+#drop unneeded fields and convert map classes
+extracted <- extracted[,c(2,3,5,6,7)]
+extracted <- convertMapClasses(extracted)
+
 # Import gathered CEO data, prepare
-ceoTable <- read_csv("data/reference/ceo_cleaned.csv")
+ceoTable <- read_csv("data/reference/aggregated/ceo_cleaned.csv")
 colnames(ceoTable)
 
 #create metadata data table. Use the colnames to find them and adjust columns.
@@ -48,12 +59,11 @@ head(metadata)
 metadata <- left_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE", 
 																									"CENTER_LAT" = "LATITUDE"))
 
-# convert integers into text, note that map class field must be named CLASS. 
-metadata <- convertToClasses(metadata)
+metadata <- left_join(metadata, extracted)
 
 # Split table into pieces, reassemble into single year tables
 
-#time one plot data
+#time one plot data, this is the FIRST year in terms of time passing.
 time1 <- ceoTable[,31:49]
 
 #time two plot data
@@ -68,7 +78,7 @@ colnames(time1)
 
 # create class column object to use in script.
 # If the structure of the data changes this MUST be updated.
-classCol <- c(19:37)
+classCol <- c(21:39)
 
 classes <- colnames(time1[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
@@ -194,8 +204,9 @@ finalTable <- addFinal(finalTable)
 # 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
 # 							 "WC", "WS", "OS", "Catchall")
 
-refLevels <- c('Settlement', "Barren", "Glacier", "Surface_Water", 
-							 "Primary_Forest", "Plantation_Forest",  "Mangrove",
+refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
+							 "Natural_Water", "Artificial_Water", "Primary_Forest", 
+							 "Plantation_Forest", "Mangrove", "Secondary_Forest",
 							 "Cropland", "Paramos", "Shrubland", "Herbland",
 							 "FF", "GG","SS", "WW", "OO",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
@@ -204,10 +215,12 @@ refLevels <- c('Settlement', "Barren", "Glacier", "Surface_Water",
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$refClass, refLevels)
 finalTable$predicted <- factor(finalTable$MapClass, refLevels)
+finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
 
 # Convert factors to integers. 
-finalTable$reference <- as.numeric(finalTable$reference)
-finalTable$predicted <- as.numeric(finalTable$predicted)
+finalTable$refint <- as.numeric(finalTable$reference)
+finalTable$predint <- as.numeric(finalTable$predicted)
+finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
 # Export table for upload to SEPAL
 write_csv(finalTable, "data/exports/finalTable.csv")
