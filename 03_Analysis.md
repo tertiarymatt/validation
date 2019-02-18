@@ -1,21 +1,24 @@
 Accuracy Assessment and Area Estimation
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-February 14, 2019
+February 17, 2019
 
 ``` r
+#cleanup workspace
+rm(list = ls())
+
 #setup
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages --------------------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts ---------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -39,6 +42,73 @@ source("00.3_area_est_functions_en.R")
 **sample\_totals** Dataframe with two columns and number of rows equal to the total number of classes in the original strata. The first column must have the same codes found in the original stratification, and the second must have the total number of SAMPLE UNITS of each class collected from that original strata map.
 
 **rfcodes** Vector with numeric values representing the reference codes present in ALL of the periods.
+\#\#\#Importing Data
+Importing the full data from the output file.
+
+``` r
+completeData <- read_csv("data/reference/complete/finalTable.csv")
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_character(),
+    ##   PLOT_ID = col_double(),
+    ##   CENTER_LON = col_double(),
+    ##   CENTER_LAT = col_double(),
+    ##   SIZE_M = col_double(),
+    ##   FLAGGED = col_logical(),
+    ##   ANALYSES = col_double(),
+    ##   SAMPLE_POINTS = col_double(),
+    ##   ANALYSIS_DURATION = col_logical(),
+    ##   COLLECTION_TIME = col_datetime(format = ""),
+    ##   PLOTID = col_double(),
+    ##   STRATACLASS = col_double(),
+    ##   MAPCLASS = col_double(),
+    ##   changeL1 = col_logical(),
+    ##   changeL2 = col_logical(),
+    ##   refint = col_double(),
+    ##   predint = col_double(),
+    ##   strataint = col_double()
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+### Create **orig\_strata**
+
+Vector with numeric codes representing the original stratification of each sample.
+
+``` r
+orig_strata <- completeData$strataint
+```
+
+### Create **ref\_label**
+
+Vector with numeric codes representing the reference label for that year/map, for each sample.
+
+``` r
+ref_label <- completeData$refint
+```
+
+### Create **map\_label**
+
+Vector with numeric codes representing the map labels, for each sample.
+
+``` r
+map_label <- completeData$predint
+```
+
+### Calculating sample\_totals
+
+Generate a dataframe with two columns and number of rows equal to the total number of classes in the original strata. The first column must have the same codes found in the original stratification, and the second must have the total number of SAMPLE UNITS of each class collected from that original strata map.
+
+``` r
+sample_totals <- data.frame(table(completeData$strataint))
+colnames(sample_totals) <- c("strata", "count")
+```
+
+### Set up rfcodes
+
+Vector with numeric values representing the reference codes present in ALL of the periods.
 
 ### Setting rfcodes
 
@@ -46,13 +116,21 @@ These are the classes from the 2016 MAE map, plus mangroves and change classes d
 
 ``` r
 # here as text, but used to convert to a factor and produce int codes.
-rfcodes <- c("Cultivo", "Cuerpo_de_Agua_Natural", "Area_sin_Cobertura_Vegetal",
-                         "Area_Poblada", "Bosque_Nativo", "Cuerpo_de_Agua_Artificial",
-                         "Plantacion_Forestal", "Infraestructura", "Vegetacion_Arbustiva",
-                         "Vegetacion_Herbacea", "Paramos", "Glaciar", "Manglar",
+rfcodes <- c("Area_Poblada", "Infraestructura", "Area_sin_Cobertura_Vegetal", 
+                         "Glaciar", "Cuerpo_de_Agua_Natural", "Cuerpo_de_Agua_Artificial", 
+                         "Bosque_Nativo", "Plantacion_Forestal", "Manglar", "Cultivo",  
+                         "Paramos", "Vegetacion_Arbustiva", "Vegetacion_Herbacea", 
                          "FF", "GG","SS", "WW", "OO",
                          "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
                          "WC", "WS", "OS", "CATCHALL")
+
+rfcodesEN <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
+                             "Natural_Water", "Artificial_Water", "Primary_Forest", 
+                             "Plantation_Forest", "Mangrove", "Secondary_Forest",
+                             "Cropland", "Paramos", "Shrubland", "Herbland",
+                             "FF", "GG","SS", "WW", "OO",
+                             "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
+                             "WC", "WS", "OS", "Catchall")
 ```
 
 ### Calculating strata\_totals
@@ -151,19 +229,19 @@ strata_totals
 ```
 
     ##    strata   pixelcount
-    ## 1       4 2.451585e+06
+    ## 1       1 2.451585e+06
     ## 2       3 8.368483e+05
-    ## 3       5 1.374481e+08
+    ## 3       7 1.374481e+08
     ## 4       6 1.579462e+06
-    ## 5       2 2.579058e+06
-    ## 6       1 9.510938e+07
-    ## 7      12 6.965808e+04
-    ## 8       8 2.342141e+05
-    ## 9      13 8.280247e+05
+    ## 5       5 2.579058e+06
+    ## 6      10 9.510938e+07
+    ## 7       4 6.965808e+04
+    ## 8       2 2.342141e+05
+    ## 9       9 8.280247e+05
     ## 10     11 1.671771e+07
-    ## 11      7 1.198278e+06
-    ## 12      9 7.968353e+06
-    ## 13     10 8.750096e+05
+    ## 11      8 1.198278e+06
+    ## 12     12 7.968353e+06
+    ## 13     13 8.750096e+05
     ## 14     32 1.325326e+06
     ## 15     24 1.702174e+06
     ## 16     23 6.296540e+05
@@ -185,6 +263,8 @@ strata_totals
     ## 32     17 1.120245e+04
 
 ### Calculate totarea\_pix
+
+Total area of classes, in pixels
 
 ``` r
 totarea_pix <- sum(strata_totals[,2])

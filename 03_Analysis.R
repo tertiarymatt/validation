@@ -6,6 +6,9 @@
 #' ---
 #'
 
+#cleanup workspace
+rm(list = ls())
+
 #setup
 library(tidyverse)
 source("00.1_functions_en.R")
@@ -37,20 +40,65 @@ source("00.3_area_est_functions_en.R")
 #' 
 #' **rfcodes** Vector with numeric values representing the reference codes
 #' present in ALL of the periods.  
+
+
+#' ###Importing Data  
+#' Importing the full data from the output file. 
+completeData <- read_csv("data/reference/complete/finalTable.csv")
+
+#' ### Create **orig_strata**  
+#' Vector with numeric codes representing the original stratification of each 
+#' sample.  
+#' 
+#+ origstrata
+orig_strata <- completeData$strataint
+
+#' ### Create **ref_label**   
+#' Vector with numeric codes representing the reference label for that year/map,
+#'  for each sample.  
+#+ reflabels
+ref_label <- completeData$reference
+
+#' ### Create **map_label**   
+#' Vector with numeric codes representing the map labels, for each sample.  
+#+ maplabels
+map_label <- completeData$predicted
+
+#' ### Calculating sample_totals  
+#' Generate a dataframe with two columns and number of rows equal to 
+#' the total number of classes in the original strata. The first column must 
+#' have the same codes found in the original stratification, and the second must
+#' have the total number of SAMPLE UNITS of each class collected from that 
+#' original strata map.  
+
+#+ sampletots
+sample_totals <- data.frame(table(completeData$strataint))
+colnames(sample_totals) <- c("strata", "count")
+
+#' ### Set up rfcodes  
+#' Vector with numeric values representing the reference codes
+#' present in ALL of the periods.  
 #'
-#' ### Setting rfcodes  
-#' These are the classes from the 2016 MAE map, plus mangroves and change
-#' classes derived from 2014/2016 map updating process. 
+#' Setting rfcodes: These are the classes from the 2016 MAE map, plus mangroves 
+#' and change classes derived from 2014/2016 map updating process. 
 
 #+ rfcodes
 # here as text, but used to convert to a factor and produce int codes.
-rfcodes <- c("Cultivo", "Cuerpo_de_Agua_Natural", "Area_sin_Cobertura_Vegetal",
-						 "Area_Poblada", "Bosque_Nativo", "Cuerpo_de_Agua_Artificial",
-						 "Plantacion_Forestal", "Infraestructura", "Vegetacion_Arbustiva",
-						 "Vegetacion_Herbacea", "Paramos", "Glaciar", "Manglar",
+areacodes <- c("Area_Poblada", "Infraestructura", "Area_sin_Cobertura_Vegetal", 
+						 "Glaciar", "Cuerpo_de_Agua_Natural", "Cuerpo_de_Agua_Artificial", 
+						 "Bosque_Nativo", "Plantacion_Forestal", "Manglar", "Cultivo",  
+						 "Paramos", "Vegetacion_Arbustiva", "Vegetacion_Herbacea", 
 						 "FF", "GG","SS", "WW", "OO",
 						 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
 						 "WC", "WS", "OS", "CATCHALL")
+
+rfcodes <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
+							 "Natural_Water", "Artificial_Water", "Primary_Forest", 
+							 "Plantation_Forest", "Mangrove", "Secondary_Forest",
+							 "Cropland", "Paramos", "Shrubland", "Herbland",
+							 "FF", "GG","SS", "WW", "OO",
+							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
+							 "WC", "WS", "OS", "Catchall")
 
 
 #' ### Calculating strata_totals  
@@ -100,7 +148,7 @@ exponent[is.na(exponent)] <- 0
 areas <- number * 10 ^ exponent
 
 #convert to factor to get to int codes
-areaClasses <- factor(areaClasses, rfcodes)
+areaClasses <- factor(areaClasses, areacodes)
 class <- as.numeric(areaClasses)
 
 cleanAreas <- data.frame(class, areas)
@@ -109,10 +157,40 @@ names(cleanAreas) <- c("class", "area")
 #convert areas to pixel counts
 strata_totals <- data.frame(class, areas/pixel^2)
 names(strata_totals) <- c("strata", "pixelcount")
-strata_totals
+strata_totals <- arrange(strata_totals, strata)
 
-#' ### Calculate totarea_pix
-
+#' ### Calculate totarea_pix  
+#' Total area of classes, in pixels
 #+ totalpixels
 totarea_pix <- sum(strata_totals[,2])
 totarea_pix
+
+#' ###calcPropsAndVars  
+#' Calculate proportions and variances for area and accuracies calculation per 
+#' original strata for a given year/map.  
+#+ propsvars
+
+propsAndVars <- calcPropsAndVars(orig_strata, ref_label, map_label, 
+																	 strata_totals, sample_totals, rfcodes)
+
+
+#' ###calcPropSE  
+#' Function to calculate std error of unbiased area proportions of reference
+#' classes for a given year/map  
+#+ propse
+
+propSE <- calcPropSE(strata_totals, sample_totals, propsAndVars$ref_var, rfcodes, 
+					 totarea_pix)
+
+#' ###calcUnbiasedArea  
+#' Function to calculate unbiased area, confidence interval and 
+#' margin of error.  
+#+ unbiasedarea
+unArea <- calcUnbiasedArea(totarea_pix, propsAndVars$class_prop, propSE, pixel)
+
+#' ###calcAccuracies  
+#' Function to calculate accuracies and their 95% confidence intervals.  
+#+ accuracies
+
+accurates <- calcAccuracies(strata_totals, sample_totals, rfcodes, totarea_pix, 
+							 propsAndVars)
