@@ -277,45 +277,26 @@ convertMapClasses <- function(table){
 #' Convert GEE codes in the exported table into predicted map class values, 
 #' using IPCC six class Level 1. 
 
+
 #+ ConvertMapCodes6. 
 convertMapClasses6 <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
 		mutate(
 			MapClass6 = case_when(
-				MAPCLASS == 1 ~ "Settlements",
-				MAPCLASS == 2 ~ "Settlements",
-				MAPCLASS == 3 ~ "Other_Lands",
-				MAPCLASS == 4 ~ "Other_Lands",
-				MAPCLASS == 5 ~ "Wetlands",
-				MAPCLASS == 6 ~ "Wetlands",
-				MAPCLASS == 7 ~ "Forest_Lands",
-				MAPCLASS == 8 ~ "Forest_Lands",
-				MAPCLASS == 9 ~ "Forest_Lands",
-				MAPCLASS == 10 ~ "Forest_Lands",
-				MAPCLASS == 11 ~ "Croplands",
-				MAPCLASS == 12 ~ "Grasslands",
-				MAPCLASS == 13 ~ "Grasslands",
-				MAPCLASS == 14 ~ "Grasslands",
-				MAPCLASS == 15 ~ "FF",
-				MAPCLASS == 16 ~ "GG",
-				MAPCLASS == 17 ~ "SS",
-				MAPCLASS == 18 ~ "WW",
-				MAPCLASS == 19 ~ "OO",
-				MAPCLASS == 20 ~ "FC",
-				MAPCLASS == 21 ~ "FG",
-				MAPCLASS == 22 ~ "FS",
-				MAPCLASS == 23 ~ "FW",
-				MAPCLASS == 24 ~ "CG",
-				MAPCLASS == 25 ~ "CF",
-				MAPCLASS == 26 ~ "CS",
-				MAPCLASS == 27 ~ "GC",
-				MAPCLASS == 28 ~ "GF",
-				MAPCLASS == 29 ~ "GS",
-				MAPCLASS == 30 ~ "WC",
-				MAPCLASS == 31 ~ "WS",
-				MAPCLASS == 32 ~ "OS",
-				MAPCLASS == 33 ~ "Catchall"
+				MAPCLASS == 1 ~ "Forest_Lands",
+				MAPCLASS == 2 ~ "Grasslands",
+				MAPCLASS == 3 ~ "Croplands",
+				MAPCLASS == 4 ~ "Wetlands",
+				MAPCLASS == 5 ~ "Settlements",
+				MAPCLASS == 6 ~ "Other_Lands",
+				MAPCLASS == 7 ~ "FC",
+				MAPCLASS == 8 ~ "FG",
+				MAPCLASS == 9 ~ "FS",
+				MAPCLASS == 10 ~ "CF",
+				MAPCLASS == 11 ~ "GF",
+				MAPCLASS == 12 ~ "GC",
+				MAPCLASS == 13 ~ "Catchall"
 			)
 		)
 	return(reclassed)
@@ -620,8 +601,6 @@ addFinal <- function(table){
 #' - Infraestructura -> Infraestructura = Settlements  
 #' - Area sin Cobertura Vegetal -> Area sin Cobertura Vegetal = Other Lands  
 #' - Glaciar-> Glaciar = Other Lands  
-#' 
-#' Unstable classes are assigned as above. 
 
 addIPCC <- function(table){
 	require(tidyr)
@@ -629,42 +608,19 @@ addIPCC <- function(table){
 		mutate(
 			ref6Class = case_when(
 				T1L2 == T2L2 ~ T2L1,
-				T1L1 == T2L1 &
-					T2L1 == "Forest_Lands" ~ "FF",
-				T1L1 == T2L1 &
-					T2L1 == "Grasslands" ~ "GG",
-				T1L1 == T2L1 &
-					T2L1 == "Settlements" ~ "SS",
-				T1L1 == T2L1 &
-					T2L1 == "Other_Lands" ~ "OO",
-				T1L1 == T2L1 &
-					T2L1 == "Wetlands" ~ "WW",
+				T1L1 == T2L1 ~ T2L1,
 				T1L1 == "Forest_Lands" &
 					T2L1 == "Croplands" ~ "FC",
 				T1L1 == "Forest_Lands" &
 					T2L1 == "Grasslands" ~ "FG",
 				T1L1 == "Forest_Lands" &
 					T2L1 == "Settlements" ~ "FS",
-				T1L1 == "Forest_Lands" &
-					T2L1 == "Wetlands" ~ "FW",
 				T1L1 == "Croplands" &
 					T2L1 == "Forest_Lands" ~ "CF",
-				T1L1 == "Croplands" &
-					T2L1 == "Grasslands" ~ "CG",
-				T1L1 == "Croplands" &
-					T2L1 == "Settlements" ~ "CS",
 				T1L1 == "Grasslands" &
 					T2L1 == "Croplands" ~ "GC",
 				T1L1 == "Grasslands" &
 					T2L1 == "Forest_Lands" ~ "GF",
-				T1L1 == "Grasslands" &
-					T2L1 == "Settlements" ~ "GS",
-				T1L1 == "Wetlands" &
-					T2L1 == "Croplands" ~ "WC",
-				T1L1 == "Wetlands" &
-					T2L1 == "Settlements" ~ "WS",
-				T1L1 == "Other_Lands" &
-					T2L1 == "Settlements" ~ "OS",
 				TRUE ~ "Catchall"
 			)
 		)

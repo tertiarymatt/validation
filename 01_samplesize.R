@@ -20,7 +20,7 @@ source("00.2_functions_es.R")
 
 #' ### This section is used to determing sample size needed for the project.  
 #' Before running this script, use the [`01_ChangePercentage` Earth Engine 
-#' script](https://code.earthengine.google.com/146c6bba7eb1d1225caa9ff01fbb3d82)
+#' script](https://code.earthengine.google.com/5c56f4448e391a3d79e58a3c94d7fbfe)
 #' to find the percent area occupied by change classes in the output data. The
 #' percentage of change will be displayed in the console after the script is
 #' run. That percentage will be used in the sample size allocation optimizing

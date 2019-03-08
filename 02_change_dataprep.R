@@ -17,6 +17,7 @@ setwd("~/R/projects/validation")
 library(tidyverse)
 library(stringr)
 source('00.1_functions_en.R')
+source('00.3_area_est_functions_en.R')
 
 #' This script is used to import the photo-interpreted points for change
 #' data (two years of data) after they have been produced in Collect Earth 
@@ -32,8 +33,8 @@ source('00.1_functions_en.R')
 
 #+ Import and Prepare Data
 #Import original samples
-stable <- read_csv("data/points/Validation_Sample_for_CEO.csv")
-change <- read_csv("data/points/Validation_Change_Sample_for_CEO.csv")
+stable <- read_csv("data/points_with_strata/Validation_Sample_for_CEO.csv")
+change <- read_csv("data/points_with_strata/Validation_Change_Sample_for_CEO.csv")
 
 allPoints <- bind_rows(stable, change)
 
@@ -41,16 +42,15 @@ allPoints <- bind_rows(stable, change)
 allPoints <- convertStrataClasses(allPoints)
 
 #Import table with map classes
-extracted <- read_csv("data/reference/extractedvalues/SampleMapClasses.csv")
+extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_classes_change.csv")
 extracted
 
 #drop unneeded fields and convert map classes
-extracted <- extracted[,c(2,3,5,6,7)]
-extracted <- convertMapClasses(extracted)
+extracted <- extracted[,c(2,4,5,6,7,8)]
 extracted <- convertMapClasses6(extracted)
 
 # Import gathered CEO data, prepare
-ceoTable <- read_csv("data/reference/aggregated/ceo_cleaned.csv")
+ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_change.csv")
 colnames(ceoTable)
 
 #create metadata data table. Use the colnames to find them and adjust columns.
@@ -187,10 +187,9 @@ if (length(toRemove) > 0) {
 finalTable <- addFinal(finalTable)
 finalTable <- addIPCC(finalTable)
 
-#' The SEPAL stratified estimator tool works with integer classes. 
-#' However, the data have been imported and prepared as characters. 
+#' The data have been imported and prepared as characters. 
 #' This section is for converting map values and validation values to integer 
-#' values, and will export a csv file that can be uploaded into SEPAL. 
+#' values, and will export a csv file that can be used for further analysis. 
 
 #+ ConvertoClassesandFactors
 
@@ -207,24 +206,18 @@ refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier",
 							 "WC", "WS", "OS", "Catchall")
 
 ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
-							 "Settlements", "Other_Lands",
-						 "FF", "GG","SS", "WW", "OO",
-						 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-						 "WC", "WS", "OS", "Catchall")
+								"Settlements", "Other_Lands",
+								"FC", "FG", "FS", "CF", "GF", "GC", "Catchall")
 
 # Add the factors to the table
-finalTable$reference <- factor(finalTable$refClass, refLevels)
 finalTable$reference6 <- factor(finalTable$ref6Class, ref6Levels)
-finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
 finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
 
 # Convert factors to integers. 
-finalTable$refint <- as.numeric(finalTable$reference)
 finalTable$ref6int <- as.numeric(finalTable$reference6)
-finalTable$predint <- as.numeric(finalTable$predicted)
 finalTable$pred6int <- as.numeric(finalTable$predicted6)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
-# Export table for upload to SEPAL
-write_csv(finalTable, "data/reference/complete/finalTable.csv")
+# Export table
+write_csv(finalTable, "data/reference/prepared_data/finalTable_change.csv")

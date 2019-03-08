@@ -1,7 +1,7 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-February 17, 2019
+March 07, 2019
 
 Set working directory to where data is being stored.
 
@@ -15,20 +15,21 @@ Required packages To use the english class functions file, change `source()` to 
 library(tidyverse)
 ```
 
-    ## -- Attaching packages ----------------------------------------------- tidyverse 1.2.1 --
+    ## -- Attaching packages ---------------------------------------- tidyverse 1.2.1 --
 
     ## v ggplot2 3.1.0     v purrr   0.2.5
     ## v tibble  1.4.2     v dplyr   0.7.8
     ## v tidyr   0.8.2     v stringr 1.3.1
     ## v readr   1.2.1     v forcats 0.3.0
 
-    ## -- Conflicts -------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
 ``` r
 library(stringr)
 source('00.1_functions_en.R')
+source('00.3_area_est_functions_en.R')
 ```
 
 This script is used to import the photo-interpreted points for change data (two years of data) after they have been produced in Collect Earth Online. The process is as follows.
@@ -44,7 +45,7 @@ Import raw data, strip out unneeded name components of class fields.
 
 ``` r
 #Import original samples
-stable <- read_csv("data/points/Validation_Sample_for_CEO.csv")
+stable <- read_csv("data/points_with_strata/Validation_Sample_for_CEO.csv")
 ```
 
     ## Parsed with column specification:
@@ -60,7 +61,7 @@ stable <- read_csv("data/points/Validation_Sample_for_CEO.csv")
     ## )
 
 ``` r
-change <- read_csv("data/points/Validation_Change_Sample_for_CEO.csv")
+change <- read_csv("data/points_with_strata/Validation_Change_Sample_for_CEO.csv")
 ```
 
     ## Parsed with column specification:
@@ -80,17 +81,23 @@ allPoints <- bind_rows(stable, change)
 allPoints <- convertStrataClasses(allPoints)
 
 #Import table with map classes
-extracted <- read_csv("data/reference/extractedvalues/SampleMapClasses.csv")
+extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_classes_change.csv")
 ```
 
     ## Parsed with column specification:
     ## cols(
     ##   `system:index` = col_character(),
+    ##   ANALYSES = col_double(),
+    ##   ANALYSIS_D = col_logical(),
     ##   CENTER_LAT = col_double(),
     ##   CENTER_LON = col_double(),
     ##   COLLECTION = col_datetime(format = ""),
+    ##   FLAGGED = col_logical(),
     ##   MAPCLASS = col_double(),
     ##   PLOT_ID = col_double(),
+    ##   SAMPLE_POI = col_double(),
+    ##   SHAPE = col_character(),
+    ##   SIZE_M = col_double(),
     ##   USER_ID = col_character(),
     ##   .geo = col_logical()
     ## )
@@ -99,30 +106,30 @@ extracted <- read_csv("data/reference/extractedvalues/SampleMapClasses.csv")
 extracted
 ```
 
-    ## # A tibble: 1,197 x 8
-    ##    `system:index` CENTER_LAT CENTER_LON COLLECTION          MAPCLASS
-    ##    <chr>               <dbl>      <dbl> <dttm>                 <dbl>
-    ##  1 000063f76672f~     0.0213      -75.9 2019-02-16 02:50:07        7
-    ##  2 00001afaf6883~     0.128       -76.0 2019-02-17 06:05:28        7
-    ##  3 000087660cbfa~     0.256       -76.0 2019-02-14 20:20:45        5
-    ##  4 000081293f9f0~     0.329       -76.3 2019-02-16 18:46:04        7
-    ##  5 000066770cb75~     0.151       -76.3 2019-02-16 02:15:52        7
-    ##  6 00005501fccde~     0.208       -76.3 2019-02-13 17:05:10       11
-    ##  7 0000b9121750b~     0.189       -76.2 2019-02-16 18:36:53        5
-    ##  8 00002ff15ee44~     0.191       -76.3 2019-02-11 17:31:32        7
-    ##  9 0000b59d9182a~     0.0234      -76.3 2019-02-11 03:52:34        2
-    ## 10 000026a1295f2~     0.0816      -76.3 2019-02-13 19:34:40        7
-    ## # ... with 1,187 more rows, and 3 more variables: PLOT_ID <dbl>,
-    ## #   USER_ID <chr>, .geo <lgl>
+    ## # A tibble: 1,177 x 14
+    ##    `system:index` ANALYSES ANALYSIS_D CENTER_LAT CENTER_LON
+    ##    <chr>             <dbl> <lgl>           <dbl>      <dbl>
+    ##  1 0000af07eef9f~        0 NA             0.0213      -75.9
+    ##  2 00002cbd93b03~        0 NA             0.128       -76.0
+    ##  3 00001beb03135~        0 NA             0.256       -76.0
+    ##  4 0000fc1586add~        0 NA             0.329       -76.3
+    ##  5 0000a9c36d932~        0 NA             0.151       -76.3
+    ##  6 0000ed72d2bd0~        0 NA             0.208       -76.3
+    ##  7 0000ec3faa6b5~        0 NA             0.189       -76.2
+    ##  8 0000697bc990c~        0 NA             0.191       -76.3
+    ##  9 0000b8f25d550~        0 NA             0.0234      -76.3
+    ## 10 00003f801bfcd~        0 NA             0.0816      -76.3
+    ## # ... with 1,167 more rows, and 9 more variables: COLLECTION <dttm>,
+    ## #   FLAGGED <lgl>, MAPCLASS <dbl>, PLOT_ID <dbl>, SAMPLE_POI <dbl>,
+    ## #   SHAPE <chr>, SIZE_M <dbl>, USER_ID <chr>, .geo <lgl>
 
 ``` r
 #drop unneeded fields and convert map classes
-extracted <- extracted[,c(2,3,5,6,7)]
-extracted <- convertMapClasses(extracted)
+extracted <- extracted[,c(2,4,5,6,7,8)]
 extracted <- convertMapClasses6(extracted)
 
 # Import gathered CEO data, prepare
-ceoTable <- read_csv("data/reference/aggregated/ceo_cleaned.csv")
+ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_change.csv")
 ```
 
     ## Parsed with column specification:
@@ -216,7 +223,7 @@ metadata <- left_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE",
 metadata <- left_join(metadata, extracted)
 ```
 
-    ## Joining, by = c("PLOT_ID", "CENTER_LON", "CENTER_LAT", "USER_ID")
+    ## Joining, by = c("CENTER_LON", "CENTER_LAT", "FLAGGED", "ANALYSES")
 
 ``` r
 # Split table into pieces, reassemble into single year tables
@@ -253,8 +260,8 @@ colnames(time1)
     ## [16] "MAPA"                             
     ## [17] "VALID_FIN"                        
     ## [18] "StrataClass"                      
-    ## [19] "MAPCLASS"                         
-    ## [20] "MapClass"                         
+    ## [19] "COLLECTION"                       
+    ## [20] "MAPCLASS"                         
     ## [21] "MapClass6"                        
     ## [22] "2014 COVER:PRIMARY TREE"          
     ## [23] "2014 COVER:SECONDARY TREE"        
@@ -388,7 +395,7 @@ finalTable <- addFinal(finalTable)
 finalTable <- addIPCC(finalTable)
 ```
 
-The SEPAL stratified estimator tool works with integer classes. However, the data have been imported and prepared as characters. This section is for converting map values and validation values to integer values, and will export a csv file that can be uploaded into SEPAL.
+The data have been imported and prepared as characters. This section is for converting map values and validation values to integer values, and will export a csv file that can be used for further analysis.
 
 ``` r
 # Convert to factors. The levels need to be properly set. For the final numeric
@@ -403,26 +410,20 @@ refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier",
                              "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
                              "WC", "WS", "OS", "Catchall")
 
-ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands", 
-                             "Settlements", "Other_Lands",
-                             "FF", "GG","SS", "WW", "OO",
-                             "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-                             "WC", "WS", "OS", "Catchall")
+ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
+                                "Settlements", "Other_Lands",
+                                "FC", "FG", "FS", "CF", "GF", "GC", "Catchall")
 
 # Add the factors to the table
-finalTable$reference <- factor(finalTable$refClass, refLevels)
 finalTable$reference6 <- factor(finalTable$ref6Class, ref6Levels)
-finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
 finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
 
 # Convert factors to integers. 
-finalTable$refint <- as.numeric(finalTable$reference)
 finalTable$ref6int <- as.numeric(finalTable$reference6)
-finalTable$predint <- as.numeric(finalTable$predicted)
 finalTable$pred6int <- as.numeric(finalTable$predicted6)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
-# Export table for upload to SEPAL
-write_csv(finalTable, "data/reference/complete/finalTable.csv")
+# Export table
+write_csv(finalTable, "data/reference/prepared_data/finalTable_change.csv")
 ```
