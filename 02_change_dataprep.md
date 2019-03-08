@@ -1,7 +1,7 @@
 Change Data Prep and Exploration
 ================
 MS Patterson, <tertiarymatt@gmail.com>
-March 07, 2019
+March 08, 2019
 
 Set working directory to where data is being stored.
 
@@ -87,17 +87,12 @@ extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_cla
     ## Parsed with column specification:
     ## cols(
     ##   `system:index` = col_character(),
-    ##   ANALYSES = col_double(),
-    ##   ANALYSIS_D = col_logical(),
     ##   CENTER_LAT = col_double(),
     ##   CENTER_LON = col_double(),
     ##   COLLECTION = col_datetime(format = ""),
     ##   FLAGGED = col_logical(),
     ##   MAPCLASS = col_double(),
     ##   PLOT_ID = col_double(),
-    ##   SAMPLE_POI = col_double(),
-    ##   SHAPE = col_character(),
-    ##   SIZE_M = col_double(),
     ##   USER_ID = col_character(),
     ##   .geo = col_logical()
     ## )
@@ -106,22 +101,21 @@ extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_cla
 extracted
 ```
 
-    ## # A tibble: 1,177 x 14
-    ##    `system:index` ANALYSES ANALYSIS_D CENTER_LAT CENTER_LON
-    ##    <chr>             <dbl> <lgl>           <dbl>      <dbl>
-    ##  1 0000af07eef9f~        0 NA             0.0213      -75.9
-    ##  2 00002cbd93b03~        0 NA             0.128       -76.0
-    ##  3 00001beb03135~        0 NA             0.256       -76.0
-    ##  4 0000fc1586add~        0 NA             0.329       -76.3
-    ##  5 0000a9c36d932~        0 NA             0.151       -76.3
-    ##  6 0000ed72d2bd0~        0 NA             0.208       -76.3
-    ##  7 0000ec3faa6b5~        0 NA             0.189       -76.2
-    ##  8 0000697bc990c~        0 NA             0.191       -76.3
-    ##  9 0000b8f25d550~        0 NA             0.0234      -76.3
-    ## 10 00003f801bfcd~        0 NA             0.0816      -76.3
-    ## # ... with 1,167 more rows, and 9 more variables: COLLECTION <dttm>,
-    ## #   FLAGGED <lgl>, MAPCLASS <dbl>, PLOT_ID <dbl>, SAMPLE_POI <dbl>,
-    ## #   SHAPE <chr>, SIZE_M <dbl>, USER_ID <chr>, .geo <lgl>
+    ## # A tibble: 1,177 x 9
+    ##    `system:index` CENTER_LAT CENTER_LON COLLECTION          FLAGGED
+    ##    <chr>               <dbl>      <dbl> <dttm>              <lgl>  
+    ##  1 0000341f1881d~     0.0213      -75.9 2019-02-16 02:50:07 FALSE  
+    ##  2 000060bfb25bf~     0.128       -76.0 2019-02-17 06:05:28 FALSE  
+    ##  3 0000e7a7dc5b8~     0.256       -76.0 2019-02-14 20:20:45 FALSE  
+    ##  4 00008118b0fff~     0.329       -76.3 2019-02-16 18:46:04 FALSE  
+    ##  5 0000e9873bc8c~     0.151       -76.3 2019-02-16 02:15:52 FALSE  
+    ##  6 000020e797dbe~     0.208       -76.3 2019-02-13 17:05:10 FALSE  
+    ##  7 0000e3495486d~     0.189       -76.2 2019-02-16 18:36:53 FALSE  
+    ##  8 000060beed62a~     0.191       -76.3 2019-02-11 17:31:32 FALSE  
+    ##  9 0000bd28c17ec~     0.0234      -76.3 2019-02-11 03:52:34 FALSE  
+    ## 10 00008826fe599~     0.0816      -76.3 2019-02-13 19:34:40 FALSE  
+    ## # ... with 1,167 more rows, and 4 more variables: MAPCLASS <dbl>,
+    ## #   PLOT_ID <dbl>, USER_ID <chr>, .geo <lgl>
 
 ``` r
 #drop unneeded fields and convert map classes
@@ -223,7 +217,7 @@ metadata <- left_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE",
 metadata <- left_join(metadata, extracted)
 ```
 
-    ## Joining, by = c("CENTER_LON", "CENTER_LAT", "FLAGGED", "ANALYSES")
+    ## Joining, by = c("PLOT_ID", "CENTER_LAT", "FLAGGED", "USER_ID")
 
 ``` r
 # Split table into pieces, reassemble into single year tables
