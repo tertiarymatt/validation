@@ -340,7 +340,8 @@ finalTable$L1 <- reclassed$LEVEL1
 finalTable$L2 <- reclassed$LEVEL2
 
 #strip out No_Data entries.
-toRemove <- which(finalTable$L2 == "No_Data" | finalTable$L1 == "No_Data")
+toRemove <- which(finalTable$L2 == "No_Data" | finalTable$L1 == "No_Data" |
+                                        finalTable$L2 == "Mosaic")
 if (length(toRemove) > 0) {
     finalTable <- finalTable[-toRemove,]
 }
@@ -360,12 +361,20 @@ refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier",
 ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
                              "Settlements", "Other_Lands")
 
+strataLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
+                                    "Natural_Water", "Artificial_Water", "Primary_Forest",
+                                    "Plantation_Forest", "Mangrove", "Cropland", "Paramos", 
+                                    "Shrubland", "Herbland", 
+                                    "FF", "GG","SS", "WW", "OO",
+                                    "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
+                                    "WC", "WS", "OS", "Catchall")
+
 # Add the factors to the table
 finalTable$reference <- factor(finalTable$L2, refLevels)
 finalTable$reference6 <- factor(finalTable$L1, ref6Levels)
 finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
-finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
+finalTable$StrataClass <- factor(finalTable$StrataClass, strataLevels)
 
 # Convert factors to integers. 
 finalTable$refint <- as.numeric(finalTable$reference)

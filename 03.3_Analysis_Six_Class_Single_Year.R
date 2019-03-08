@@ -1,5 +1,5 @@
 #' ---
-#' title: "Accuracy Assessment and Area Estimation"
+#' title: "Accuracy Assessment and Area Estimation, Six Class"
 #' author: "MS Patterson, tertiarymatt@gmail.com"
 #' date: "`r format(Sys.time(), '%B %d, %Y')`"
 #' output: github_document
@@ -16,7 +16,7 @@ source("00.3_area_est_functions_en.R")
 
 #' ### Necessary data  
 #' **ceoTable** Outputs of all ceo projects, collated, and unifed with original
-#' point metadata. Produced in script `02_change_dataprep.R`.  
+#' point metadata. Produced in script `02_new_change_dataprep.R`.  
 #' 
 #' **orig_strata** Vector with numeric codes representing the original 
 #' stratification of each sample.  
@@ -57,12 +57,12 @@ orig_strata <- completeData$strataint
 #' Vector with numeric codes representing the reference label for that year/map,
 #'  for each sample.  
 #+ reflabels
-ref_label <- completeData$reference
+ref_label <- completeData$reference6
 
 #' ### Create **map_label**   
 #' Vector with numeric codes representing the map labels, for each sample.  
 #+ maplabels
-map_label <- completeData$predicted
+map_label <- completeData$predicted6
 
 #' ### Calculating sample_totals  
 #' Generate a dataframe with two columns and number of rows equal to 
@@ -85,18 +85,15 @@ colnames(sample_totals) <- c("strata", "count")
 #+ rfcodes
 # here as text, but used to convert to a factor and produce int codes.
 areacodes <- c("Area_Poblada", "Infraestructura", "Area_sin_Cobertura_Vegetal", 
-						 "Glaciar", "Cuerpo_de_Agua_Natural", "Cuerpo_de_Agua_Artificial", 
-						 "Bosque_Nativo", "Plantacion_Forestal", "Manglar", "Cultivo",  
-						 "Paramos", "Vegetacion_Arbustiva", "Vegetacion_Herbacea", 
-						 "FF", "GG","SS", "WW", "OO",
-						 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
-						 "WC", "WS", "OS", "CATCHALL")
+							 "Glaciar", "Cuerpo_de_Agua_Natural", "Cuerpo_de_Agua_Artificial", 
+							 "Bosque_Nativo", "Plantacion_Forestal", "Manglar", "Cultivo",  
+							 "Paramos", "Vegetacion_Arbustiva", "Vegetacion_Herbacea", 
+							 "FF", "GG","SS", "WW", "OO",
+							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
+							 "WC", "WS", "OS", "CATCHALL")
 
-rfcodes <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
-							 "Natural_Water", "Artificial_Water", "Primary_Forest", 
-							 "Plantation_Forest", "Mangrove", "Secondary_Forest",
-							 "Cropland", "Paramos", "Shrubland", "Herbland")
-
+rfcodes <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
+						 "Settlements", "Other_Lands")
 
 #' ### Calculating strata_totals  
 #' Import class data, reformat the feature properties to make a tidy export.
@@ -168,7 +165,8 @@ totarea_pix
 #+ propsvars
 
 propsAndVars <- calcPropsAndVars(orig_strata, ref_label, map_label, 
-																	 strata_totals, sample_totals, rfcodes)
+																 strata_totals, sample_totals, rfcodes)
+
 
 #' ###calcPropSE  
 #' Function to calculate std error of unbiased area proportions of reference
@@ -176,7 +174,7 @@ propsAndVars <- calcPropsAndVars(orig_strata, ref_label, map_label,
 #+ propse
 
 propSE <- calcPropSE(strata_totals, sample_totals, propsAndVars$ref_var, rfcodes, 
-					 totarea_pix)
+										 totarea_pix)
 
 #' ###calcUnbiasedArea  
 #' Function to calculate unbiased area, confidence interval and 
@@ -189,7 +187,7 @@ unArea <- calcUnbiasedArea(totarea_pix, propsAndVars$class_prop, propSE, pixel)
 #+ accuracies
 
 accurates <- calcAccuracies(strata_totals, sample_totals, rfcodes, totarea_pix, 
-							 propsAndVars)
+														propsAndVars)
 
 #' ### Making some outputs
 #+ Outputs
@@ -206,8 +204,8 @@ users <- cbind(round(accurates$users_acc*100, 1),
 colnames(users) <- c("User's", "Min User's", "Max User's")
 
 producers<- cbind(round(accurates$producers_acc*100, 1), 
-									round(accurates$producers_acc_min*100, 1), 
-									round(accurates$producers_acc_max*100, 1))
+							 round(accurates$producers_acc_min*100, 1), 
+							 round(accurates$producers_acc_max*100, 1))
 colnames(producers) <- c("Producer's", "Min Producer's", "Max Producer's")
 
 overall
