@@ -11,7 +11,7 @@ After a sample size has been generated, the [second GEE script](https://code.ear
 ### PI Work
 The two CSV files are then concatenated, and ordered such that they can be imported into Collect Earth Online (CEO); the field order (and names) must be Longtidue, Latitude, and Plotid. Projects are constructed in CEO and assigned, and Photo Interpretation performed to collect data. 
 
-Once the PI work is complete, the resulting tables are exported from CEO and brought together into one table. This table is re-imported into GEE as an asset, and the map values from the data to be validated are then added to the table, and it is re-exported, in [GEE script 4](https://code.earthengine.google.com/095b34fe3226cc32553fe4fdf3824a73). 
+Once the PI work is complete, the resulting tables are exported from CEO and brought together into one table. This table is re-imported into GEE as an asset, and the map values from the data to be validated are then added to the table, and it is re-exported, in [GEE script 4](https://code.earthengine.google.com/c977c8f97d772acfb6d42085dee24085). Note that the file must be converted into a shapefile, and all the CEO fields should be dropped, as they will be truncated by conversion to a shapefile. This necessitates rejoining the file in R. It is only necessary to upload a single point file, as the same points are used for each data product.
 
 ### Validation
 Once the full table has been assembled, the script 02_change_dataprep.R or 02_dataprep.R are used to clean and recode the data for analysis in R, as well as to process the area tables. 
