@@ -183,6 +183,8 @@ if (length(toRemove) > 0) {
 	finalTable <- finalTable[-toRemove,]
 }
 
+finalTable <- drop_na(finalTable, c("MAPCLASS"))
+
 # produce final classes
 finalTable <- addFinal(finalTable)
 finalTable <- addIPCC(finalTable)

@@ -44,7 +44,7 @@ source("00.3_area_est_functions_en.R")
 
 #' ###Importing Data  
 #' Importing the full data from the output file. 
-completeData <- read_csv("data/reference/complete/finalTable.csv")
+completeData <- read_csv("data/reference/prepared_data/finalTable_change.csv")
 
 #' ### Create **orig_strata**  
 #' Vector with numeric codes representing the original stratification of each 
@@ -92,11 +92,9 @@ areacodes <- c("Area_Poblada", "Infraestructura", "Area_sin_Cobertura_Vegetal",
 							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS", 
 							 "WC", "WS", "OS", "CATCHALL")
 
-rfcodes <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands", 
-								"Settlements", "Other_Lands",
-								"FF", "GG","SS", "WW", "OO",
-								"FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-								"WC", "WS", "OS", "Catchall")
+rfcodes <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
+						 "Settlements", "Other_Lands",
+						 "FC", "FG", "FS", "CF", "GF", "GC", "Catchall")
 
 #' ### Calculating strata_totals  
 #' Import class data, reformat the feature properties to make a tidy export.
@@ -194,6 +192,12 @@ accurates <- calcAccuracies(strata_totals, sample_totals, rfcodes, totarea_pix,
 
 #' ### Making some outputs
 #+ Outputs
+# Overall accuracy
+overall <- cbind(round(accurates$overall_acc*100, 1), 
+								 round(accurates$overall_acc_min*100, 1), 
+								 round(accurates$overall_acc_max*100, 1))
+colnames(overall) <- c("Overall", "Min Overall", "Max Overall")
+
 # User's and Producer's Accuracy
 users <- cbind(round(accurates$users_acc*100, 1), 
 							 round(accurates$users_acc_min*100, 1), 
@@ -205,6 +209,7 @@ producers<- cbind(round(accurates$producers_acc*100, 1),
 							 round(accurates$producers_acc_max*100, 1))
 colnames(producers) <- c("Producer's", "Min Producer's", "Max Producer's")
 
+overall
 users
 producers
 
