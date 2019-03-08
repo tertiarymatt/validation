@@ -81,7 +81,7 @@ allPoints <- bind_rows(stable, change)
 allPoints <- convertStrataClasses(allPoints)
 
 #Import table with map classes
-extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_classes_change.csv")
+extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_classes_2016.csv")
 ```
 
     ## Parsed with column specification:
@@ -120,10 +120,11 @@ extracted
 ``` r
 #drop unneeded fields and convert map classes
 extracted <- extracted[,c(2,4,5,6,7,8)]
-extracted <- convertMapClasses6Change(extracted)
+extracted <- convertMapClasses(extracted)
+extracted <- convertMapClasses6(extracted)
 
 # Import gathered CEO data, prepare
-ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_change.csv")
+ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_2016.csv")
 ```
 
     ## Parsed with column specification:
@@ -172,25 +173,6 @@ colnames(ceoTable)
     ## [28] "2016 COVER:SNOW/ICE"              
     ## [29] "2016 COVER:OTHER"                 
     ## [30] "2016 COVER:CLOUDS/UNINTERPRETABLE"
-    ## [31] "2014 COVER:PRIMARY TREE"          
-    ## [32] "2014 COVER:SECONDARY TREE"        
-    ## [33] "2014 COVER:PLANTATION TREE"       
-    ## [34] "2014 COVER:MANGROVE"              
-    ## [35] "2014 COVER:HERBACEOUS VEGETATION" 
-    ## [36] "2014 COVER:SHRUB VEGETATION"      
-    ## [37] "2014 COVER:PARAMO VEGETATION"     
-    ## [38] "2014 COVER:CROPS"                 
-    ## [39] "2014 COVER:NATURAL WATER"         
-    ## [40] "2014 COVER:ARTIFICIAL WATER"      
-    ## [41] "2014 COVER:WETLAND VEGETATION"    
-    ## [42] "2014 COVER:HOUSING STRUCTURE"     
-    ## [43] "2014 COVER:INFRASTRUCTURE"        
-    ## [44] "2014 COVER:ROADS AND LOTS"        
-    ## [45] "2014 COVER:SETTLEMENT VEGETATION" 
-    ## [46] "2014 COVER:BARE GROUND"           
-    ## [47] "2014 COVER:SNOW/ICE"              
-    ## [48] "2014 COVER:OTHER"                 
-    ## [49] "2014 COVER:CLOUDS/UNINTERPRETABLE"
 
 ``` r
 #create metadata data table. Use the colnames to find them and adjust columns.
@@ -211,29 +193,24 @@ head(metadata)
     ## #   COLLECTION_TIME <dttm>
 
 ``` r
-metadata <- left_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE", 
+metadata <- inner_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE", 
                                                                                                     "CENTER_LAT" = "LATITUDE"))
 
-metadata <- left_join(metadata, extracted)
+metadata <- inner_join(metadata, extracted)
 ```
 
     ## Joining, by = c("PLOT_ID", "CENTER_LAT", "FLAGGED", "USER_ID")
 
 ``` r
-# Split table into pieces, reassemble into single year tables
+# assemble full table
+ceoTable <- inner_join(metadata, ceoTable)
+```
 
-#time one plot data, this is the FIRST year in terms of time passing.
-time1 <- ceoTable[,31:49]
+    ## Joining, by = c("PLOT_ID", "CENTER_LON", "CENTER_LAT", "SIZE_M", "SHAPE", "FLAGGED", "ANALYSES", "SAMPLE_POINTS", "USER_ID", "ANALYSIS_DURATION", "COLLECTION_TIME")
 
-#time two plot data
-time2 <- ceoTable[,12:30]
-
-#add metadata to the time tables.
-time1 <- bind_cols(metadata, time1)
-time2 <-  bind_cols(metadata, time2)
-
+``` r
 # class names need to be pulled and cleaned up.
-colnames(time1)
+colnames(ceoTable)
 ```
 
     ##  [1] "PLOT_ID"                          
@@ -256,59 +233,49 @@ colnames(time1)
     ## [18] "StrataClass"                      
     ## [19] "COLLECTION"                       
     ## [20] "MAPCLASS"                         
-    ## [21] "MapClass6"                        
-    ## [22] "2014 COVER:PRIMARY TREE"          
-    ## [23] "2014 COVER:SECONDARY TREE"        
-    ## [24] "2014 COVER:PLANTATION TREE"       
-    ## [25] "2014 COVER:MANGROVE"              
-    ## [26] "2014 COVER:HERBACEOUS VEGETATION" 
-    ## [27] "2014 COVER:SHRUB VEGETATION"      
-    ## [28] "2014 COVER:PARAMO VEGETATION"     
-    ## [29] "2014 COVER:CROPS"                 
-    ## [30] "2014 COVER:NATURAL WATER"         
-    ## [31] "2014 COVER:ARTIFICIAL WATER"      
-    ## [32] "2014 COVER:WETLAND VEGETATION"    
-    ## [33] "2014 COVER:HOUSING STRUCTURE"     
-    ## [34] "2014 COVER:INFRASTRUCTURE"        
-    ## [35] "2014 COVER:ROADS AND LOTS"        
-    ## [36] "2014 COVER:SETTLEMENT VEGETATION" 
-    ## [37] "2014 COVER:BARE GROUND"           
-    ## [38] "2014 COVER:SNOW/ICE"              
-    ## [39] "2014 COVER:OTHER"                 
-    ## [40] "2014 COVER:CLOUDS/UNINTERPRETABLE"
+    ## [21] "MapClass"                         
+    ## [22] "MapClass6"                        
+    ## [23] "2016 COVER:PRIMARY TREE"          
+    ## [24] "2016 COVER:SECONDARY TREE"        
+    ## [25] "2016 COVER:PLANTATION TREE"       
+    ## [26] "2016 COVER:MANGROVE"              
+    ## [27] "2016 COVER:HERBACEOUS VEGETATION" 
+    ## [28] "2016 COVER:SHRUB VEGETATION"      
+    ## [29] "2016 COVER:PARAMO VEGETATION"     
+    ## [30] "2016 COVER:CROPS"                 
+    ## [31] "2016 COVER:NATURAL WATER"         
+    ## [32] "2016 COVER:ARTIFICIAL WATER"      
+    ## [33] "2016 COVER:WETLAND VEGETATION"    
+    ## [34] "2016 COVER:HOUSING STRUCTURE"     
+    ## [35] "2016 COVER:INFRASTRUCTURE"        
+    ## [36] "2016 COVER:ROADS AND LOTS"        
+    ## [37] "2016 COVER:SETTLEMENT VEGETATION" 
+    ## [38] "2016 COVER:BARE GROUND"           
+    ## [39] "2016 COVER:SNOW/ICE"              
+    ## [40] "2016 COVER:OTHER"                 
+    ## [41] "2016 COVER:CLOUDS/UNINTERPRETABLE"
 
 ``` r
 # create class column object to use in script.
 # If the structure of the data changes this MUST be updated.
-classCol <- c(22:40)
+classCol <- c(23:41)
 
-classes <- colnames(time1[classCol]) %>% 
+classes <- colnames(ceoTable[classCol]) %>% 
     str_split(., coll(":"), simplify = TRUE) %>% 
     .[,2] %>% 
     gsub(" ", "_", .) %>% 
     gsub("/", "_", .)
 
-colnames(time1)[classCol] <- classes
-colnames(time2)[classCol] <- classes
-
-#verify the tables have the same names
-colnames(time1) == colnames(time2)
+colnames(ceoTable)[classCol] <- classes
 ```
-
-    ##  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-    ## [15] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
-    ## [29] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE
 
 ### CEO Point Table Reclassification
 
 Use \`addTopClasses()\`\` to take a raw plot table produced by Collect Earth Online, and returns that table with a Primary and Secondary class field added.
 
 ``` r
-time1 <- addTopClasses(time1, plotfield = 1, flagfield = 6, 
+ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
                                                     classfields = classCol)
-
-time2 <- addTopClasses(time2, plotfield = 1, flagfield = 6, 
-                                             classfields = classCol)
 ```
 
 Then use primary and/or secondary classes and threshold values to convert to end classification.
@@ -349,8 +316,7 @@ Other Lands: Barren, Snow/Ice;
 
 ``` r
 # Adding the Level 2 Classes. 
-reclassedTime1 <- addLevel2(time1)
-reclassedTime2 <- addLevel2(time2)
+reclassed <- addLevel2(ceoTable)
 ```
 
 #### Level 1 LULC Conversions:
@@ -365,30 +331,19 @@ No Data = No Data;
 
 ``` r
 # Add level one classes. 
-reclassedTime1 <- addLevel1(reclassedTime1)
-reclassedTime2 <- addLevel1(reclassedTime2)
+reclassed <- addLevel1(reclassed)
+
 
 # Begin to assemble output table
 finalTable <- metadata
-finalTable$T1L1 <- reclassedTime1$LEVEL1
-finalTable$T1L2 <- reclassedTime1$LEVEL2
-finalTable$T2L1 <- reclassedTime2$LEVEL1
-finalTable$T2L2 <- reclassedTime2$LEVEL2
-finalTable$changeL1 <- finalTable$T1L1 != finalTable$T2L1
-finalTable$changeL2 <- finalTable$T1L2 != finalTable$T2L2
-
+finalTable$L1 <- reclassed$LEVEL1
+finalTable$L2 <- reclassed$LEVEL2
 
 #strip out No_Data entries.
-toRemove <- which(finalTable$T1L2 == "No_Data" | finalTable$T2L2 == "No_Data")
+toRemove <- which(finalTable$L2 == "No_Data" | finalTable$L1 == "No_Data")
 if (length(toRemove) > 0) {
     finalTable <- finalTable[-toRemove,]
 }
-
-finalTable <- drop_na(finalTable, c("MAPCLASS"))
-
-# produce final classes
-finalTable <- addFinal(finalTable)
-finalTable <- addIPCC(finalTable)
 ```
 
 The data have been imported and prepared as characters. This section is for converting map values and validation values to integer values, and will export a csv file that can be used for further analysis.
@@ -397,29 +352,28 @@ The data have been imported and prepared as characters. This section is for conv
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-
 refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
                              "Natural_Water", "Artificial_Water", "Primary_Forest", 
                              "Plantation_Forest", "Mangrove", "Secondary_Forest",
-                             "Cropland", "Paramos", "Shrubland", "Herbland",
-                             "FF", "GG","SS", "WW", "OO",
-                             "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-                             "WC", "WS", "OS", "Catchall")
+                             "Cropland", "Paramos", "Shrubland", "Herbland")
 
 ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
-                                "Settlements", "Other_Lands",
-                                "FC", "FG", "FS", "CF", "GF", "GC", "Catchall")
+                             "Settlements", "Other_Lands")
 
 # Add the factors to the table
-finalTable$reference6 <- factor(finalTable$ref6Class, ref6Levels)
+finalTable$reference <- factor(finalTable$L2, refLevels)
+finalTable$reference6 <- factor(finalTable$L1, ref6Levels)
+finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
 finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
 
 # Convert factors to integers. 
+finalTable$refint <- as.numeric(finalTable$reference)
 finalTable$ref6int <- as.numeric(finalTable$reference6)
+finalTable$predint <- as.numeric(finalTable$predicted)
 finalTable$pred6int <- as.numeric(finalTable$predicted6)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
-# Export table
-write_csv(finalTable, "data/reference/prepared_data/finalTable_change.csv")
+# Export table for upload to SEPAL
+write_csv(finalTable, "data/reference/prepared_data/finalTable_2016.csv")
 ```

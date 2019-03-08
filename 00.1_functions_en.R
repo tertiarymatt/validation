@@ -276,10 +276,33 @@ convertMapClasses <- function(table){
 
 #' Convert GEE codes in the exported table into predicted map class values, 
 #' using IPCC six class Level 1. 
-
-
-#+ ConvertMapCodes6. 
+#+ ConvertMapCodes6
 convertMapClasses6 <- function(table){
+	require(tidyr)
+	reclassed <- table %>% 
+		mutate(
+			MapClass6 = case_when(
+				MAPCLASS == 1 ~ "Settlements",
+				MAPCLASS == 2 ~ "Settlements",
+				MAPCLASS == 3 ~ "Other_Lands",
+				MAPCLASS == 4 ~ "Other_Lands",
+				MAPCLASS == 5 ~ "Wetlands",
+				MAPCLASS == 6 ~ "Wetlands",
+				MAPCLASS == 7 ~ "Forest_Lands",
+				MAPCLASS == 8 ~ "Forest_Lands",
+				MAPCLASS == 9 ~ "Forest_Lands",
+				MAPCLASS == 10 ~ "Forest_Lands",
+				MAPCLASS == 11 ~ "Croplands",
+				MAPCLASS == 12 ~ "Grasslands",
+				MAPCLASS == 13 ~ "Grasslands",
+				MAPCLASS == 14 ~ "Grasslands"
+			)
+		)
+	return(reclassed)
+}
+
+#+ ConvertMapCodes6forchangeproduct. 
+convertMapClasses6Change <- function(table){
 	require(tidyr)
 	reclassed <- table %>% 
 		mutate(

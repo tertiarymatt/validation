@@ -47,7 +47,7 @@ extracted
 
 #drop unneeded fields and convert map classes
 extracted <- extracted[,c(2,4,5,6,7,8)]
-extracted <- convertMapClasses6(extracted)
+extracted <- convertMapClasses6Change(extracted)
 
 # Import gathered CEO data, prepare
 ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_change.csv")

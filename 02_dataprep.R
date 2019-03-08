@@ -17,6 +17,7 @@ setwd("~/R/projects/validation")
 library(tidyverse)
 library(stringr)
 source('00.1_functions_en.R')
+source('00.3_area_est_functions_en.R')
 
 #' This script is used to import the photo-interpreted points for change
 #' data (two years of data) after they have been produced in Collect Earth 
@@ -32,8 +33,8 @@ source('00.1_functions_en.R')
 
 #+ Import and Prepare Data
 #Import original samples
-stable <- read_csv("data/points/Validation_Sample_for_CEO.csv")
-change <- read_csv("data/points/Validation_Change_Sample_for_CEO.csv")
+stable <- read_csv("data/points_with_strata/Validation_Sample_for_CEO.csv")
+change <- read_csv("data/points_with_strata/Validation_Change_Sample_for_CEO.csv")
 
 allPoints <- bind_rows(stable, change)
 
@@ -41,57 +42,44 @@ allPoints <- bind_rows(stable, change)
 allPoints <- convertStrataClasses(allPoints)
 
 #Import table with map classes
-extracted <- read_csv("data/reference/extractedvalues/SampleMapClasses.csv")
+extracted <- read_csv("data/reference/extracted_values_from_maps/sampled_map_classes_2016.csv")
 extracted
 
 #drop unneeded fields and convert map classes
-extracted <- extracted[,c(2,3,5,6,7)]
+extracted <- extracted[,c(2,4,5,6,7,8)]
 extracted <- convertMapClasses(extracted)
 extracted <- convertMapClasses6(extracted)
 
 # Import gathered CEO data, prepare
-ceoTable <- read_csv("data/reference/aggregated/ceo_cleaned.csv")
+ceoTable <- read_csv("data/reference/aggregated_CEO_projects/ceo_2016.csv")
 colnames(ceoTable)
 
 #create metadata data table. Use the colnames to find them and adjust columns.
 metadata <- ceoTable[,1:11]
 head(metadata)
 
-metadata <- left_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE", 
+metadata <- inner_join(metadata, allPoints, by = c("CENTER_LON" = "LONGITUDE", 
 																									"CENTER_LAT" = "LATITUDE"))
 
-metadata <- left_join(metadata, extracted)
+metadata <- inner_join(metadata, extracted)
 
-# Split table into pieces, reassemble into single year tables
-
-#time one plot data, this is the FIRST year in terms of time passing.
-time1 <- ceoTable[,31:49]
-
-#time two plot data
-time2 <- ceoTable[,12:30]
-
-#add metadata to the time tables.
-time1 <- bind_cols(metadata, time1)
-time2 <-  bind_cols(metadata, time2)
+# assemble full table
+ceoTable <- inner_join(metadata, ceoTable)
 
 # class names need to be pulled and cleaned up.
-colnames(time1)
+colnames(ceoTable)
 
 # create class column object to use in script.
 # If the structure of the data changes this MUST be updated.
-classCol <- c(22:40)
+classCol <- c(23:41)
 
-classes <- colnames(time1[classCol]) %>% 
+classes <- colnames(ceoTable[classCol]) %>% 
 	str_split(., coll(":"), simplify = TRUE) %>% 
 	.[,2] %>% 
 	gsub(" ", "_", .) %>% 
 	gsub("/", "_", .)
 
-colnames(time1)[classCol] <- classes
-colnames(time2)[classCol] <- classes
-
-#verify the tables have the same names
-colnames(time1) == colnames(time2)
+colnames(ceoTable)[classCol] <- classes
 
 #' ### CEO Point Table Reclassification
 #'
@@ -100,11 +88,8 @@ colnames(time1) == colnames(time2)
 #' added.
 
 #+ Find dominant landcover elements
-time1 <- addTopClasses(time1, plotfield = 1, flagfield = 6, 
+ceoTable <- addTopClasses(ceoTable, plotfield = 1, flagfield = 6, 
 													classfields = classCol)
-
-time2 <- addTopClasses(time2, plotfield = 1, flagfield = 6, 
-											 classfields = classCol)
 
 #' Then use primary and/or secondary classes and threshold values to convert to
 #' end classification.
@@ -150,8 +135,8 @@ time2 <- addTopClasses(time2, plotfield = 1, flagfield = 6,
 
 #+ Do Reclass
 # Adding the Level 2 Classes. 
-reclassedTime1 <- addLevel2(time1)
-reclassedTime2 <- addLevel2(time2)
+reclassed <- addLevel2(ceoTable)
+
 
 #' #### Level 1 LULC Conversions:
 #' Forest Lands = Primary, Secondary, Plantation, Mangrove;  
@@ -164,57 +149,40 @@ reclassedTime2 <- addLevel2(time2)
 
 #+ Adding the Level one classes.
 # Add level one classes. 
-reclassedTime1 <- addLevel1(reclassedTime1)
-reclassedTime2 <- addLevel1(reclassedTime2)
+reclassed <- addLevel1(reclassed)
+
 
 # Begin to assemble output table
 finalTable <- metadata
-finalTable$T1L1 <- reclassedTime1$LEVEL1
-finalTable$T1L2 <- reclassedTime1$LEVEL2
-finalTable$T2L1 <- reclassedTime2$LEVEL1
-finalTable$T2L2 <- reclassedTime2$LEVEL2
-finalTable$changeL1 <- finalTable$T1L1 != finalTable$T2L1
-finalTable$changeL2 <- finalTable$T1L2 != finalTable$T2L2
-
+finalTable$L1 <- reclassed$LEVEL1
+finalTable$L2 <- reclassed$LEVEL2
 
 #strip out No_Data entries.
-toRemove <- which(finalTable$T1L2 == "No_Data" | finalTable$T2L2 == "No_Data")
+toRemove <- which(finalTable$L2 == "No_Data" | finalTable$L1 == "No_Data")
 if (length(toRemove) > 0) {
 	finalTable <- finalTable[-toRemove,]
 }
 
-# produce final classes
-finalTable <- addFinal(finalTable)
-finalTable <- addIPCC(finalTable)
-
-#' The SEPAL stratified estimator tool works with integer classes. 
-#' However, the data have been imported and prepared as characters. 
+#' The data have been imported and prepared as characters. 
 #' This section is for converting map values and validation values to integer 
-#' values, and will export a csv file that can be uploaded into SEPAL. 
+#' values, and will export a csv file that can be used for further analysis. 
 
 #+ ConvertoClassesandFactors
 
 # Convert to factors. The levels need to be properly set. For the final numeric
 # codes to match those of the map, they need to be in the same order as those
 # of the map. 
-
 refLevels <- c("Settlement", "Infrastructure", "Barren", "Glacier", 
 							 "Natural_Water", "Artificial_Water", "Primary_Forest", 
 							 "Plantation_Forest", "Mangrove", "Secondary_Forest",
-							 "Cropland", "Paramos", "Shrubland", "Herbland",
-							 "FF", "GG","SS", "WW", "OO",
-							 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-							 "WC", "WS", "OS", "Catchall")
+							 "Cropland", "Paramos", "Shrubland", "Herbland")
 
 ref6Levels <- c("Forest_Lands", "Grasslands", "Croplands", "Wetlands",
-							 "Settlements", "Other_Lands",
-						 "FF", "GG","SS", "WW", "OO",
-						 "FC", "FG", "FS", "FW", "CG", "CF", "CS", "GC", "GF", "GS",
-						 "WC", "WS", "OS", "Catchall")
+							 "Settlements", "Other_Lands")
 
 # Add the factors to the table
-finalTable$reference <- factor(finalTable$refClass, refLevels)
-finalTable$reference6 <- factor(finalTable$ref6Class, ref6Levels)
+finalTable$reference <- factor(finalTable$L2, refLevels)
+finalTable$reference6 <- factor(finalTable$L1, ref6Levels)
 finalTable$predicted <- factor(finalTable$MapClass, refLevels)
 finalTable$predicted6 <- factor(finalTable$MapClass6, ref6Levels)
 finalTable$StrataClass <- factor(finalTable$StrataClass, refLevels)
@@ -227,4 +195,4 @@ finalTable$pred6int <- as.numeric(finalTable$predicted6)
 finalTable$strataint <- as.numeric(finalTable$StrataClass)
 
 # Export table for upload to SEPAL
-write_csv(finalTable, "data/reference/complete/finalTable.csv")
+write_csv(finalTable, "data/reference/prepared_data/finalTable_2016.csv")
